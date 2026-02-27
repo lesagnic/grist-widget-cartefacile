@@ -25,7 +25,7 @@ Le **Widget Carte Facile** peut être connecté, typiquement à un widget de typ
 [product-screenshot]: assets/img/screenshot.png
 [CarteFacile]: https://img.shields.io/badge/Carte%20Facile-v0.8.3-000000?style=plastic&labelColor=F7AF40
 [CarteFacile-url]: https://fab-geocommuns.github.io/carte-facile-site/
-[Map libre]: https://img.shields.io/badge/MapLibre-maplibre--gl%20v5.5.0-000000?logo=maplibre&style=plastic&labelColor=F7AF40
+[Maplibre]: https://img.shields.io/badge/MapLibre-maplibre--gl%20v5.5.0-000000?logo=maplibre&style=plastic&labelColor=F7AF40
 [Maplibre-url]: https://maplibre.org/
 [Grist]: https://img.shields.io/badge/Grist-grist--plugin--api-000000?&style=plastic&labelColor=F7AF40
 [Grist-url]: https://support.getgrist.com/code/modules/grist_plugin_api/
@@ -42,4 +42,5 @@ Le **Widget Carte Facile** peut être connecté, typiquement à un widget de typ
 [license-url]: https://github.com/lesagnic/grist-widget-cartefacile/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-linkedIn-black.svg?style=plastic&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/nicolas-lesage-1a2049b0/
+
 
