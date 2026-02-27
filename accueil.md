@@ -6,7 +6,7 @@
 [![Unlicense License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-[![Product Name Screen Shot][product-screenshot]](https://lesagnic.github.io/grist-widget-cartefacile)
+[![Product Name Screen Shot][product-screenshot]][product-screenshot]
   
 Ce widget permet de visualiser les lignes d'une table GRIST disposant de coordonnées géographiques sur un fond cartographique [Carte Facile][CarteFacile-url].
 
@@ -42,5 +42,6 @@ Le **Widget Carte Facile** peut être connecté, typiquement à un widget de typ
 [license-url]: https://github.com/lesagnic/grist-widget-cartefacile/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-linkedIn-black.svg?style=plastic&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/nicolas-lesage-1a2049b0/
+
 
 
