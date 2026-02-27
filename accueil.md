@@ -8,9 +8,13 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://lesagnic.github.io/grist-widget-cartefacile)
   
-Ce widget permet de visualiser dans un widget les lignes d'une table GRIST disposant de coordonnées géographiques sur un fond cartographique [Carte Facile][CarteFacile-url]. Chaque ligne peut être sélectionnée sur la carte et ainsi être visualisée dans les widgets connectés. Le Widget Carte Facile peut être coonnecté, typiquement à un widget de type table au travers duquel il sera possible :
-* de filtrer tout ou parte des données de la table à cartographier ;
-* de zoomer dans Carte Facile sur la ligne sélectionnée.
+Ce widget permet de visualiser les lignes d'une table GRIST disposant de coordonnées géographiques sur un fond cartographique [Carte Facile][CarteFacile-url].
+
+Chaque ligne peut être sélectionnée sur la carte et ainsi être visualisée dans les widgets connectés, typiquement dans une vue de type Fiche pour appréhender toutes les données de la ligne concernée.
+
+Le **Widget Carte Facile** peut être connecté, typiquement à un widget de type table au travers duquel il sera possible :
+* de filtrer tout ou partie des données de la table à cartographier ;
+* de sélectionner une ligne afin de zoomer dans le **Widget Carte Facile** sur sa repésentation cartographique.
 
 ### Modules utilisés
 
@@ -38,3 +42,4 @@ Ce widget permet de visualiser dans un widget les lignes d'une table GRIST dispo
 [license-url]: https://github.com/lesagnic/grist-widget-cartefacile/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-linkedIn-black.svg?style=plastic&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/nicolas-lesage-1a2049b0/
+
