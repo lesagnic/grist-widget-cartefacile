@@ -6,42 +6,35 @@
 [![Unlicense License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-<!-- TODO : Replace :
-			- lesagnic with account name of your repository,
-			- utilities-repository-page with the name of your repository -->
-[![Product Name Screen Shot][product-screenshot]](https://lesagnic.github.io/utilities-repository-page)
+[![Product Name Screen Shot][product-screenshot]](https://lesagnic.github.io/grist-widget-cartefacile)
   
-<!-- TODO: Replace this text with a description of your repository -->
-Les ressources de ce référentiel Github consituent un template qui peut être 
-utilisé pour créer votre propre référentiel Github. Il fournit alors la structure de documentation 
-du produit de votre future référentiel.
+Ce widget permet de visualiser dans un widget les lignes d'une table GRIST disposant de coordonnées géographiques sur un fond cartographique [Carte Facile][CarteFacile-url]. Chaque ligne peut être sélectionnée sur la carte et ainsi être visualisée dans les widgets connectés. Le Widget Carte Facile peut être coonnecté, typiquement à un widget de type table au travers duquel il sera possible :
+* de filtrer tout ou parte des données de la table à cartographier ;
+* de zoomer dans Carte Facile sur la ligne sélectionnée.
 
 ### Modules utilisés
 
-<!-- TODO : Replace these shields with the shields of your Built with modules -->
-[![Best-README-Template][BestReadme]][BestReadMe-Url]
-[![Jekyll Themes][Jekyll]][Jekyll-url]
-[![Markdown Basic Syntax][Markdown]][Markdown-url]
+[![Carte Facile][CarteFacile]][CarteFacile-url]
+[![MapLibre][Maplibre]][Maplibre-url]
+[![GRIST][Grist]][Grist-url]
 
-<!-- TODO : Replace the dummy screenshot.png file with your screenshot in /assets/img -->
 [product-screenshot]: assets/img/screenshot.png
-<!-- TODO : Replace these URLs and shields with those of your Built in -->
-[BestReadme]: https://img.shields.io/badge/Github-Best--README--Template-000000?logo=Github&style=plastic&labelColor=F7AF40
-[BestReadMe-Url]: https://github.com/othneildrew/Best-README-Template
-[Jekyll]: https://img.shields.io/badge/Jekyll-Github%20Page%20Themes-000000?logo=Jekyll&style=plastic&labelColor=F7AF40
-[Jekyll-url]: https://github.com/pages-themes
-[Markdown]: https://img.shields.io/badge/Markdown-Basic%20Syntax-000000?logo=Markdown&style=plastic&labelColor=F7AF40
-[Markdown-url]: [https://www.markdownguide.org/](https://www.markdownguide.org/basic-syntax/)
+[CarteFacile]: https://img.shields.io/badge/Carte%20Facile-v0.8.3-000000?style=plastic&labelColor=F7AF40
+[CarteFacile-url]: https://fab-geocommuns.github.io/carte-facile-site/
+[Map libre]: https://img.shields.io/badge/MapLibre-maplibre--gl%20v5.5.0-000000?logo=maplibre&style=plastic&labelColor=F7AF40
+[Maplibre-url]: https://maplibre.org/
+[Grist]: https://img.shields.io/badge/Grist-grist--plugin--api-000000?&style=plastic&labelColor=F7AF40
+[Grist-url]: https://support.getgrist.com/code/modules/grist_plugin_api/
 <!-- TODO : Check that these URLs are related to your account and your repository -->
-[contributors-shield]: https://img.shields.io/github/contributors/lesagnic/utilities-repository-page.svg?style=plastic
-[contributors-url]: https://github.com/lesagnic/utilities-repository-page/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/lesagnic/utilities-repository-page.svg?style=plastic
-[forks-url]: https://github.com/lesagnic/utilities-repository-page/network/members
-[stars-shield]: https://img.shields.io/github/stars/lesagnic/utilities-repository-page.svg?style=plastic
-[stars-url]: https://github.com/lesagnic/utilities-repository-page/stargazers
-[issues-shield]: https://img.shields.io/github/issues/lesagnic/utilities-repository-page.svg?style=plastic
-[issues-url]: https://github.com/lesagnic/utilities-repository-page/issues
-[license-shield]: https://img.shields.io/github/license/lesagnic/utilities-repository-page.svg?style=plastic
-[license-url]: https://github.com/lesagnic/utilities-repository-page/blob/main/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/lesagnic/grist-widget-cartefacile.svg?style=plastic
+[contributors-url]: https://github.com/lesagnic/grist-widget-cartefacile/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/lesagnic/grist-widget-cartefacile.svg?style=plastic
+[forks-url]: https://github.com/lesagnic/grist-widget-cartefacile/network/members
+[stars-shield]: https://img.shields.io/github/stars/lesagnic/grist-widget-cartefacile.svg?style=plastic
+[stars-url]: https://github.com/lesagnic/grist-widget-cartefacile/stargazers
+[issues-shield]: https://img.shields.io/github/issues/lesagnic/grist-widget-cartefacile.svg?style=plastic
+[issues-url]: https://github.com/lesagnic/grist-widget-cartefacile/issues
+[license-shield]: https://img.shields.io/github/license/lesagnic/grist-widget-cartefacile.svg?style=plastic
+[license-url]: https://github.com/lesagnic/grist-widget-cartefacile/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-linkedIn-black.svg?style=plastic&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/nicolas-lesage-1a2049b0/
