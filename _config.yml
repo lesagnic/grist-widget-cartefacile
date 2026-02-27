@@ -1,8 +1,6 @@
-title: Page de référentiel
+title: Widget Carte Facile
 logo: /assets/img/logo.png
-description: Standardisez vos référentiels
+description: Cartographie souveraine des données GRIST
 show_downloads: true
 google_analytics:
 theme: jekyll-theme-minimal
-baseurl: "/utilities-repository-page"
-url: "https://lesagnic.github.io"
