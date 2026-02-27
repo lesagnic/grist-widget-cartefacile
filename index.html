@@ -1,0 +1,139 @@
+---
+layout: default
+title: Page de référentiel
+---
+<div class="my-header">
+
+  <!-- MENU
+       TODO : Adjust menu items adding or removing li elements
+              There should be a single li.active
+              data-section attributes shall contain the id of a div.section element of this html file -->
+  <nav>
+    <ul>
+      <li><a href="#" class="active" data-section="accueil">Accueil</a></li>
+      <li><a href="#" class="" data-section="prerequisites">Prérequis</a></li>
+      <li><a href="#" class="" data-section="installation">Installation</a></li>
+      <li><a href="#" class="" data-section="usage">Utilisation</a></li>
+      <li><a href="#" class="" data-section="contributing">Contribution</a></li>
+    </ul>
+  </nav>
+  
+</div>
+
+<!-- SECTIONS
+     TODO: There shall be one and only one div.section element for each menu item.
+     It's id is the value of the data-section attribute of the menu item (li element)
+     Use the id (e.g. accueil) as liquid variable name
+     The file (e.g. accueil.md) should be place at the root of the repository (due to include_relative)
+     -->
+
+<div id="accueil" class="my-section active">
+{% capture accueil %}
+{% include_relative accueil.md %}
+{% endcapture %}
+{{ accueil | markdownify }}
+</div> <!-- End of section -->
+
+<div id="prerequisites" class="my-section">
+{% capture prerequisites %}
+{% include_relative prerequis.md %}
+{% endcapture %}
+{{ prerequisites | markdownify }} 
+</div> <!-- Fin de section -->
+
+<div id="installation" class="my-section">
+{% capture installation %}
+{% include_relative installation.md %}
+{% endcapture %}
+{{ installation | markdownify }} 
+</div>
+
+<div id="usage" class="my-section">
+{% capture usage %}
+{% include_relative utilisation.md %}
+{% endcapture %}
+{{ usage | markdownify }}
+</div>
+
+<div id="contributing" class="my-section">
+{% capture contributing %}
+{% include_relative contribution.md %}
+{% endcapture %}
+{{ contributing | markdownify }}
+</div>
+
+<!-- END OF CUSTOMIZABLE PART -->
+<script>
+  document.querySelectorAll('.my-header nav a').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.getAttribute('data-section');
+
+      // Hide all sections
+      document.querySelectorAll('.my-header nav a').forEach(a => a.classList.remove('active'));
+      document.querySelectorAll('.my-section').forEach(sec => sec.classList.remove('active'));
+
+      // Show the selected section
+      link.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

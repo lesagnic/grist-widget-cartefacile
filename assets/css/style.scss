@@ -1,0 +1,97 @@
+---
+---
+@import "jekyll-theme-minimal";
+/*
+ * Issues
+ *    1) Content Scrolling :
+ *        - the index html is supposed to "wrapper" in div.wrapper element ;
+ *        - it defines a div.my-header element containing the a menu and a set of div.my-section elements providing
+ *          the content corresponding to each menu item. A single div.section element is supposed to be active ;
+ *        - The intent is to be able to scrol the active div.my-section element instead of the overall div.wrapper content.
+ */
+/*
+ * Top Navigation Bar
+ */
+.my-header {
+    --menu-item-selected-color: #267CB9; /* Like h1 in Jekyll minimal theme */
+    --menu-item-hover-color: #2F5A79; /* In between Like h1 in Jekyll minimal theme */
+    --menu-item-color: #393939; /* Like h2 in Jekyll minimal theme */
+    --menu-border-color: #E0E0E0; /* Like other borders of Jekyll minimal theme */
+    --menu-background: #f4f4f4; /* Like other backgrounds of Jekyll minimal theme */
+    --menu-item-spacing: 8px;
+    --menu-and-content-spacing: 30px; /* Usefull in 1 column mode of Jekyll minimal theme */
+}
+/* Two-column mode : fixed menu (my-header) and scrolling content (my-section) */
+@media screen and (min-width: 980px) {
+    .my-header {
+        position: fixed;
+        top: 50px;
+    }
+    .my-section {
+        position: fixed; /* make it independent of page scroll */
+        top: 110px; /* header offset */
+        bottom: 70px;
+        overflow-y: auto; /* now this scrolls */
+        width: 500px;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        box-sizing: border-box;
+        border-radius: 5px;
+        padding-right: 5px; /* space for scrollbar */
+    }
+    .my-section::-webkit-scrollbar {
+        width: 10px;
+    }  
+    .my-section::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 5px;
+    }
+    .my-header nav ul {
+        width: 500px;
+    }
+}
+.my-header nav ul {
+    display: flex;
+    list-style: none;
+    margin-left: 0px;
+    padding: 0px;
+    gap: 0;
+    margin-bottom: var(--menu-and-content-spacing);
+    background: var(--menu-background);
+    border: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+.my-header nav ul li a {
+  text-decoration: none;
+  display: block;
+  font-weight: bold;
+  color: var(--menu-item-color);
+  padding: 10px var(--menu-item-spacing); /* top/bottom left/right */
+}
+.my-header nav ul li a.active {
+  color: var(--menu-item-selected-color);
+}
+.my-header nav ul li a:not(.active):hover {
+  color: var(--menu-item-hover-color);
+}
+/*
+ * Main Content pseudo-section
+ */
+.my-section:not(.active) {
+  display: none !important;
+}
+.my-section.active {
+  display: block !important;
+}
+/*
+ * Github pseudo-styling
+ */
+.github-green-btn {
+    background: green;
+    color: white;
+    font-weight: bold;
+    padding: 2px 7px; /* top/bottom left/right */
+    border: 1px solid black;
+    border-radius: 5px;
+}
