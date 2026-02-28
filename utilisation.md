@@ -1,18 +1,28 @@
-Dès que les fichiers nécessaires ont été clônées dans votre référentiel Github, il convient :
-* de modifier le fichier **_config.yml**, notamment de renseigner les propriétés **title** et **description** avec un le titre et un slogan (ou très brève description) qui apparaîtront dans l'en-tête du site ;
-* de modifier les fichiers **accueil.md**, **prerequis.md**, **installation.md**, **utilisation.md** et **contribution.md** pour adapter leur contenu au produit objet de votre référentiel Github. Pour cela, des commentaire commençant pas **TODO** vous expliquent quoi faire. Ces fichiers utilisent la notation [Markdown][Markdown-url] ;
-* de remplacer les fichiers **assets/img/logo.png** et **assets/img/screenshot.png** par le logo et une capture
-d'écran ou une illustration du produit objet de votre référentil Github ;
-* éventuellement :
-  * de modifier le fichier **assets/css/style.scss** pour y ajouter des styles nécessaires
-pour la documentation que vous souhaitez fournir ;
-  * ajouter d'autres images illustratives dans **assets/img** que vous pourrez alors référencer dans les fichiers **\*.md**.
+### Configuration du Widget
 
-Il n'est pas indispensable de modifier le fichier index.html qui se contente de proposer un menu permettant d'accéder aux différentes
-parties de la documentation. Vous devrez cependant le modifier (en suivant les instructions commencant par **TODO**) si vous souhaitez ajouter ou supprimer des sections de documentation.
+Après avoir sélectionné le widget Carte Facile, sa configuration se fait en deux étapes au sein de l'onglet **Vue** se trouvant dans la partie droite de la page :
+* Autoriser le widget à lire les données de la table ;
+* Mettre en correspondant les colonnes de la table avec les propriétés **Longitude**, **Latitude** et **Libellé** du widget.
 
-> La documentation fournie doit rester simple. Typiquement, dans l'onglet utilisation, il est recommandé de pointer sur des
-exemples de mise en oeuvre de votre produit plutôt que de proposer un long discours. Il est aussi possible de proposer
-un fichier PDF en téléchargement pour fournir les explications complémentaires nécessaires.
+### Fonctionnalités cartographiques
 
-[Markdown-url]: https://www.markdownguide.org/basic-syntax
+Les lignes disposant de données cartographiques valides doivent alors s'afficher sur le fond Carte Facile. Il est alors possible d'utiliser les contrôles suivant :
+* le contrôle de **Navigation** et le contrôle de **Gestion de l'échelle** de Map Libre;
+* le **sélecteur de carte** du service CarteFacile permettant de basculer sur le fond OSM ou d'afficher des données complémentaires ;
+* un contrôle spécifique de **recentrage** de la carte sur les objets de la table GRIST source.
+
+Les fonctionnalités de zoom et de déplacement fournies par Mal Libre permettent de naviguer dans la carte et de sélectionner les lignes valides de la table. Un popup contenant le libellé de la ligné est affiché lors du passage sur la représentation d'un ligne ou lorsque la ligne est sélectionnée.
+
+Les points correspondants aux lignes de la table GRIST sont clusterisées, c'est à dire que des cercles de taille variable contenant un nombre, permettent de représenter de manière agrégée les points dans les zones denses. Le nombre indique la quantité d'objets agrégréss.En cliquant sur un de ces cercles, Map Libre va zoomer de manière à désagrager les points concernés. 
+
+### Connection d'un widget tiers
+
+Toute vue de la page dans laquelle se trouve le widget Carte Facile peut lui être connecté. Dans ce cas, chaque ligne sélectionnée au travers du widget Carte facile sera visualisée dans la vue connectée. Une vue de type Fiche permettra typiquement de visualiser les valeurs des différentes colonnes de la ligne sélectionnée dans le widget Carte Facile.
+
+### Connection du widget Carte Facile
+
+Le widget Carte Facile réagit de deux manières à la vue à laquelle il est connecté :
+- les filtres appliquées dans la vue à laquelle le widget Carte Facile est connecté seront répercutées sur la cartographie :
+- si une ligne est sélectionnées dans la vue à laquelle le widget Carte Facile est connecté, le widget Carte Facile se déplacera et zoomera sur le point correspondant sur la carte.
+
+Ces fonctionnalités fonctionnent très bien avec la vue de type Table ou avec le widget Explorateur.
