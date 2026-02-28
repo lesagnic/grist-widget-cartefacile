@@ -1,0 +1,63 @@
+/*
+ * Styles pour le positionnement optimal de la carte
+ */
+html,body, #map {
+	height:100%;
+	width: 100%;
+	margin:0;
+}
+#map {
+	background: #000120;
+}
+/*
+ * Style pour ajouter un contrôle de recentrage sur les données de la table
+ * basé sur le style MapLibre
+ */
+.maplibregl-ctrl-icon.fit-bounds-btn {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23000" viewBox="0 0 24 24"><path d="M 12 8 A 4 4 0 0 0 12 18 A 4 4 0 1 0 12 8 Z m 0 -6 a 1 1 0 0 1 1 1 v 2 a 8.001 8.001 0 0 1 6.93 6.93 H 22 a 1 1 0 1 1 0 2 h -2 a 8.001 8.001 0 0 1 -7 7.07 V 23 a 1 1 0 1 1 -2 0 v -2 a 8.001 8.001 0 0 1 -6.93 -6.93 H 2 a 1 1 0 1 1 0 -2 h 2.07 a 8.001 8.001 0 0 1 6.93 -7.07 V 3 a 1 1 0 0 1 1 -1 z"/></svg>');
+    background-size: 70%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+/*
+ * Ajustement des styles MapLibre pour les Markers
+ */
+/* Contenu du popup : padding réduit + angles arrondis */
+.maplibregl-popup-content {
+    padding-top: 6px;         /* moins d'espace en haut */
+    padding-bottom: 6px;      /* moins d'espace en bas */
+    padding-right: 1.5em;       /* espace pour le bouton de fermeture */
+    border-radius: 8px;       /* angles arrondis */
+}
+/* Bouton de fermeture : descendu légèrement et sans fond */
+.maplibregl-popup-close-button {
+    /* top: 4px !important;      décale vers le bas */
+    border: none !important;  /* supprime la bordure */
+    outline: none !important; /* supprime le contour focus */
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0;
+    padding-right: 0.25em;
+    margin: 0;
+    cursor: pointer;
+}
+/* Style du X du bouton de fermeture */
+.maplibregl-popup-close-button {
+    color: #999 !important;   /* couleur du X */
+    font-weight: bold !important;
+    font-size: 18px;
+}
+/* (Optionnel) Changer la couleur du x au survol */
+.maplibregl-popup-close-button:hover {
+    color: #000 !important;
+}
+/*
+ *
+ * Style pour le popup apparaissant lors du passage de la souris sur les markers
+ *
+ */
+.hover-popup {
+	font-family: Arial, sans-serif;
+    font-size: 13px;
+    padding: 4px;
+  }

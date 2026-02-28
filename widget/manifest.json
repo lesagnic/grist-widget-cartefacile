@@ -1,0 +1,13 @@
+{
+  "name": "Widget Grist Carte Facile",
+  "version": "1.0.0",
+  "description": "Cartographie souveraine des données GRIST",
+  "author": "lesagni@gmail.com",
+  "url": "index.html",
+  "homepage_url": "https://lesagnic.github.io/grist-widget-cartefacile",
+  "accessLevel": "read table",
+  "requiredFields": ["Longitude", "Latitude", "Libellé"],
+  "optionalFields": [],
+  "parameters": [],
+  "allowSelectBy": true
+}
