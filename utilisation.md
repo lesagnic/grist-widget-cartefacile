@@ -4,7 +4,7 @@ Après avoir sélectionné le widget Carte Facile, sa configuration se fait en d
 * Autoriser le widget à lire les données de la table ;
 * Mettre en correspondant les colonnes de la table avec les propriétés **Longitude**, **Latitude** et **Libellé** du widget.
 
-> Chaque ligne disposant de données cartographiques valides est alors par défaut représentée sur le fond Carte Facile avec ce symbole : <img src="widget/marker.png" alt="Marker" height="20"/>. 
+> Chaque ligne disposant de données cartographiques valides est alors par défaut représentée sur le fond Carte Facile avec ce symbole : <img src="widget/marker.png" alt="Marker" height="12"/>. 
 
 ### Fonctionnalités cartographiques
 
