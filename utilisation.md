@@ -4,9 +4,11 @@ Après avoir sélectionné le widget Carte Facile, sa configuration se fait en d
 * Autoriser le widget à lire les données de la table ;
 * Mettre en correspondant les colonnes de la table avec les propriétés **Longitude**, **Latitude** et **Libellé** du widget.
 
+> Chaque ligne disposant de données cartographiques valides est alors par défaut représentée sur le fond Carte Facile avec ce symbole : ![Marker](widget/marker.png). 
+
 ### Fonctionnalités cartographiques
 
-Les lignes disposant de données cartographiques valides doivent alors s'afficher sur le fond Carte Facile. Il est alors possible d'utiliser les contrôles suivant :
+Il est alors possible d'utiliser les contrôles suivant :
 * le contrôle de **Navigation** et le contrôle de **Gestion de l'échelle** de Map Libre;
 * le **sélecteur de carte** du service CarteFacile permettant de basculer sur le fond OSM ou d'afficher des données complémentaires ;
 * un contrôle spécifique de **recentrage** de la carte sur les objets de la table GRIST source.
