@@ -1,5 +1,7 @@
 //
-// Widget Cartes.gouv
+// Increment last figure when testing a new change
+const widgetVersion = "1.0.2"
+const widgetRootMsg = `Grist Widget Carte Facile v${widgetVersion} `;
 // 
 // Pour afficher les données des lignes d'une table GRIST sous forme de Markers sur
 // un fond cartes.gouv
@@ -126,9 +128,6 @@
 // permet de repérer très vite les lignes de debogage avant de passer le code en production.
 // Lors du passage en production, on passe debug à false au cas où il resterait des messages...
 const debug = true;
-// Increment last figure when testing a new change
-const WIDGET_VERSION = "1.0.2"
-const widgetRootMsg = `GRIST Widget Carte facile v${WIDGET_VERSION} `;
 //
 // Gestion de l'aspect des Markers
 // L'URL du marker utilisé
@@ -300,7 +299,7 @@ grist.ready({
   allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
 });
 // Log version once on load
-console.log(`Grist Widget Carte Facile v${WIDGET_VERSION} loaded`);
+console.log(`Grist Widget Carte Facile v${widgetVersion} loaded`);
 //
 // API GRIST : onOptions
 grist.onOptions((options, settings) => {
@@ -736,5 +735,6 @@ grist.onRecord(record => {
  
 
 });
+
 
 
