@@ -127,7 +127,8 @@
 // Lors du passage en production, on passe debug à false au cas où il resterait des messages...
 const debug = true;
 // Increment last figure when testing a new change
-const WIDGET_VERSION = "1.0.1"
+const WIDGET_VERSION = "1.0.2"
+const widgetRootMsg = `GRIST Widget Carte facile v${WIDGET_VERSION} `;
 //
 // Gestion de l'aspect des Markers
 // L'URL du marker utilisé
@@ -302,9 +303,9 @@ grist.ready({
 console.log(`Grist Widget Carte Facile v${WIDGET_VERSION} loaded`);
 //
 // API GRIST : onOptions
-grist.onOptions((options) => {
-  clusterRadius = options.clusterRadius ?? 0;
-  if (debug) console.log("Cluster radius:", clusterRadius);
+grist.onOptions((options, settings) => {
+ if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
+ if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
 });
 //
 //
@@ -735,4 +736,5 @@ grist.onRecord(record => {
  
 
 });
+
 
