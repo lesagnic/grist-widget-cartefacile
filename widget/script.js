@@ -126,6 +126,8 @@
 // permet de repérer très vite les lignes de debogage avant de passer le code en production.
 // Lors du passage en production, on passe debug à false au cas où il resterait des messages...
 const debug = true;
+// Increment last figure when testing a new change
+const WIDGET_VERSION = "1.0.1"
 //
 // Gestion de l'aspect des Markers
 // L'URL du marker utilisé
@@ -187,9 +189,9 @@ function NewActiveFeaturePopup(f) {
 }
 // Change of the current row happens also in different contexts
 function ChangeCurrentRow(id) {
-  currentRowId = id;
-  async () => {
-    await grist.setSelectedRows([currentRowId]);
+  if (id !== currentRowId) {
+    currentRowId = id;
+    grist.setSelectedRows([currentRowId]);
   }
 }
 // Change the color of the marker corresponding to the current row,
@@ -296,6 +298,8 @@ grist.ready({
   ],
   allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
 });
+// Log version once on load
+console.log(`Grist Widget Carte Facile v${WIDGET_VERSION} loaded`);
 //
 // API GRIST : onOptions
 grist.onOptions((options) => {
@@ -391,15 +395,13 @@ if (debug) console.log(window.location.pathname);
     }
     map.addControl(new FitBoundsControl(), 'top-right');
 
-    // Select first line  of the Grist table when creating the map
+    // Select first line of the Grist table when creating the map
+    // if it has not been set first by a call of onRecord...
     if ( currentRowId==null ) {
- 
-      // On envoie une sélection vide... pour vider la sélection
-      async () => {
-        await grist.setSelectedRows([]);
-      }
+      // It is safe to reset first the selection
+      grist.setSelectedRows([]);
       ChangeCurrentRow(geojsonFeatures[0].properties.id);
-
+      // map is not ready yet: no need to ChangeMapFocus
     }
     //
     //
@@ -526,8 +528,7 @@ if (debug) console.log(window.location.pathname);
         });
         if ( !features.length ) return;
 
-        const clusterId = features[0].properties.cluster_id;
-        const zoom = await map.getSource('markers').getClusterExpansionZoom(clusterId);
+        const zoom = await map.getSource('markers').getClusterExpansionZoom(features[0].properties.cluster_id);
         // Click event is sometimes intercepted for the clusters layer when clicking a
         // feature of the unclustered-point layer. zoom may be Nan in this case...
         if ( isNaN(zoom) ) return;
@@ -541,11 +542,9 @@ if (debug) console.log(window.location.pathname);
       // When a click event occurs on a feature in the unclustered-point layer ...
       map.on('click', 'unclustered-point', (e) => {       
         if ( !e || e.features[0].properties.id == currentRowId ) return;
-
         // Change current row
         ChangeCurrentRow(e.features[0].properties.id);
         ChangeMapFocus(e.features[0]);
-
       });
 
       // Check popup visibility on every render
@@ -638,12 +637,11 @@ grist.onRecord(record => {
 
   // Ensure map is ready
   // Just change the currentRowId if not ready
-  // This a a way to get the current from a source widget before 
+  // This a a way to get the current row from a source widget before 
   // the map loading and the intialization of the Geojson features
   if ( !mapReady ) {
-    if (record.id !== currentRowId) {
-      ChangeCurrentRow(record.id);
-    }
+    ChangeCurrentRow(record.id);
+    // map is not ready yet: no need to ChangeMapFocus
     return;
   }
 
@@ -730,10 +728,11 @@ grist.onRecord(record => {
   // ... Change current row if needed
   if (currentRowId !== record.id) {
      ChangeCurrentRow(record.id);
-     // ... Change feature focus
+     // ... Change map focus
     ChangeMapFocus(recordFeature); // null if skippedrecord
   }
 
  
 
 });
+
