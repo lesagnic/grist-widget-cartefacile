@@ -1,8 +1,9 @@
 //
-// Increment last figure when testing a new change
-const widgetVersion = "1.0.2"
-const widgetRootMsg = `Grist Widget Carte Facile v${widgetVersion} `;
+// Widget Carte facile
 // 
+// Increment last figure when testing a new change
+const widgetVersion = "1.0.2";
+const widgetRootMsg = `Grist Widget Carte Facile v${widgetVersion} `;
 // Pour afficher les données des lignes d'une table GRIST sous forme de Markers sur
 // un fond cartes.gouv
 //
@@ -129,6 +130,8 @@ const widgetRootMsg = `Grist Widget Carte Facile v${widgetVersion} `;
 // Lors du passage en production, on passe debug à false au cas où il resterait des messages...
 const debug = true;
 //
+// Widget Mode : "selector" (no linked widget) vs "selected" (has a linked widget)
+let widgetMode = "unset";
 // Gestion de l'aspect des Markers
 // L'URL du marker utilisé
 const iconUrl = "https://lesagnic.github.io/grist-widget-cartefacile/widget/marker.png";
@@ -191,7 +194,7 @@ function NewActiveFeaturePopup(f) {
 function ChangeCurrentRow(id) {
   if (id !== currentRowId) {
     currentRowId = id;
-    grist.setSelectedRows([currentRowId]);
+    if (widgetMode == "selector" ) grist.setSelectedRows([currentRowId]);
   }
 }
 // Change the color of the marker corresponding to the current row,
@@ -299,21 +302,45 @@ grist.ready({
   allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
 });
 // Log version once on load
-console.log(`Grist Widget Carte Facile v${widgetVersion} loaded`);
+console.log(widgetRootMsg+"loaded");
 //
 // API GRIST : onOptions
-grist.onOptions((options, settings) => {
- if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
- if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
+grist.onOptions((options,settings) => {
+if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
+if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
+  if (settings?.viewSection?.linkSrcSectionRef) {
+    clusterRadius = options.clusterRadius;
+  }
+  if (settings?.viewSection?.linkSrcSectionRef) {
+if (debug) console.log(widgetRootMsg+"is Connected to another widget: "+settings.viewSection.linkSrcSectionRef);
+  } else {
+if (debug) console.log(widgetRootMsg+"is not connected.");
+  }
 });
 //
 //
 // API GRIST : onRecords
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-grist.onRecords(function(table, viewMeta) {
-  // Need to Reset geojsonFeatures
-  geojsonFeatures.length=0;
+grist.onRecords(table => {
 
+  // First time, need to delay the effective implementation of gristOnrecords 
+  // to see whether onRecord will be called (i.e, a widget is connected)
+  if (widgetMode == "unset") {
+    // Delay check to see if onRecord will follow
+    setTimeout(() => {
+      if (widgetMode == "unset") wigdetMode=="selector";
+      console.log(widgetRootMsg+"mode: "+widgetMode);
+      runOnRecords(table);
+    }, 200); // 50ms is usually enough for Grist to send onRecord if connected
+  }
+  else runOnRecords(table);
+
+});
+//
+// Effective implementation of onRecords
+function runOnRecords(table) {
+  // reset geojsonFeatures
+  geojsonFeatures.length=0;
   //
   // Definition de la Bouding Box des données et de la liste de features
   
@@ -332,20 +359,20 @@ grist.onRecords(function(table, viewMeta) {
       }; 
       
     }
-    else console.warn("WIDGET Cartes.gouv : Skipped record [id="+record.id+", Titre="+mapped.Titre+", Lat="+mapped.Latitude+", Lon="+mapped.Longitude+"]");
+    else console.warn(widgetRootMsg+"Skipped record [id="+record.id+", Titre="+mapped.Titre+", Lat="+mapped.Latitude+", Lon="+mapped.Longitude+"]");
   });
 
   BoundingBox(geojsonFeatures);
 
   if ( !BBox || !BBox[0] || !BBox[1] || !BBox[2] || !BBox[3]) {
-    console.warn("WIDGET Cartes.gouv : Bounds not fully defined ["+BBox[0]+", "+BBox[1]+", "+BBox[2]+", "+BBox[3]+"]");
+    console.warn(widgetRootMsg+": Bounds not fully defined ["+BBox[0]+", "+BBox[1]+", "+BBox[2]+", "+BBox[3]+"]");
     return;
   }
 
 // DEBUG
-if (debug) console.log(window.location.href);
-if (debug) console.log(window.location.origin);
-if (debug) console.log(window.location.pathname);
+if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
+if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
+if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 // END DEBUG
 
   if (!map ) {
@@ -399,7 +426,7 @@ if (debug) console.log(window.location.pathname);
     // if it has not been set first by a call of onRecord...
     if ( currentRowId==null ) {
       // It is safe to reset first the selection
-      grist.setSelectedRows([]);
+      //grist.setSelectedRows([]);
       ChangeCurrentRow(geojsonFeatures[0].properties.id);
       // map is not ready yet: no need to ChangeMapFocus
     }
@@ -612,7 +639,7 @@ if (debug) console.log(window.location.pathname);
       });
   }    
 
-});
+}
 //
 // API GRIST : onRecord
 // Few cases :
@@ -633,6 +660,7 @@ grist.onRecord(record => {
   let propertyChange = false;
   let newRecord = false;
   let skippedRecord = false;
+  widgetMode = "selected";
   if ( !record ) return;
 
   // Ensure map is ready
@@ -648,6 +676,7 @@ grist.onRecord(record => {
   // Try to find a feature with a matching id property
   let recordFeature = geojsonFeatures.find(item => item.properties.id === record.id);
 
+if(debug) console.log("In onrecord, recordFeature:"+recordFeature);
   // Retrieve Mapped columns for the record
   const mapped = grist.mapColumnNames(record);
 
@@ -712,7 +741,7 @@ grist.onRecord(record => {
 
 
   }
-
+if (debug) console.log("Debug connection: recordFeature: "+recordFeature+", currentRowId: "+currentRowId+", record.id: "+record.id);
   // Zoom in to the record feature when onRecord is not related to an internal change of Row
   if ( recordFeature && 
        (currentRowId !== record.id || geometryChange || newRecord || propertyChange) ) {
@@ -735,6 +764,3 @@ grist.onRecord(record => {
  
 
 });
-
-
-
