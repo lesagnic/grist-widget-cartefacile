@@ -12,6 +12,23 @@
 	<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+   <!-- Conteneur HTML qui accueillera la carte -->
   <div id="map"></div>
+
+  <!-- Fenêtre modal de gestion des  paramètres du widget -->
+  <div id="widgetParameters" class="widget-parameters-modal">
+    <div class="widget-parameters-content">
+      <div class="widget-parameters-header">Paramètres</div>
+      <label>
+        Rayon d'aggrégation
+        <input type="number" id="clusterRadius" placeholder="0">
+      </label>
+       <div class="widget-parameters-footer">
+        <button id="cancelSettings" class="btn btn-secondary">Annuler</button>
+        <button id="saveSettings" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </div>
+  </div>
 </body>
+
 </html>
