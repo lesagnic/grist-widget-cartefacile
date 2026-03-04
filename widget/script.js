@@ -1,9 +1,23 @@
 //
-// Widget Cartes.gouv
+// Widget Carte Facile
 // 
 // Increment last figure when testing a new change
-const widgetVersion = "1.0.3"
+const widgetVersion = "1.0.4"
 const widgetRootMsg = `Grist Widget Carte Facile v${widgetVersion} `;
+// 
+// Known issues :
+// 1) When clicking on a selected feature, the activePopup disappears
+// 2) Issues related to source linked widget
+//    a) Since Carte Facile widget calls setCursorPos, GRIST does not send
+//       onRecords whan changing the filters of the source widget
+//    b) Selection of records via Carte Facile widget are not reflected on
+//       the source widget if there is no cross-linking. Cross-linking seems
+//       to work better, even if clinking on the selected record in the source
+//       widget will not generate a Map Focus (GRIST does not send a call
+//       to onRecord on the currentRow to avoid infinit loops). Another record 
+//       has to be selected first...
+//
+
 // Pour afficher les données des lignes d'une table GRIST sous forme de Markers sur
 // un fond cartes.gouv
 //
@@ -130,8 +144,6 @@ const widgetRootMsg = `Grist Widget Carte Facile v${widgetVersion} `;
 // Lors du passage en production, on passe debug à false au cas où il resterait des messages...
 const debug = true;
 //
-// Widget Mode : "selector" (no linked widget) vs "selected" (has a linked widget)
-let widgetMode = "unset";
 // Gestion de l'aspect des Markers
 // L'URL du marker utilisé
 const iconUrl = "marker.png";
@@ -164,6 +176,9 @@ let currentRowId = null;
 let activePopup = null;
 let hoverPopup = null;
 //
+// Detection of internal serCursorPos
+let internalCursorPos = false;
+//
 // Variable globale pour la carte
 let map = null;
 // Déclaration d'un tableau pour y stocker les données de la table GRIST
@@ -179,7 +194,7 @@ let mapReady = false;
 // In Selected mode, the map is nor ready the first time on Record is called. So,
 // the focus on the selected record can't be achieved. This flag is set to true
 // in this case, so the focus be made later when loadinf the map...
-let lateMapFocus = false;
+//let lateMapFocus = false;
 //
 // Gestion des paramètres
 const modal = document.getElementById('widgetParameters');
@@ -202,15 +217,16 @@ function NewActiveFeaturePopup(f) {
 function ChangeCurrentRow(id) {
   if (id !== currentRowId) {
     currentRowId = id;
-    if (widgetMode == "selector" ) grist.setSelectedRows([currentRowId]);
+    internalCursorPos = true;
+    grist.setCursorPos?.({rowId: id}).catch(() => {});
   }
 }
-// Change the color of the marker corresponding to the current row,
-// delete the previous Popup and create a new on using the data of feature f
+//
+// Change Map Selection and flyTo the selected feature
 function ChangeMapFocus(f) {
-
+if (debug) console.log(widgetRootMsg+"ChangeMapFocus : f: "+f);
   // Zoon in a the focus record when it is valid in "selected" widget mode
-  if (f && widgetMode=="selected") {
+  if (f) {
       // Fit the map to the record
       map.flyTo({
         center: f.geometry.coordinates,
@@ -221,14 +237,26 @@ function ChangeMapFocus(f) {
         essential: true   // Required for accessibility
       });
   }
+  // Map Selection to be applied even if not f (for unselection)
+  ChangeMapSelection(f);
+
+}
+// Change the color of the marker corresponding to the current row,
+// delete the previous Popup and create a new on using the data of feature f
+function ChangeMapSelection(f) {
 
   // Update paint property of the layer dynamically to highlighth the marker of the currentRow
-  map.setPaintProperty('unclustered-point', 'icon-color', [
+  if (f) {
+    map.setPaintProperty('unclustered-point', 'icon-color', [
       'case',
       ['==', ['coalesce', ['get', 'id'], ''], ['literal', currentRowId || '']],
       selectedColor,
       defaultColor
     ]);
+  }
+  else { // no selection
+    map.setPaintProperty('unclustered-point', 'icon-color', defaultColor);
+  }
     
   // Change active Popup    
   if (activePopup) activePopup.remove();
@@ -408,6 +436,14 @@ function CreateMap () {
       });
   }
      
+  let iconColor = defaultColor;
+  // apply selectedColor when id=currentRowId or defaultColor
+  if ( !currentRowId ) iconColor = [
+    'case',
+    ['==', ['coalesce', ['get', 'id'], ''], ['literal', currentRowId || '']],
+    selectedColor, // Selected point color
+    defaultColor  // Default color
+  ];
   map.addLayer({
     id: 'unclustered-point',
     type: 'symbol',
@@ -419,30 +455,34 @@ function CreateMap () {
       'icon-anchor': 'bottom',
       'icon-allow-overlap': true
     },
-    // TODO : Would rather be achieved calling ChangeMapFocus
     paint: {
-      // apply selectedColor when id=currentRowId or defaultColor
-      'icon-color': [
-        'case',
-        ['==', ['coalesce', ['get', 'id'], ''], ['literal', currentRowId || '']],
-        selectedColor, // Selected point color
-        defaultColor  // Default color
-      ]
+      'icon-color': iconColor
     }
   });
 
-  //
-  // Deal with the late Map Focus on the first onRecord call
-  if ( lateMapFocus ) {
-    // Put the focus of the features related to the cirrentRowId
-    ChangeMapFocus(geojsonFeatures.find(
-      item => item.properties.id === currentRowId
-    ));
-    lateMapFocus = false; // late Map Focus is done once
+  
+  // Map is now ready for style changes through onRecord
+  mapReady = true;
+if(debug) console.log("Map is ready!!!");
+
+  // Select first line of the Grist table when creating the map
+  // if it has not been set first by a call of onRecord...
+  if ( currentRowId==null ) {
+      ChangeCurrentRow(geojsonFeatures[0].properties.id);
+      ChangeMapSelection(geojsonFeatures[0]);
   }
 
-  // Need to create an active Popup for the currentRowId if it does not exist yet
-  if ( currentRowId && !activePopup ) activePopup = NewActiveFeaturePopup(geojsonFeatures[0]);
+  //
+  // Deal with the late Map Focus on the first onRecord call
+  //if ( lateMapFocus ) {
+    // Put the focus of the features related to the cirrentRowId
+  //  ChangeMapFocus(geojsonFeatures.find(
+  //    item => item.properties.id === currentRowId
+  //  ));
+  //  lateMapFocus = false; // late Map Focus is done once
+  //}
+
+  // Create Add hoverPopup
   if ( !hoverPopup ) hoverPopup = new maplibregl.Popup({
     closeButton: false,
     closeOnClick: false,
@@ -450,8 +490,6 @@ function CreateMap () {
     className: 'maplibregl-popup'
   });
 
-  // Map is now ready for style changes through onRecord
-  mapReady = true;
 }
 // 
 //
@@ -487,11 +525,10 @@ grist.ready({
   allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
 });
 // Log version once on load
-if (debug) console.log(widgetRootMsg+"loaded");
+console.log(widgetRootMsg+"loaded");
 //
 // API GRIST : onOptions
 grist.onOptions((options,settings) => {
-  // For future use...
   if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
   if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
 });
@@ -500,23 +537,7 @@ grist.onOptions((options,settings) => {
 // API GRIST : onRecords
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 grist.onRecords(table => {
-
-  // First time, need to delay the effective implementation of gristOnrecords 
-  // to see whether onRecord will be called (i.e, a widget is connected)
-  if (widgetMode == "unset") {
-    // Delay check to see if onRecord will follow
-    setTimeout(() => {
-      if (widgetMode == "unset") wigdetMode=="selector";
-      if (debug) console.log(widgetRootMsg+"mode: "+widgetMode);
-      runOnRecords(table);
-    }, 200); // 50ms is usually enough for Grist to send onRecord if connected
-  }
-  else runOnRecords(table);
-
-});
-//
-// Effective implementation of onRecords
-function runOnRecords(table) {
+if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
   //
@@ -547,7 +568,7 @@ function runOnRecords(table) {
     return;
   }
 
-// DEBUG : for future use...
+// DEBUG
 if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
 if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
 if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
@@ -651,16 +672,6 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         modal.style.display = 'none';
       }
     });
-
-
-    // Select first line of the Grist table when creating the map
-    // if it has not been set first by a call of onRecord...
-    if ( currentRowId==null ) {
-      // It is safe to reset first the selection
-      //grist.setSelectedRows([]);
-      ChangeCurrentRow(geojsonFeatures[0].properties.id);
-      // map is not ready yet: no need to ChangeMapFocus
-    }
     //
     //
     // Chargement de la carte
@@ -693,12 +704,12 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       
       });
 
-      // When a click event occurs on a feature in the unclustered-point layer ...
+      // When a click event occurs on a feature in the unclustered-point layer
       map.on('click', 'unclustered-point', (e) => {       
         if ( !e || e.features[0].properties.id == currentRowId ) return;
         // Change current row
         ChangeCurrentRow(e.features[0].properties.id);
-        ChangeMapFocus(e.features[0]);
+        ChangeMapSelection(e.features[0]);
       });
 
       // Check popup visibility on every render
@@ -710,7 +721,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
           layers: ['unclustered-point'],
           filter: ['==', ['get', 'id'], currentRowId]
         });
-
+if (debug) console.log(widgetRootMsg+"on render f: "+features.length);
         // Sync visibility of Popup and the unclustered point of the feature   
         if ( features && features[0] ) {
           // if activePopup is null, the unclustered point is visible again 
@@ -729,10 +740,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       });
 
       map.on('mouseenter', 'unclustered-point', (e) => {
-        map.getCanvas().style.cursor = 'pointer';
-
         if ( e.features[0].properties.id != currentRowId ) {
-          hoverPopup
+         map.getCanvas().style.cursor = 'pointer';
+         hoverPopup
             .setLngLat(e.features[0].geometry.coordinates.slice())
             .setHTML(e.features[0].properties.title)
             .addTo(map);
@@ -766,7 +776,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       });
   }    
 
-}
+});
 //
 // API GRIST : onRecord
 // Few cases :
@@ -788,21 +798,26 @@ grist.onRecord(record => {
   let newRecord = false;
   let skippedRecord = false;
 
-  // When onRecord is called, the widget works in "Selected" mode, i.e.
-  // the linked widget drives the Carte Facile widget.
-  widgetMode = "selected";
-
   // Nothing to do until a record is provided
   if ( !record ) return;
 
+if (debug) console.log(widgetRootMsg+"onRecord : "+record.id);
+
+  // Detect onRecord call related to internal setCursorPos
+  if (internalCursorPos) {
+    internalCursorPos = false;
+    // check matching id in case external change arises before internal Curpos
+    if ( record.id == currentRowId ) return;
+  }
   // Ensure map is ready
   // Just change the currentRowId if not ready
   // This a a way to get the current row from a source widget before 
   // the map loading and the intialization of the Geojson features
   if ( !mapReady ) {
-    ChangeCurrentRow(record.id);
+if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+record.id)
+    //ChangeCurrentRow(record.id);
     // map is not ready yet: no need to ChangeMapFocus
-    lateMapFocus = true;
+    //lateMapFocus = true;
     return;
   }
 
@@ -817,7 +832,7 @@ grist.onRecord(record => {
   //////////////////////////////
   if ( !mapped || !mapped.Longitude || !mapped.Latitude || !mapped.Titre ) {
     // Send a warning to the console
-    console.warn(widgetRootMsg+"Skipped record [id="+record.id+", Titre="+mapped.Titre+", Lat="+mapped.Latitude+", Lon="+mapped.Longitude+"]");
+    console.warn("WIDGET Cartes.gouv : Skipped record [id="+record.id+", Titre="+mapped.Titre+", Lat="+mapped.Latitude+", Lon="+mapped.Longitude+"]");
     // need to retrive the feature from geojsonFeatures if the record was valid before the change
     if ( recordFeature ) {
       geojsonFeatures = geojsonFeatures.filter(item => item.properties.id === record.id);
@@ -887,12 +902,9 @@ grist.onRecord(record => {
 //
 //  }
   
-  // ... Change current row if needed
-  if (currentRowId !== record.id) {
-     ChangeCurrentRow(record.id);
-     // ... Change map focus with zoom in since the widget is in selected mode
+    ChangeCurrentRow(record.id);
+     // ... Change map focus (selection with zoom in)  
     ChangeMapFocus(recordFeature); // null if skippedrecord
-  }
 
  
 
