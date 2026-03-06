@@ -1,159 +1,32 @@
+// Widget identification
 //
-// Widget Carte Facile
-// 
-// Increment last figure when testing a new change
-const widgetVersion = "1.0.4"
-const widgetRootMsg = `Grist Widget Carte Facile v${widgetVersion} `;
-// 
-// Known issues :
-// 1) When clicking on a selected feature, the activePopup disappears
-// 2) Issues related to source linked widget
-//    a) Since Carte Facile widget calls setCursorPos, GRIST does not send
-//       onRecords whan changing the filters of the source widget
-//    b) Selection of records via Carte Facile widget are not reflected on
-//       the source widget if there is no cross-linking. Cross-linking seems
-//       to work better, even if clinking on the selected record in the source
-//       widget will not generate a Map Focus (GRIST does not send a call
-//       to onRecord on the currentRow to avoid infinit loops). Another record 
-//       has to be selected first...
+const widgetName = "Grist Widget Carte Facile";
+const widgetVersion = "1.0.5" // Increment at least last figure for new release
 //
-
-// Pour afficher les données des lignes d'une table GRIST sous forme de Markers sur
-// un fond cartes.gouv
-//
-// Chaque ligne "valide" de la table source est associé à un objet de la collection
-// (FeatureCollection) "geojsonFeatures". Chaque objet comprend :
-// - une géométrie représentée par un couple de coordonnées provenant des colonnes mappées
-//   "Longitude" et "Latitude" ;
-// - des propriétés :
-//     o id correspondant à l'identifiant de la ligne du tableau ;
-//     o title correspondant à la colonne mappée "Titre".
-// La ligne est considéréparame valide lorsque les 3 colonnes mappées contiennent bien une valeur.
-// Pour la longitude et la latitude, ont fait bien la différence entre la valeur 0 qui est 
-// valide est la valeur null (pas de valeur) qui n'est pas valide. La colonne mappée "Titre"
-// doit également contenir un texte non vide pour que la ligne soit valide. Un message de 
-// type warning est transmis à la console pour signaler les objets invalides. Par exemple, la
-// ligne identifié 4 a une latitude nulle ('Invalid record' est bien la valeur de "Titre") :
-// > WIDGET Cartes.gouv : Skipped record [id=4, Titre=Invalid record, Lat=null, Lon=1.5]
-// S'il n'y a pas de ligne valide, un message de type warning est transmis à la console
-// pour indiquer que le rectangle englobant n'est pas complètement défini :
-// > WIDGET Cartes.gouv : Bounds not fully defined [null, null, null, null]
-// En pratique, la carte n'est pas créée tant qu'il n'y a pas de ligne valide.
-//
-// La visualiation cartographique du widget est assurée au travers de la variable globale "map" 
-// qui représente une carte MapLibre dans le style "CarteFacile.mapStyles.simple". CarteFacile
-// est un service de représentation cartographique souveraine compatible avec les données IGN
-// et OpenStreetMap. Le style "simple" correspond aux données IGN.
-// La carte MapLibre comprend :
-// - les contrôles suivants :
-//     o Navigation (NavigationControl) et Gestion de l'échelle (ScaleControl) de MapLibre ;
-//     o Sélecteur de carte (MapSelectControl) du service CarteFacile permettant de basculer
-//       sur le fond OSM ou d'afficher des données complémentaires ;
-//     o un contrôle spécifique à ce widget de recentrage de la carte sur les objets
-//       de la table GRIST source.
-// - une unique source de données "markers" consituée de la collection d'objets
-//   "geojsonFeatures". L'option "cluster" est activée ; elle permet d'agréger les objets 
-//   dans les zones denses à certaines échelles (jusqu'à un facteur de zoom définit par 
-//   la variable "clusterMaxZoom").
-// - les couches de données suivantes construites à partir de la source "markers" :
-//     o 'clusters' regroupent les objets agrégés créés à partir de la source markers pour
-//       représenter les objets dans les zones trop denses. Les objets agrégés sont représentés
-//       par un cercle dont le rayon et la couleur dépend du nombre d'objets agrégés ;
-//     o 'cluster-count' permet de représenter, sous forme de labels superposées aux objets
-//       agrégés, le nombre d'objets agrégés. Pour que la superposition du label sur le cercle
-//       soit effective, il faut que la couche 'cluster-count' soit créée après la couche
-//      'clusters" ;
-//     o 'unclustered-point' regroupe les objets réellement dérivés de la table source. Ils sont
-//       représentés par un symbole de localisation (de type "PinPoint) dont la couleur peut
-//       changer pour indiquer la sélection d'un objet. Voir les variables "selectedColor" et 
-//       "defaultColor" pour connaître la définition des couleurs de ces symboles.
-// - Lors de la sélection d'un objet sur la carte, un Pop-up est affiché ; il contient la valeur
-//   de la propriété "title" de l'objet. Il disparaît lorsque un nouvel objet est sélectionné ou
-//   lorsque l'objet est agrégé suite à un zoom arrière. Ce Pop-up fait l'objet de la variable
-//   "activePopup. 
-//
-// En tant que widget GRIST :
-// - le paramètre "allowSelectBy" est positionné à "true" lors de l'appel à grist.ready pour
-//   permettre d'utiliser le widget comme source d'un autre widget. Dans ce cadre, la variable
-//   currentRowId contient l'identifiant de la ligne en cours. 
-// - la création de la carte est de l'ensemble de son contenu est réalisé lors de l'appel à 
-//   grist.onRecords. Cet appel intervient notamment lors de l'initialisation du widget et 
-//   dès qu'il y a des changements dans les données de la tables. Le contenu de la variable
-//   "geojsonFeatures" est donc redéfini à chaque appel de gris.onRecords, de même que length
-//   rectangle engloblant "BBox" utilisé par le contrôle de recentrage sur les données. La 
-//   carte est créée lors du premier appel ; lors de appels suivants ont se contente de redéfinir
-//   les données de la source "markers" à partir du nouveau contenu de "geojsonFeatures" ;
-// - il peut être associé à un widget source ce qui ne change rien sur le comportement de
-//   grist.onrecords mais nécessite un traitement particulier via la fonction grist.onRecord
-//   qui est invoqué à chaque fois qu'une nouvelle ligne du tableau est sélectionné ou que le
-//   contenu d'une ligne est changé dans le widget source. Le widget réagit par un zoom sur 
-//   l'objet de la nouvelle ligne sélectionné (si elle différente de la ligne courante) et 
-//   analyse les évolutions du contenu de la ligne qui peut dans l'absolu être :
-//     o devenue invalide, ce qui suppose de l'enlever de geojsonFeatures ;
-//     o nouvelle, ce qui suppose au contraire de l'ajouter à geojsonFeatures ;
-//     o un changement de géométrie ou sémantique (propriété title de l'objet) qui implique
-//       d'ajuster l'objet correspondant de geojsonFeatures.
-//   Notons que le widget génère lui aussi des appels à onRecord lorsque l'utilisateur
-//   sélectionne un objet sur la carte. Pour éviter une boucle infinie, il ne faut donc pas
-//   que le widget répercute un changement de ligne lorsque l'appel à onRecord vient de lui.
-//  
-// Le cycle de vie de la sélection est importante à comprendre :
-// - Lorsque le widget est connecté à un widget source, il reçoit des appels à grist.onRecord
-//   avant même que la carte ait pu créer et donc avant qu'il y ait eu le moindre appel
-//   à grist.onRecords. Dans ce cas, on prend bien la peine d'initialiser la variable
-//   currentRowId pour connaître l'objet à représenter sélectionnée lorsque la carte sera
-//   initialisé. Mais évidemment, on agit pas sur la carte puisqu'elle n'existe pas ;
-// - Lors du premier appel à onRecords on crée la carte. S'il y a un widget source connecté,
-//   currentRowId est différent de null et on va représenter l'objet correspondant comme
-//   étant sélectionné et on affiche son Popup. Sinon, currentRowId est null et on 
-//   lui associé lors l'id de la première ligne de la table de manière à ce que l'objet
-//   correspondant soit représenté sélectionné avec son Popup.
-// - l'utilisateur peut alors sélectionné un autre objet sur la carte mais dans ce cas
-//   on se contente de changer la sélection sans opérer de zoom. On laisse l'utilisteur
-//   naviguer dans la carte et opérer lui-même les zooms que les objets qu'ils souhaitent
-//   examiner ;
-// - l'utilisateur peut alors décider d'agir sur le widget source connecté. On choisit alors
-//   de répercuter les changements de ligne active dans le widget source par la sélection
-//   de l'objet correspondant sur la carte mais cette fois-ci en faisant un zoom avant sur
-//   l'objet concerné car le principe d'avoir cette connexion sur le widget source est bien
-//   de mettre le focus sur l'objet dans le widget cartes.gouv. Le widget source sert alors 
-//   au piloages de la navigation spatiale dans le widget cartes.gouv...
-// - lorsque l'utilisateur veut revenir à une navigation spatiale pilotée par le widget cartes.gouv
-//   il peut utiliser le bouton de recentrage pour appréhender les objets de la table dans leur
-//   ensemble.
-// - lors des zooms arrières, l'objet sélectionné peut disparaître et être remplacé par un objet
-//   agrégé, mais il reste l'objet sélectionné. On se contente de faire temporairement disparaitre
-//   son Popup. Lorsque l'objet sélectionné réapparaît, on réaffiche son Popup.
-// - lorsque l'utilisateur sélectionne une ligne "invalide" de la table, il n'y a plus d'objets
-//   sélectionné dans la carte mais la variable currentRowId contient bien l'identifiant de la
-//   ligne "invalide". On opère pas non plus de zoom avant pour mettre le focus sur l'objet
-//   de la carte puisqu'il n'en existe pas... Il y aura de nouveau un objet sélectionné dès que
-//   l'utilisateur aure cliqué sur un objet de la carte ou sur une ligne valide au sein du 
-//   widget source.
-// 
-//
-// Variables Globales
-/////////////////////////////////////////////////////////////////////////////////////////////////
 // Debug management
 //
-// Cette variable est destinée à gérer des messages de la console destinée au debogage lors de
-// l'évolution du widget. Cela se fait comme cela :
-//       if (debug) console.log("Message de debogage");
-// Le paramètre debug vaut true lorsque l'on debogue pour que les messages s'affichent. Il 
-// permet de repérer très vite les lignes de debogage avant de passer le code en production.
-// Lors du passage en production, on passe debug à false au cas où il resterait des messages...
+// Set debug to true to send log to the console
 const debug = true;
+// Debug message root
+const widgetRootMsg = `${widgetName} v${widgetVersion} `;
+// Debug message template to be used (Replace "Debug on" with your message)
+if (debug) console.log(widgetRootMsg+"Debug on");
 //
-// Gestion de l'aspect des Markers
-// L'URL du marker utilisé
-const iconUrl = "marker.png";
-const defaultColor = '#0070C0';   // bleu par défaut
-const selectedColor = '#548235';  // vert lorsque sélectionné
-// La hauteur nominale du marker.png est 82 pixels
-// On le réduit avec le facteur de mise à l'échelle markerIconSize
+// Styling of markers
+//
+// Base 64 encoding of the marker PNG File
+// The PNG can be black & white (2-colours) but transparency
+// is required to met 
+const base64EncodedMarker = "iVBORw0KGgoAAAANSUhEUgAAADIAAABSAgMAAABrpW94AAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kb9Lw0AcxV9Ti1IqHewg4pChOlkRFXGUKhbBQmkrtOpgcukvaNKQpLg4Cq4FB38sVh1cnHV1cBUEwR8g/gHipOgiJX4vKbSI8eC4D+/uPe7eAUKzylSzZwJQNctIJ+JiLr8q9r7CjwDCCGJcYqaezCxm4Tm+7uHj612MZ3mf+3P0KwWTAT6ReI7phkW8QTyzaemc94kjrCwpxOfEYwZdkPiR67LLb5xLDgs8M2Jk0/PEEWKx1MVyF7OyoRJPE0cVVaN8IeeywnmLs1qts/Y9+QtDBW0lw3Waw0hgCUmkIEJGHRVUYSFGq0aKiTTtxz38Q44/RS6ZXBUwciygBhWS4wf/g9/dmsWpSTcpFAcCL7b9MQL07gKthm1/H9t26wTwPwNXWsdfawKzn6Q3Olr0CAhvAxfXHU3eAy53gMEnXTIkR/LTFIpF4P2MvikPDNwCwTW3t/Y+Th+ALHW1fAMcHAKjJcpe93h3X3dv/55p9/cDXnNynwvzmMUAAAAJUExURQAALgAAAP///xxfjRMAAAABdFJOUwBA5thmAAAAAWJLR0QAiAUdSAAAAAlwSFlzAAAD6AAAA+gBtXtSawAAAAd0SU1FB+oDBgksA7YpttMAAAC4SURBVDjLjdTLFcQgCAVQWVgC/ViCC+i/lfkY9T0MmXGTcw2BRDGl/Bjiblv+Hn2ifuR4a92UIcNA9waBV6hMGQaOrCxdapBkpCHJlpEcUy6ZXNKRGy7z8aWy1Q/pV/MFx+z/UlBWIXuz+SltXDpNJt+ertKhp7UOu5LpYW/t7AKhDuF+WUnbjSoUiOKOZHHvBikUiOITwBIsEMTnKEihQFSFAlF8UlkFC0QpFIiqTj8Dy1X6g27HC45Au/ZEeLoSAAAAAElFTkSuQmCC";
+// default and selected colors
+const defaultColor = '#0070C0';   // blue
+const selectedColor = '#548235';  // green
+// marker.png height is 82 pixels. It is reduced using markerIconSize factor
 const markerIconSize = 0.25;
-const popupOffset = 13; // 2/3 de la hauteur du marker après mise à l'échelle//
-// Gestion des zoom
+const popupOffset = 13; // 2/3 of marker height after resizing
+//
+// Zoom management
+//
 // In MapLibre GL JS (and Mapbox GL JS), the zoom value is a floating‑point number where:
 // 0 = whole world view
 // ~5–7 = country level
@@ -162,43 +35,41 @@ const popupOffset = 13; // 2/3 de la hauteur du marker après mise à l'échelle
 // ~17–19 = building level
 // 20+ = very close, individual building details (if tiles support it)
 // Highest zoom level recommended for cartes.gouv is 18.9
-const highestZoomLevel = 18.9;
+const highestZoomLevel = 18.9; // recommended by Carte Facile service
 // Cluster max zoom level for clusters
-const clusterMaxZoom = 14;
-// Set the Zoom to focus on a specific feature just above the clusterMawZoom
+const clusterMaxZoom = 14; // From Map Libre example
+// Set the Zoom to focus on a specific feature just above clusterMaxZoom
 // to ensure that the feature marker will be visible
 const focusZoom = clusterMaxZoom + 0.1;
 //
-// Les variables de gestion du Widget
+// Widget management
 //
-// Id de la ligne sélectionnée du tableau (celle du marker sélectionné) et le Popup associé (actif)
+// Id of current row even if there is no corresponding feature on the map
 let currentRowId = null;
+// reference to the active Popup
 let activePopup = null;
+// refreence to the hover Popup
 let hoverPopup = null;
-//
-// Detection of internal serCursorPos
+// Detection of internal setCursorPos to leave quickly subsequent call to
+// onRecord
 let internalCursorPos = false;
-//
-// Variable globale pour la carte
-let map = null;
-// Déclaration d'un tableau pour y stocker les données de la table GRIST
-// Chaque ligne est représentée par un feature Map Libre car dans une premiere mise
-// en oeuvre les données étaient affichés en tant que Layer GeoJson
-let geojsonFeatures = [];
-// Le rectangle englobant
-let BBox = [];
-// Flag set to true when map has been loaded. 
-// It is used in onRecord to avoid style changes when the map is not yet loaded
-let mapReady = false;
-//
-// In Selected mode, the map is nor ready the first time on Record is called. So,
-// the focus on the selected record can't be achieved. This flag is set to true
-// in this case, so the focus be made later when loadinf the map...
-//let lateMapFocus = false;
-//
-// Gestion des paramètres
+// Parameters model dialog box
 const modal = document.getElementById('widgetParameters');
+// 
+// Mapping management
+//
+// reference to the map
+let map = null;
+// list of features corresponding to valid rows
+let geojsonFeatures = [];
+// Bouding Box ogf valid rows
+let BBox = [];
+// It is used in onRecord to avoid style changes when the map is not yet loaded
+// Cluster radius (0=>no cluster) in pixels. This can be changed by the users
+// via the widget buttons to fit the feature density.
 let clusterRadius = 30;
+// Flag set to true when map has been loaded. 
+let mapReady = false;
 //
 //
 // Utilities function
@@ -206,7 +77,8 @@ let clusterRadius = 30;
 // The Active Popup of the selected feature is created in different contexts consistently
 function NewActiveFeaturePopup(f) {
   return new maplibregl.Popup({
-      offset: popupOffset,   // Ancrage au centre du cercle du marker
+      anchor: 'bottom', // render the popup above the anchor
+      offset: popupOffset, // More or less the center of the marker circle
       className: 'maplibregl-popup'
     })
     .setLngLat(f.geometry.coordinates)
@@ -318,8 +190,25 @@ function getDynamicPadding() {
     }
 }
 //
-// Map data initializing based onclusterRadius
-function CreateMap () {
+// Fit the map to the bounding box with padding
+// Note : At least two calls, on through the widget buttons, another when
+// creating the map. This function ensures the consistency.
+function FitBounds() {
+  map.fitBounds(BBox, {
+    padding: getDynamicPadding(),   // pixels
+    maxZoom: highestZoomLevel,      // prevent zooming in too far
+     duration: 1000                 // animation duration in ms
+  });
+}
+//
+// Mapping of the map data is by default clustered
+// but it is possible to change the cluster radius
+// possibly any positive integer including 0 (no cluster).
+// The following function generates all map Libre Data
+// from the Grist source table according to clusterRadius
+// parameter. It is called once when the map is loaded
+// using the default cluster radius value
+function AddGristTable2Map () {
 
   // Clustered Source
   if (clusterRadius> 0) {
@@ -398,42 +287,13 @@ function CreateMap () {
       });
   } //  if (clusterRadius > 0)
 
-  //Add a layer for unclustered points...;
-  //const iconUrl = "https://corsproxy.io/?https://lesagnic.github.io/grist-widget-cartefacile/widget/marker.png";
-  if (!map.hasImage('custom-marker')) {
-    
-  /*  fetch(iconUrl)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Failed to load marker.txt: ${response.statusText}`);
-        }
-        return response.text();
-      })
-      .then(rawBase64 => {
-        // Ensure we have a proper data URL
-        const markerBase64 = `data:image/png;base64,${rawBase64.trim()}`;
-
-        // Load the image from the Base64 string
-        map.loadImage(markerBase64, (err, image) => {
-          if (err) {
-            console.error("Failed to load marker image from Base64", err);
-            return;
-          }
-
-          // Add the image to the map if not already present
-          map.addImage('custom-marker', image, { sdf: true });
-          console.log("Custom marker image added from marker.txt");
-        });
-      })
-      .catch(err => console.error(err));
-*/
-
-    fetch(iconUrl)
-      .then(res => res.blob())
-      .then(blob => createImageBitmap(blob))
-      .then(imageBitmap => {
-        map.addImage('custom-marker', imageBitmap, { sdf: true });
-      });
+  // Check whether the marker icon has to be added to the map
+  if (!map.hasImage('custom-marker')) {   
+      const img = new Image();
+      img.onload = () => {
+        map.addImage('custom-marker', img, { sdf: true });
+      };
+      img.src = `data:image/png;base64,${base64EncodedMarker}`;       
   }
      
   let iconColor = defaultColor;
@@ -472,21 +332,12 @@ if(debug) console.log("Map is ready!!!");
       ChangeMapSelection(geojsonFeatures[0]);
   }
 
-  //
-  // Deal with the late Map Focus on the first onRecord call
-  //if ( lateMapFocus ) {
-    // Put the focus of the features related to the cirrentRowId
-  //  ChangeMapFocus(geojsonFeatures.find(
-  //    item => item.properties.id === currentRowId
-  //  ));
-  //  lateMapFocus = false; // late Map Focus is done once
-  //}
-
   // Create Add hoverPopup
   if ( !hoverPopup ) hoverPopup = new maplibregl.Popup({
     closeButton: false,
     closeOnClick: false,
-    offset: popupOffset, // Ancrage au centre du cercle du marker
+    anchor: 'bottom', // render the popup above the anchor
+    offset: popupOffset, // More or less the center of the marker circle
     className: 'maplibregl-popup'
   });
 
@@ -540,9 +391,8 @@ grist.onRecords(table => {
 if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
-  //
+
   // Definition de la Bouding Box des données et de la liste de features
-  
   table.forEach ( record => {
 
     // On récupère les colonnes mappées
@@ -569,15 +419,17 @@ if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   }
 
 // DEBUG
+// Send widget location info to the console...
 if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
 if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
 if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 // END DEBUG
 
+  // When the map does not exists : need to create it
   if (!map ) {
 
     //
-    // Création la carte
+    // Création de la carte
     map = new maplibregl.Map({
       container: 'map', // id du conteneur de la carte
       style: CarteFacile.mapStyles.simple, // style de carte
@@ -591,48 +443,40 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     // Ajout d'un sélecteur de carte
     map.addControl(new CarteFacile.MapSelectorControl);
     // Création d'un contrôle personnalisé de recentrage sur les données de la table
-    class FitBoundsControl {
-      onAdd(map) {
-        this._map = map;
-        // Conteneur du groupe de boutons
-        this._container = document.createElement('div');
-        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-        // Bouton style natif
-        const button = document.createElement('button');
-        button.className = 'maplibregl-ctrl-icon fit-bounds-btn';
-        button.type = 'button';
-        button.title = 'Recentrer sur les données';
-        button.onclick = () => {
-          map.fitBounds(
-            BBox, 
-            { 
-              padding: getDynamicPadding(),
-              duration: 1000 
-            }
-          );
-        };
-        this._container.appendChild(button);
-        return this._container;
-      }
-      onRemove() {
-        this._container.parentNode.removeChild(this._container);
-        this._map = undefined;
-      }
-    }
-    map.addControl(new FitBoundsControl(), 'top-right');
 
-    class ParametersControl {
+    class WidgetControl {
       //private _container: HTMLElement;
       onAdd(map) {
         this._map = map;
         this._container = document.createElement('div');
         this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-        // Bouton style natif
-        const button = document.createElement('button');
+        // fit-bounds-btn => Driver mode
+        let button = document.createElement('button');
+        button.className = 'maplibregl-ctrl-icon fit-bounds-btn';
+        button.type = 'button';
+        button.title = 'Toutes les lignes';
+        button.onclick = () => {
+          FitBounds();
+        };
+        this._container.appendChild(button);
+        // Bouton Mode Driven : Zoom sur le marker sélectionné
+        button = document.createElement('button');
+        button.className = 'maplibregl-ctrl-icon one-row-btn'; 
+        button.type = 'button';
+        button.title = 'Ligne sélectionnée';
+        button.onclick = () => {
+          ChangeMapFocus(geojsonFeatures.find(
+            item => item.properties.id === currentRowId
+          ));
+
+        };
+        this._container.appendChild(button);
+        // Bouton paramètres
+        button = document.createElement('button');
         button.className = 'maplibregl-ctrl-icon parameters-btn';
         button.type = 'button';
         button.title = 'Paramètres';
-        button.textContent = '⚙️'; // 
+        //button.textContent = '⚙️'; // 
         button.onclick = () => {
           document.getElementById('clusterRadius').value = clusterRadius;
           modal.style.display = 'block';
@@ -646,7 +490,8 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         this._map = undefined;
       }
     }
-    map.addControl(new ParametersControl(), 'top-right');
+    map.addControl(new WidgetControl(), 'top-right');
+
     document.getElementById('cancelSettings').addEventListener('click', () => {
       modal.style.display = 'none';
     });
@@ -662,7 +507,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
           if (map.getLayer('clusters')) map.removeLayer('clusters');
           map.removeSource('markers');
         }
-        CreateMap ();
+        AddGristTable2Map ();
       }
       
     });
@@ -677,14 +522,10 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     // Chargement de la carte
     map.on('load', () => {
 
-      // Fit the map to the bounding box with padding
-      map.fitBounds(BBox, {
-        padding: getDynamicPadding(),   // pixels
-        maxZoom: highestZoomLevel,   // prevent zooming in too far
-        duration: 1000 // animation duration in ms
-      });
+      // Focus on the BBox of table rows
+      FitBounds();
 
-      CreateMap ();
+      AddGristTable2Map ();
 
       // inspect a cluster on click
       map.on('click', 'clusters', async (e) => {
@@ -763,12 +604,17 @@ if (debug) console.log(widgetRootMsg+"on render f: "+features.length);
    
     }); // end map.on
   } // if (!map)
-  else {
-      // Need to recompute BBox in case of further click on FitBoundsControl
+
+  // when there is already a map :
+  else { 
+
+      // 1) Need to recompute BBox in case of further click to fit-bounds-btn
       BoundingBox(geojsonFeatures);
-      // ... but no FitBounds update since the user would not understand a focus change
-      // due to changes in the source data
-      // Need to update the data
+
+      // ... but no call to FitBounds (user would not undertand  
+      // a focus change due to changes in the source data)
+
+      // 2) Need to update the data
       const src = map.getSource('markers');
       if (src) src.setData({
         type: 'FeatureCollection',
@@ -879,33 +725,20 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
       features: [...geojsonFeatures] // Again, need to clone the data
      });
 
-    // ...Update BBox when geometry has change (or a feature has been skipped)
-    // in case of further click on FitBoundsControl
+    // ...Update BBox when geometry has changed (or a feature has been skipped)
+    // in case of further click on fit-bounds-btn
     if ( geometryChange || skippedRecord) {
       BoundingBox(geojsonFeatures);
-      // ... but no FitBounds update since the user would not understand 
-      // a focus change due to changes in the source data
+      // ... but no call to FitBounds (user would not undertand  
+      // a focus change due to changes in the source data)
     }
 
 
   }
 
-  // Zoom in to the record feature when onRecord is not related to an internal change of Row
-//  if ( recordFeature && 
-//       (currentRowId !== record.id || geometryChange || newRecord || propertyChange) ) {
-    
-    // Fit the map to the record
-//    map.easeTo({
-//      center: recordFeature.geometry.coordinates,
-//      zoom: focusZoom
-//    });
-//
-//  }
-  
-    ChangeCurrentRow(record.id);
-     // ... Change map focus (selection with zoom in)  
-    ChangeMapFocus(recordFeature); // null if skippedrecord
+  ChangeCurrentRow(record.id);
+  // ... Change map focus (selection with zoom in)  
+  ChangeMapFocus(recordFeature); // null if skippedrecord
 
- 
 
 });
