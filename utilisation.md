@@ -1,11 +1,3 @@
-### Configuration du Widget
-
-Après avoir sélectionné le widget Carte Facile, sa configuration se fait en deux étapes au sein de l'onglet **Vue** se trouvant dans la partie droite de la page :
-* Autoriser le widget à lire les données de la table ;
-* Mettre en correspondant les colonnes de la table avec les propriétés **Longitude**, **Latitude** et **Libellé** du widget.
-
-> Chaque ligne disposant de données cartographiques valides est alors par défaut représentée sur le fond Carte Facile avec ce symbole : <img src="widget/marker.png" alt="Marker" height="16"/>. 
-
 ### Fonctionnalités cartographiques
 
 Il est alors possible d'utiliser les contrôles suivant :
