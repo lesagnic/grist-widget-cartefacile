@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.5" // Increment at least last figure for new release
+const widgetVersion = "1.0.6" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -54,7 +54,7 @@ let hoverPopup = null;
 // onRecord
 let internalCursorPos = false;
 // Parameters model dialog box
-const modal = document.getElementById('widgetParameters');
+let modal = null;
 // 
 // Mapping management
 //
@@ -425,6 +425,10 @@ if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
 if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 // END DEBUG
 
+  if (!modal) {
+    modal = document.getElementById('widgetParameters');
+  }
+  
   // When the map does not exists : need to create it
   if (!map ) {
 
@@ -742,3 +746,4 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
