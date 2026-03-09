@@ -486,7 +486,8 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button.title = "Ajout d'une ligne";
         button.onclick = () => {
           // pointeur en forme de croix
-          map.getCanvas().style.cursor = 'crosshair';
+          map.getCanvas().style.cursor = 'crosshair !important' ;
+          map.getCanvas().style.border = '1px solid #333 !important';
           // Listen for click events
           map.on('click', (e) => {
             const lng = e.lngLat.lng.toFixed(6);
@@ -783,6 +784,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
