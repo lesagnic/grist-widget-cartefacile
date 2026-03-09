@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.6" // Increment at least last figure for new release
+const widgetVersion = "1.0.7" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -475,6 +475,15 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 
         };
         this._container.appendChild(button);
+        // Bouton ajout d'une ligne
+        button = document.createElement('button');
+        button.className = 'maplibregl-ctrl-icon add-row-btn';
+        button.type = 'button';
+        button.title = 'Ajout d'une ligne';
+        button.onclick = () => {
+          alert("Ajout d'une ligne en cours de mise en oeuvre");
+        };
+        this._container.appendChild(button);
         // Bouton paramètres
         button = document.createElement('button');
         button.className = 'maplibregl-ctrl-icon parameters-btn';
@@ -746,4 +755,5 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
