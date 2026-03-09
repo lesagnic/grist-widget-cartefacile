@@ -1,4 +1,4 @@
-Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartoraphiques. Il propose également au travers de 4 pages les 4 d'usages du Widget Carte Facile décrit ci-dessous : Cartographie, Localisation, Exploration et Localisation/Exploration combinées.
+Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose également une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : Cartographie, Localisation, Exploration et Localisation/Exploration combinées.
 
 ### Cartographie
 
