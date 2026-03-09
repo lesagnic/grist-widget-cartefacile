@@ -8,7 +8,7 @@ L'outil Map libre fournit les fonctions de navigation de base tels que le dépla
 
 Le bouton <img height="12" src="assets/img/widget-control-selection.png" alt="selection"/> permet de sélectionner les données du fond Carte Facile.
 
-Les 3 derniers icônes permettent de revenir à une vue d'ensemble des lignes de la table, se déplacer sur la représentation de la ligne sélectionnée et enfin de modifier les paramètres du widet Carte Facile.
+Le widget Carte facile propose en complément le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> pour une vue d'ensemble des marqueurs de toutes les lignes de la table, le bouton <img height="12" src="assets/img/widget-control-one-row.svg" alt="focus"/> pour se déplacer sur le marqueur de la ligne sélectionnée et enfin le bouton <img height="12" src="assets/img/widget-parameters.svg" alt="paramètres"/> pour modifier les paramètres du widget.
 
 Il est alors possible d'utiliser les contrôles suivant :
 * le contrôle de **Navigation** et le contrôle de **Gestion de l'échelle** de Map Libre;
