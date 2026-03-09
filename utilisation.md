@@ -2,7 +2,7 @@ Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte
 
 ### Cartographie
 
-Les lignes sont représentées par un marqueur de localisation bleu (<img src="assets/img/widget-marker.png" height="12" style="filter: brightness(0) saturate(100%) invert(27%) sepia(99%) saturate(747%) hue-rotate(179deg) brightness(95%) contrast(97%)" alt="marker-default"/>) sauf pour l'unique ligne sélectionnée (première ligne valide du tableau par défaut) représentée en vert. Un popup s'affiche lorsque la souris passe sur le marqueur. Il est alors possible de changer la sélection en cliquant sur le marqueur ; son popup devient fixe mais peut-être supprimé.
+Toutes les lignes sont représentées par un marqueur de localisation bleu (<img src="assets/img/widget-marker.png" height="12" style="filter: brightness(0) saturate(100%) invert(27%) sepia(99%) saturate(747%) hue-rotate(179deg) brightness(95%) contrast(97%)" alt="marker-default"/>) sauf l'unique ligne sélectionnée (première ligne valide du tableau par défaut) qui est représentée par un marqueur vert (<img src="assets/img/widget-marker.png" height="12" style="filter: brightness(0) saturate(100%) invert(38%) sepia(21%) saturate(1180%) hue-rotate(53deg) brightness(92%) contrast(88%)" alt="marker-default"/>). Un popup s'affiche lorsque la souris passe sur le marqueur. Il est alors possible de changer la sélection en cliquant sur le marqueur ; son popup devient fixe mais peut-être supprimé.
 
 L'outil Map libre fournit les fonctions de navigation de base tels que :
 * le déplacement (en bougeant la souris après un clic maintenu sur la carte),
