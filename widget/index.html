@@ -16,19 +16,43 @@
   <div id="map"></div>
 
   <!-- Fenêtre modal de gestion des  paramètres du widget -->
-  <div id="widgetParameters" class="widget-parameters-modal">
-    <div class="widget-parameters-content">
-      <div class="widget-parameters-header">Paramètres</div>
+  <div id="widgetParameters" class="widget-diag-modal">
+    <div class="widget-diag-content">
+      <div class="widget-diag-header">Paramètres</div>
       <label>
         Rayon d'aggrégation
         <input type="number" id="clusterRadius" placeholder="0">
       </label>
-       <div class="widget-parameters-footer">
+       <div class="widget-diag-footer">
         <button id="cancelSettings" class="btn btn-secondary">Annuler</button>
         <button id="saveSettings" class="btn btn-primary">Enregistrer</button>
       </div>
     </div>
   </div>
-</body>
 
+	<!-- Fenêtre modal d'ajout d'une ligne -->
+  <div id="widgetNewRow" class="widget-diag-modal">
+    <div class="widget-diag-content">
+      <div class="widget-diag-header">Nouvelle ligne</div>
+      <label>
+       Libellé
+        <input type="text" id="newRowTitle" placeholder="Libellé de l'objet pointé">
+      </label>
+      <label>
+       Latitude
+        <input type="number" id="newRowLat" placeholder="">
+      </label>
+      <label>
+       Latitude
+        <input type="number" id="newRowLon" placeholder="">
+      </label>
+      <div class="widget-diag-footer">
+        <button id="cancelNewRow" class="btn btn-secondary">Annuler</button>
+        <button id="saveNewRow" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+</body>
 </html>
+
