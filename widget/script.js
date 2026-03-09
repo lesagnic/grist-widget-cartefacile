@@ -343,6 +343,30 @@ if(debug) console.log("Map is ready!!!");
   });
 
 }
+//
+// Event handler for new row
+// Click handler
+function handleNewRowClick(e) {
+  const lng = e.lngLat.lng.toFixed(6);
+  const lat = e.lngLat.lat.toFixed(6);
+  document.getElementById('newRowLat').value = lat;
+  document.getElementById('newRowLon').value = lng;
+  // Remove both listeners after first click
+  map.off('click', handleNewRowClick);
+  document.removeEventListener('keydown', handleNewRowEscKey);
+  // retour au pointeur par défaut
+  map.getCanvas().style.cursor = '';
+  newRowDialog.style.display = 'block';
+}
+// ESC key handler
+function handleNewRowEscKey(e) {
+  if (e.key === 'Escape') {
+    map.off('click', handleNewRowClick);
+    document.removeEventListener('keydown', handleNewRowEscKey);
+    // retour au pointeur par défaut
+    map.getCanvas().style.cursor = '';
+  }
+}
 // 
 //
 // API GRIST : ready
@@ -488,16 +512,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
           // pointeur en forme de croix
           map.getCanvas().style.cursor = 'crosshair !important' ;
           map.getCanvas().style.border = '1px solid #333 !important';
-          // Listen for click events
-          map.on('click', (e) => {
-            const lng = e.lngLat.lng.toFixed(6);
-            const lat = e.lngLat.lat.toFixed(6);
-            document.getElementById('newRowLat').value = lat;
-            document.getElementById('newRowLon').value = lng;
-            // retour au pointeur par défaut
-            map.getCanvas().style.cursor = '';
-            newRowDialog.style.display = 'block';
-          });
+          // Listen for click events or ESC key
+          map.on('click', handleNewRowClick);
+          document.addEventListener('keydown', handleNewRowEscKey);
         };
         this._container.appendChild(button);
         // Bouton paramètres
@@ -784,6 +801,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
