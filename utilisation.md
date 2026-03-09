@@ -38,6 +38,6 @@ La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans l
 
 Le widget Carte facile devient alors un outil de **localisation cartographique** des données de la table.
 
-### Exploration Localisation
+### Exploration et localisation
 
 Il est possible de combiner les cas d'usage **Exploration** et **Localisation**. Dans ce cas, le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> permet de revenir à une vue d'ensemble des marqueurs de la table après une séquence de localisation pilotée par la vue à laquelle le widget est connecté. Les informations fournies dans cette vue peuvent être limitées à ce qui est nécessaire pour que l'utilisateur identifie de quoi il s'agit puisque le détail des lignes sélectionnées est fourni par la vue connectée au widget Carte facile. 
