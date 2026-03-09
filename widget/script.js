@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.7" // Increment at least last figure for new release
+const widgetVersion = "1.0.8" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -55,6 +55,7 @@ let hoverPopup = null;
 let internalCursorPos = false;
 // Parameters model dialog box
 let modal = null;
+let newRowDialog = null;
 // 
 // Mapping management
 //
@@ -425,8 +426,12 @@ if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
 if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 // END DEBUG
 
+  // Init dialogs
   if (!modal) {
     modal = document.getElementById('widgetParameters');
+  }
+  if (!newRowDialog) {
+    newRowDialog = document.getElementById('widgetNewRow');
   }
   
   // When the map does not exists : need to create it
@@ -472,7 +477,6 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
           ChangeMapFocus(geojsonFeatures.find(
             item => item.properties.id === currentRowId
           ));
-
         };
         this._container.appendChild(button);
         // Bouton ajout d'une ligne
@@ -481,7 +485,18 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button.type = 'button';
         button.title = "Ajout d'une ligne";
         button.onclick = () => {
-          alert("Ajout d'une ligne en cours de mise en oeuvre");
+          // pointeur en forme de croix
+          map.getCanvas().style.cursor = 'crosshair';
+          // Listen for click events
+          map.on('click', (e) => {
+            const lng = e.lngLat.lng.toFixed(6);
+            const lat = e.lngLat.lat.toFixed(6);
+            document.getElementById('newRowLat').value = lat;
+            document.getElementById('newRowLon').value = lng;
+            // retour au pointeur par défaut
+            map.getCanvas().style.cursor = '';
+            newRowDialog.style.display = 'block';
+          });
         };
         this._container.appendChild(button);
         // Bouton paramètres
@@ -505,12 +520,20 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     }
     map.addControl(new WidgetControl(), 'top-right');
 
+    document.getElementById('cancelNewRow').addEventListener('click', () => {
+      newRowDialog.style.display = 'none';
+    });
+    document.getElementById('saveSettings').addEventListener('click', () => {
+      newRowDialog.style.display = 'none';
+      alert("Ajout d'une ligne en cours de mise en oeuvre");
+      // To be done : addition of the new row in the grist table */
+    });
     document.getElementById('cancelSettings').addEventListener('click', () => {
       modal.style.display = 'none';
     });
     document.getElementById('saveSettings').addEventListener('click', () => {
       modal.style.display = 'none';
-      if ( document.getElementById('clusterRadius').value < 0 ) return;
+      if ( Number(document.getElementById('clusterRadius').value) < 0 ) return;
       if ( clusterRadius !== Number(document.getElementById('clusterRadius').value) ) {
         clusterRadius = Number(document.getElementById('clusterRadius').value) ;
         if (map.getSource('markers')) {
@@ -524,10 +547,13 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       }
       
     });
-        // Close modal when clicking outside content
+    // Close modal diag when clicking outside content
     window.addEventListener('click', (event) => {
       if (event.target === modal) {
         modal.style.display = 'none';
+      }
+      if (event.target === newRowDialog) {
+        newRowDialog.style.display = 'none';
       }
     });
     //
@@ -755,6 +781,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
