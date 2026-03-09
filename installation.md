@@ -1,13 +1,13 @@
 ### Mise en oeuvre du Widget
 
-> La mise en oeuvre du widget consiste à ajouter, dans une page GRIST éventuellement créée pour l'occasion dans le même document que la table à cartographier, un widget GRIST (ou vue personnalisée) de type URL en utilisant l'URL suivante : **https://lesagnic.github.io/grist-widget-carte-facile/widget**
+> La mise en oeuvre du widget consiste à ajouter, dans une page GRIST éventuellement créée pour l'occasion dans le même document que la table à cartographier, un widget GRIST (ou vue personnalisée) de type URL en utilisant l'URL suivante : **https://lesagnic.github.io/grist-widget-cartefacile/widget**
 
 <!-- A finaliser :
 Dans une page du document GRIST éventuellement créée pour l'occasion, ajoutez une vue personnalisée associée à votre table :
 
 ![Ajout d'un widget][newwidget-url]
 
-Sélectionnez le widget de type **URL Personnalisée** et copiez l'URL **'https://lesagnic.github.io/grist-widget-carte-facile/widget'** dans la zone URL du widget et cliquez sur **Ajouter**.
+Sélectionnez le widget de type **URL Personnalisée** et copiez l'URL **'https://lesagnic.github.io/grist-widget-cartefacile/widget'** dans la zone URL du widget et cliquez sur **Ajouter**.
 
 ![Ajout d'un widget][urlwidget-url]
 
@@ -21,5 +21,5 @@ Après avoir mise en oeuvre le widget Carte Facile et après l'avoir sélectionn
 * Autoriser le widget à lire les données de la table ;
 * Mettre en correspondant les colonnes de la table avec les propriétés **Longitude**, **Latitude** et **Libellé** du widget.
 
-> Chaque ligne disposant de données cartographiques valides est alors par défaut représentée sur le fond Carte Facile avec ce symbole : <img src="assets/img/widget-marker.png" alt="Marker" height="16"/> qui sera de couleur verte pour l'unique ligne sélectionnée de la table.
+> Chaque ligne disposant de données cartographiques valides est alors par défaut représentée sur le fond Carte Facile avec un marqueur de localisation (<img src="assets/img/widget-marker.png" alt="Marker" height="16"/>).
 
