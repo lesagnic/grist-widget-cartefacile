@@ -1,4 +1,4 @@
-Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), [Localisation](#localisation), [Exploration](#exploration) et Localisation/Exploration combinées.
+Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), [Exploration](#exploration), [Localisation](#localisation) et [Exploration/Localisation](#exploration-localisation) combinées.
 
 ### Cartographie
 
@@ -18,7 +18,7 @@ Le widget Carte facile propose en complément :
 * le bouton <img height="12" src="assets/img/widget-control-parameters.svg" alt="paramètres"/> pour modifier les paramètres du widget.
 
 Le widget Carte facile permet de modifier les paramètres suivants :
-* le **rayon d'agrégation** permet de gérer la représentation cartographique des lignes de la table dans les zones denses. Exprimé en pixels, il est utilisé par Map Libre pour aggréger aux différentes échelles les lignes se trouvant dans une même zone et les représenter par un cercle de taille et de couleur variable en fonction du nombre de lignes concernées ; le nombre de lignes agrégées est par ailleurs affiché au centre du cercle. Il suffit de cliquer sur le cercle pour zoomer sur les lignes agrégées. Il est possible de désactiver cette fonction d'agrégation en chpisissant un rayon de 0 ou de faire varier le rayon pour trouver le niveau d'aggrégation optimal.
+* le **rayon d'agrégation** permet de gérer la représentation cartographique des lignes de la table dans les zones denses. Exprimé en pixels, il est utilisé par Map Libre pour aggréger, aux différentes échelles, les lignes se trouvant dans une même zone et les représenter par un cercle de taille et de couleur variable en fonction du nombre de lignes concernées ; le nombre de lignes agrégées est par ailleurs affiché au centre du cercle. Il suffit de cliquer sur le cercle pour zoomer sur les lignes agrégées. Il est possible de désactiver cette fonction d'agrégation en choisissant un rayon de 0 ou de faire varier le rayon pour trouver le niveau d'aggrégation optimal.
 
 ### Exploration
 
@@ -38,4 +38,4 @@ La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans l
 
 ### Exploration/Localisation
 
-Il est possible de combiner les cas d'usage **Exploration** et **Localisation**. Dans ce cas, le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> permet de revenir à une vue d'ensemble des marqueurs de la table après une séquence de localisation pilotée par la vue de localisation. 
+Il est possible de combiner les cas d'usage **Exploration** et **Localisation**. Dans ce cas, le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> permet de revenir à une vue d'ensemble des marqueurs de la table après une séquence de localisation pilotée par la vue à laquelle le widget est connecté. Les informations fournies dans cette vue peuvent être limitées à ce qui est nécessaire pour que l'utilisateur identifie de quoi il s'agit puisque le détail des lignes sélectionnées est fourni par la vue connectée au widget Carte facile. 
