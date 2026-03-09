@@ -1,4 +1,4 @@
-Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), Localisation, Exploration et Localisation/Exploration combinées.
+Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), [Localisation](#localisation), [Exploration](#exploration) et Localisation/Exploration combinées.
 
 ### Cartographie
 
@@ -17,23 +17,25 @@ Le widget Carte facile propose en complément :
 * le bouton <img height="12" src="assets/img/widget-control-one-row.svg" alt="focus"/> pour se déplacer sur le marqueur de la ligne sélectionnée,
 * le bouton <img height="12" src="assets/img/widget-control-parameters.svg" alt="paramètres"/> pour modifier les paramètres du widget.
 
-Il est alors possible d'utiliser les contrôles suivant :
-* le contrôle de **Navigation** et le contrôle de **Gestion de l'échelle** de Map Libre;
-* le **sélecteur de carte** du service CarteFacile permettant de basculer sur le fond OSM ou d'afficher des données complémentaires ;
-* un contrôle spécifique de **recentrage** de la carte sur les objets de la table GRIST source.
+Le widget Carte facile permet de modifier les paramètres suivants :
+* le **rayon d'agrégation** permet de gérer la représentation cartographique des lignes de la table dans les zones denses. Exprimé en pixels, il est utilisé par Map Libre pour aggréger aux différentes échelles les lignes se trouvant dans une même zone et les représenter par un cercle de taille et de couleur variable en fonction du nombre de lignes concernées ; le nombre de lignes agrégées est par ailleurs affiché au centre du cercle. Il suffit de cliquer sur le cercle pour zoomer sur les lignes agrégées. Il est possible de désactiver cette fonction d'agrégation en chpisissant un rayon de 0 ou de faire varier le rayon pour trouver le niveau d'aggrégation optimal.
 
-Les fonctionnalités de zoom et de déplacement fournies par Mal Libre permettent de naviguer dans la carte et de sélectionner les lignes valides de la table. Un popup contenant le libellé de la ligné est affiché lors du passage sur la représentation d'un ligne ou lorsque la ligne est sélectionnée.
+### Exploration
 
-Les points correspondants aux lignes de la table GRIST sont clusterisées, c'est à dire que des cercles de taille variable contenant un nombre, permettent de représenter de manière agrégée les points dans les zones denses. Le nombre indique la quantité d'objets agrégréss.En cliquant sur un de ces cercles, Map Libre va zoomer de manière à désagrager les points concernés. 
+Ce cas d'usage revient à :
+* ajouter à la cartographie déjà disponible dans la page, une vue (typiquement de type Fiche) associée à la même table,
+* connecter cette vue au widget Carte Facile (via l'onglet Source de la vue).
 
-### Connection d'un widget tiers
+Chaque ligne sélectionnée au travers du widget Carte facile sera alors visualisée dans la vue connectée qui pourra alors fournir tout ou partie des informations contenues dans les colonnes de la table. Le widget Carte facile permet ainsi l'exploration du contenu de la table.
 
-Toute vue de la page dans laquelle se trouve le widget Carte Facile peut lui être connecté. Dans ce cas, chaque ligne sélectionnée au travers du widget Carte facile sera visualisée dans la vue connectée. Une vue de type Fiche permettra typiquement de visualiser les valeurs des différentes colonnes de la ligne sélectionnée dans le widget Carte Facile.
+### Localisation
 
-### Connection du widget Carte Facile
+Ce cas d'usage revient à :
+* ajouter à la cartographie déjà disponible dans la page, une vue (typiquement de type Table) associée à la même table,
+* connecter le widget Carte facile à cette nouvelle vue (via l'onglet Source du widget).
 
-Le widget Carte Facile réagit de deux manières à la vue à laquelle il est connecté :
-- les filtres appliquées dans la vue à laquelle le widget Carte Facile est connecté seront répercutées sur la cartographie :
-- si une ligne est sélectionnées dans la vue à laquelle le widget Carte Facile est connecté, le widget Carte Facile se déplacera et zoomera sur le point correspondant sur la carte.
+La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans la cartographique permettant, si la ligne est valide) de sélectionner, localiser et zoomer sur le marqueur correspondant. Le widget Carte facile devient alors un outil de **localisation cartographique** des données de la table.
 
-Ces fonctionnalités fonctionnent très bien avec la vue de type Table ou avec le widget Explorateur.
+### Exploration/Localisation
+
+Il est possible de combiner les cas d'usage **Exploration** et **Localisation**. Dans ce cas, le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> permet de revenir à une vue d'ensemble des marqueurs de la table après une séquence de localisation pilotée par la vue de localisation. 
