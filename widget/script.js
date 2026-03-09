@@ -42,6 +42,11 @@ const clusterMaxZoom = 14; // From Map Libre example
 // to ensure that the feature marker will be visible
 const focusZoom = clusterMaxZoom + 0.1;
 //
+// Cursor styling management
+let cursorOnMouseEnter = '';
+let cursorOnNewRowClick = '';
+
+//
 // Widget management
 //
 // Id of current row even if there is no corresponding feature on the map
@@ -355,7 +360,7 @@ function handleNewRowClick(e) {
   map.off('click', handleNewRowClick);
   document.removeEventListener('keydown', handleNewRowEscKey);
   // retour au pointeur par défaut
-  map.getCanvas().style.cursor = '';
+  map.getCanvas().style.cursor = cursorOnNewRowClick;
   newRowDialog.style.display = 'block';
 }
 // ESC key handler
@@ -364,7 +369,7 @@ function handleNewRowEscKey(e) {
     map.off('click', handleNewRowClick);
     document.removeEventListener('keydown', handleNewRowEscKey);
     // retour au pointeur par défaut
-    map.getCanvas().style.cursor = '';
+    map.getCanvas().style.cursor = cursorOnNewRowClick;
   }
 }
 // 
@@ -510,8 +515,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button.title = "Ajout d'une ligne";
         button.onclick = () => {
           // pointeur en forme de croix
+          cursorOnNewRowClick = map.getCanvas().style.cursor;
           map.getCanvas().style.cursor = 'crosshair' ;
-          map.getCanvas().style.border = '1px solid blue';
+          map.getCanvas().style.border = '1px solid #0FF';
           // Listen for click events or ESC key
           map.on('click', handleNewRowClick);
           document.addEventListener('keydown', handleNewRowEscKey);
@@ -641,8 +647,9 @@ if (debug) console.log(widgetRootMsg+"on render f: "+features.length);
 
       map.on('mouseenter', 'unclustered-point', (e) => {
         if ( e.features[0].properties.id != currentRowId ) {
-         map.getCanvas().style.cursor = 'pointer';
-         hoverPopup
+          cursorOnMouseEnter = map.getCanvas().style.cursor;
+          map.getCanvas().style.cursor = 'pointer';
+          hoverPopup
             .setLngLat(e.features[0].geometry.coordinates.slice())
             .setHTML(e.features[0].properties.title)
             .addTo(map);
@@ -650,15 +657,16 @@ if (debug) console.log(widgetRootMsg+"on render f: "+features.length);
       });
 
       map.on('mouseleave', 'unclustered-point', () => {
-        map.getCanvas().style.cursor = '';
+        map.getCanvas().style.cursor = cursorOnMouseEnter;
         hoverPopup.remove();
       });
 
       map.on('mouseenter', 'clusters', () => {
+        cursorOnMouseEnter = map.getCanvas().style.cursor;
         map.getCanvas().style.cursor = 'pointer';
       });
       map.on('mouseleave', 'clusters', () => {
-        map.getCanvas().style.cursor = '';
+        map.getCanvas().style.cursor = cursorOnMouseEnter;
       });  
    
     }); // end map.on
@@ -801,6 +809,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
