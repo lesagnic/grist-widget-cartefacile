@@ -6,7 +6,7 @@ Les lignes sont représentées par un marqueur de localisation bleu sauf pour l'
 
 L'outil Map libre fournit les fonctions de navigation de base (déplacement en bougeant la souris après un clic maintenu sur la carte) ainsi que zoom (<img height="12" src="assets/img/widget-control-zoom.png" alt="zoom"/>), dézoom (<img height="12" src="assets/img/widget-control-dezoom.png" alt="dezoom"/>) et orientation (<img height="12" src="assets/img/widget-control-orientation.png" alt="orientation"/>).
 
-L'icône du dessous (3 feuilles supperposées) permet de sélectionner les données du fond Carte Facile.
+Le bouton <img height="12" src="assets/img/widget-control-selection.png" alt="selection"/> permet de sélectionner les données du fond Carte Facile.
 
 Les 3 derniers icônes permettent de revenir à une vue d'ensemble des lignes de la table, se déplacer sur la représentation de la ligne sélectionnée et enfin de modifier les paramètres du widet Carte Facile.
 
