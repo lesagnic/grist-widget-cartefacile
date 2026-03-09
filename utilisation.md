@@ -1,4 +1,4 @@
-Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), [Exploration](#exploration), [Localisation](#localisation) et [Exploration/Localisation](#exploration-localisation) combinées.
+Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), [Exploration](#exploration), [Localisation](#localisation) et [Exploration et localisation](#exploration-et-localisation) combinées.
 
 ### Cartographie
 
@@ -34,8 +34,10 @@ Ce cas d'usage revient à :
 * ajouter à la cartographie déjà disponible dans la page, une vue (typiquement de type Table) associée à la même table,
 * connecter le widget Carte facile à cette nouvelle vue (via l'onglet Source du widget).
 
-La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans la cartographique permettant, si la ligne est valide) de sélectionner, localiser et zoomer sur le marqueur correspondant. Le widget Carte facile devient alors un outil de **localisation cartographique** des données de la table.
+La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans la cartographique permettant de sélectionner, localiser et zoomer sur le marqueur correspondant. Si la ligne sélectionnée n'est pas représentée cartographiquement, le widget carte Facile se contentera de déselectionner la ligne sélectionnées précédemment.
 
-### Exploration/Localisation
+Le widget Carte facile devient alors un outil de **localisation cartographique** des données de la table.
+
+### Exploration Localisation
 
 Il est possible de combiner les cas d'usage **Exploration** et **Localisation**. Dans ce cas, le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> permet de revenir à une vue d'ensemble des marqueurs de la table après une séquence de localisation pilotée par la vue à laquelle le widget est connecté. Les informations fournies dans cette vue peuvent être limitées à ce qui est nécessaire pour que l'utilisateur identifie de quoi il s'agit puisque le détail des lignes sélectionnées est fourni par la vue connectée au widget Carte facile. 
