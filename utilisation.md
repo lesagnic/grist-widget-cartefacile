@@ -4,7 +4,7 @@ Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte
 
 Les lignes sont représentées par un marqueur de localisation bleu sauf pour l'unique ligne sélectionnée (première ligne valide du tableau par défaut) représentée en vert. Un popup s'affiche lorsque la souris passe sur le marqueur. Il est alors possible de changer la sélection en cliquant sur le marqueur. Le Popup devient fixe.
 
-L'outil Map libre fournit les fonctions de navigation de base (déplacement en bougeant la souris après un clic maintenu sur la carte) ainsi que zoom/dézoom/orientation en cliquant respectivement sur les boutons <img height="18" src="assets/img/widget-control-all-rows.svg" alt="zoom"/>.
+L'outil Map libre fournit les fonctions de navigation de base (déplacement en bougeant la souris après un clic maintenu sur la carte) ainsi que zoom (<img height="18" src="assets/img/widget-control-zoom.svg" alt="zoom"/>), dézoom (<img height="18" src="assets/img/widget-control-dezoom.svg" alt="dezoom"/>) et orientation (<img height="18" src="assets/img/widget-control-orientation.svg" alt="orientation"/>).
 
 L'icône du dessous (3 feuilles supperposées) permet de sélectionner les données du fond Carte Facile.
 
