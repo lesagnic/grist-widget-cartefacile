@@ -88,7 +88,7 @@ html,body, #map {
  * Style de la boite de gestion des paramètres
  */
 /* Modal overlay */
-.widget-parameters-modal {
+.widget-diag-modal {
 	display: none;
     position: fixed;
     z-index: 2000;
@@ -101,7 +101,7 @@ html,body, #map {
     color: #333;
 }
 /* Modal content */
-.widget-parameters-content {
+.widget-diag-content {
     background-color: #fff;
     margin: 10% auto;
     padding: 20px;
@@ -115,14 +115,14 @@ html,body, #map {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-.widget-parameters-header {
+.widget-diag-header {
     font-weight: 600;
     font-size: 12px;
     margin-bottom: 12px;
     color: #333;
     text-transform: uppercase; /* Converts all letters to uppercase */
 }
-.widget-parameters-footer {
+.widget-diag-footer {
     margin-top: 16px;
     text-align: right;
 }
@@ -172,6 +172,7 @@ input:focus {
 //.btn-primary:hover {
 //  background: #3f7ecb;
 //}
+
 
 
 
