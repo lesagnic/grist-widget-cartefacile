@@ -4,7 +4,7 @@ Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte
 
 Les lignes sont représentées par un marqueur de localisation bleu sauf pour l'unique ligne sélectionnée (première ligne valide du tableau par défaut) représentée en vert. Un popup s'affiche lorsque la souris passe sur le marqueur. Il est alors possible de changer la sélection en cliquant sur le marqueur ; son popup devient fixe mais peut-être supprimé.
 
-L'outil Map libre fournit les fonctions de navigation de base tels que le déplacement (en bougeant la souris après un clic maintenu sur la carte), le zoom (<img height="12" src="assets/img/widget-control-zoom.png" alt="zoom"/>), le dézoom (<img height="12" src="assets/img/widget-control-dezoom.png" alt="dezoom"/>) et l'orientation (<img height="12" src="assets/img/widget-control-orientation.png" alt="orientation"/>). Il fournit également un indicateur d'échelle : (<img height="12" src="assets/img/widget-control-echelle.png" alt="échelle"/>).
+L'outil Map libre fournit les fonctions de navigation de base tels que le déplacement (en bougeant la souris après un clic maintenu sur la carte), le zoom (<img height="12" src="assets/img/widget-control-zoom.png" alt="zoom"/>), le dézoom (<img height="12" src="assets/img/widget-control-dezoom.png" alt="dezoom"/>) et l'orientation (<img height="12" src="assets/img/widget-control-orientation.png" alt="orientation"/>). Il fournit également un indicateur d'échelle : <img height="16" src="assets/img/widget-control-echelle.png" alt="échelle"/>
 
 Le bouton <img height="12" src="assets/img/widget-control-selection.png" alt="selection"/> permet de sélectionner les données du fond Carte Facile.
 
