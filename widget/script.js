@@ -523,9 +523,11 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     document.getElementById('cancelNewRow').addEventListener('click', () => {
       newRowDialog.style.display = 'none';
     });
-    document.getElementById('saveSettings').addEventListener('click', () => {
+    document.getElementById('saveNewRow').addEventListener('click', () => {
       newRowDialog.style.display = 'none';
-      alert("Ajout d'une ligne en cours de mise en oeuvre");
+      alert("Ajout d'une ligne en cours de mise en oeuvre : Libellé="+document.getElementById('newRowTitle').value
+            +" Lat="+Number(document.getElementById('NewRowLat').value)
+            +" Lon="+Number(document.getElementById('NewRowLon').value)));
       // To be done : addition of the new row in the grist table */
     });
     document.getElementById('cancelSettings').addEventListener('click', () => {
@@ -781,6 +783,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
