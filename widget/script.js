@@ -479,7 +479,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button = document.createElement('button');
         button.className = 'maplibregl-ctrl-icon add-row-btn';
         button.type = 'button';
-        button.title = 'Ajout d'une ligne';
+        button.title = "Ajout d'une ligne";
         button.onclick = () => {
           alert("Ajout d'une ligne en cours de mise en oeuvre");
         };
@@ -755,5 +755,6 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
