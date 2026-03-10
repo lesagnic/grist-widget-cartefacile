@@ -18,7 +18,8 @@
   <!-- Fenêtre modal de gestion des  paramètres du widget -->
   <div id="widgetParameters" class="widget-dialog-modal">
     <div class="widget-dialog-content">
-      <div class="widget-dialog-header">Paramètres</div>
+	  // Need to identify the header to make the dialog draggable
+      <div id="widgetParametersHeader" class="widget-dialog-header">Paramètres</div>
       <label>
         Rayon d'aggrégation
         <input type="number" id="clusterRadius" placeholder="0">
@@ -33,7 +34,7 @@
 	<!-- Fenêtre modal d'ajout d'une ligne -->
   <div id="widgetNewRow" class="widget-dialog-modal">
     <div class="widget-dialog-content">
-      <div class="widget-dialog-header">Nouvelle ligne</div>
+      <div id="widgetNewRowHeader" class="widget-dialog-header">Nouvelle ligne</div>
       <label>
        Libellé
         <input type="text" id="newRowTitle" placeholder="Libellé de l'objet pointé">
@@ -55,6 +56,7 @@
 
 </body>
 </html>
+
 
 
 
