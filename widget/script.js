@@ -77,7 +77,7 @@ let clusterRadius = 30;
 // Flag set to true when map has been loaded. 
 let mapReady = false;
 //
-let instructionControl = null;
+let instructionControl = undefined;
 let alreadyEditingNewRow = false;
 //
 //
@@ -365,7 +365,7 @@ function handleNewRowClick(e) {
   // retour au pointeur par défaut
   map.getCanvas().style.cursor = cursorOnNewRowClick;
   // Suppression de l'instruction
-  instructionControl.remove();
+  map.removeControl(instructionControl);
   alreadyEditingNewRow = false;
   newRowDialog.style.display = 'block';
 }
@@ -377,7 +377,7 @@ function handleNewRowEscKey(e) {
     // retour au pointeur par défaut
     map.getCanvas().style.cursor = cursorOnNewRowClick;
     // Suppression de l'instruction
-    instructionControl.remove();
+    map.removeControl(instructionControl);
     alreadyEditingNewRow = false;
   }
 }
@@ -843,6 +843,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
