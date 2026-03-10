@@ -568,7 +568,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         return this.container;
       }
       onRemove() {
-        this.container.parentNode.removeChild(this.container);
+        // Remove only this control's container
+        this.container?.remove();
+        this.map = undefined;
       }
     }
 
@@ -837,6 +839,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
