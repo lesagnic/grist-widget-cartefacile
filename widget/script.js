@@ -116,7 +116,7 @@ function ChangeCurrentRow(id) {
 // Change Map Selection and flyTo the selected feature
 function ChangeMapFocus(f) {
 if (debug) console.log(widgetRootMsg+"ChangeMapFocus : f: "+f);
-  // Zoon in a the focus record when it is valid in "selected" widget mode
+  // Zoom in on the focus record when it is valid in "selected" widget mode
   if (f) {
       // Fit the map to the record
       map.flyTo({
@@ -862,6 +862,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
