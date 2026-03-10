@@ -563,7 +563,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       onAdd(map) {
         this.map = map;
         this.container = document.createElement('div');
-        this.container.className = 'instruction-control';
+        this.container.className = 'maplibregl-ctrl instruction-control';
         this.container.textContent = this.message;
         return this.container;
       }
@@ -837,6 +837,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
