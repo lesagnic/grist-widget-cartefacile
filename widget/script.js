@@ -479,9 +479,8 @@ if (debug) console.log(widgetRootMsg+"onRecords tableMeta: "+tableMeta);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
 
-  if ( tableId = null ) {
+  if ( tableId == null ) {
      tableId = tableMeta.tableId;
-
     // tableMeta.columns is an object: { realColId: { id, label, type, ... }, ... }
     // The mapping UI renames keys in `records` to your friendly names.
     // We can reverse-map them to real IDs
@@ -905,6 +904,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
