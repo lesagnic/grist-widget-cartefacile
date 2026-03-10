@@ -637,7 +637,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     document.getElementById('saveNewRow').addEventListener('click', async () => {
       newRowDialog.style.display = 'none';
       await addRow(document.getElementById('newRowTitle').value,
-                   Number(document.getElementById('newRowLat').value)
+                   Number(document.getElementById('newRowLat').value),
                    Number(document.getElementById('newRowLon').value)
       );
     });
@@ -896,6 +896,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
