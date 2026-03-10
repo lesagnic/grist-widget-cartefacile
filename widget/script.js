@@ -104,7 +104,7 @@ let currentRecords = [];
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // The Active Popup of the selected feature is created in different contexts consistently
 function NewActiveFeaturePopup(f) {
-if (debug) console.log(widgetRootMsg+"NewActiveFeaturePopup : f="+JSON.stringify(f, null, 2)
+if (debug) console.log(widgetRootMsg+"NewActiveFeaturePopup : f="+JSON.stringify(f, null, 2));
   return new maplibregl.Popup({
       anchor: 'bottom', // render the popup above the anchor
       offset: popupOffset, // More or less the center of the marker circle
@@ -780,7 +780,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
           layers: ['unclustered-point'],
           filter: ['==', ['get', 'id'], currentRowId]
         });
-if (debug) console.log(widgetRootMsg+"on render f: "+features.length);
+        
         // Sync visibility of Popup and the unclustered point of the feature   
         if ( features && features[0] ) {
           // if activePopup is null, the unclustered point is visible again 
@@ -974,6 +974,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 });
 //
 /// END  OF FILE
+
 
 
 
