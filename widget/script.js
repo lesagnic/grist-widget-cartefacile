@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.11" // Increment at least last figure for new release
+const widgetVersion = "1.0.12" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -973,4 +973,5 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 });
 //
 /// END  OF FILE
+
 
