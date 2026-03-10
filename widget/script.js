@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.8" // Increment at least last figure for new release
+const widgetVersion = "1.0.9" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -45,7 +45,17 @@ const focusZoom = clusterMaxZoom + 0.1;
 // Cursor styling management
 let cursorOnMouseEnter = '';
 let cursorOnNewRowClick = '';
-
+// Cursor specific shape for chossing new row location
+const svgCursor = `
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+  <circle cx="8" cy="8" r="2" fill="none" stroke="black" stroke-width="1"/>
+  <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_1" x1="8" y1="1" x2="8" y2="6" stroke="black" stroke-width="1"/>
+  <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" x1="8" y1="15" x2="8" y2="10" stroke="black" stroke-width="1"/>
+  <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" x1="1" y1="8" x2="6" y2="8" stroke="black" stroke-width="1"/>
+  <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" x1="10" y1="8" x2="15" y2="8" stroke="black" stroke-width="1"/>
+</svg>
+`;
+const svgCursorUri = `url('data:image/svg+xml;base64,${btoa(svgCursor)}') 8 8, auto`;
 //
 // Widget management
 //
@@ -362,6 +372,7 @@ function handleNewRowClick(e) {
   // Remove both listeners after first click
   map.off('click', handleNewRowClick);
   document.removeEventListener('keydown', handleNewRowEscKey);
+  document.removeEventListener('mousemove', handleNewRowMouseMove);
   // retour au pointeur par défaut
   map.getCanvas().style.cursor = cursorOnNewRowClick;
   // Suppression de l'instruction
@@ -374,12 +385,17 @@ function handleNewRowEscKey(e) {
   if (e.key === 'Escape') {
     map.off('click', handleNewRowClick);
     document.removeEventListener('keydown', handleNewRowEscKey);
+    document.removeEventListener('mousemove', handleNewRowMouseMove);
     // retour au pointeur par défaut
     map.getCanvas().style.cursor = cursorOnNewRowClick;
     // Suppression de l'instruction
     map.removeControl(instructionControl);
     alreadyEditingNewRow = false;
   }
+}
+// To avoid external cursor changes while chosing the new row location
+function handleNewRowMouseMove(e) {
+   e.target.style.cursor = svgCursorUri;
 }
 // 
 //
@@ -530,11 +546,14 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
             map.addControl(instructionControl,'top-left');
             // pointeur en forme de croix
             cursorOnNewRowClick = map.getCanvas().style.cursor;
-            map.getCanvas().style.cursor = 'crosshair' ;
-            map.getCanvas().style.border = '1px solid #0FF';
+            // Choose a specific cursor because crosshair appears sometimes white or black...
+            // map.getCanvas().style.cursor = 'crosshair' ;
+            map.getCanvas().style.cursor = svgCursorUri;
             // Listen for click events or ESC key
             map.on('click', handleNewRowClick);
             document.addEventListener('keydown', handleNewRowEscKey);
+            // ... and ensure the mouse cursor remains
+            document.addEventListener('mousemove', handleNewRowMouseMove, true);
           }
         };
         this._container.appendChild(button);
@@ -843,6 +862,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
