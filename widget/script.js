@@ -71,9 +71,8 @@ let internalCursorPos = false;
 // Parameters model dialog box
 let modal = null;
 let newRowDialog = null;
-// Mapping and tableIdto add rows
+// Columns Mapping for AddRows
 let mapping = {};
-let tableId = null;
 // 
 // Mapping management
 //
@@ -345,7 +344,7 @@ function AddGristTable2Map () {
   
   // Map is now ready for style changes through onRecord
   mapReady = true;
-if(debug) console.log("Map is ready!!!");
+if(debug) console.log(widgetRootMsg+"Map is ready!!!");
 
   // Select first line of the Grist table when creating the map
   // if it has not been set first by a call of onRecord...
@@ -403,30 +402,27 @@ function handleNewRowMouseMove(e) {
 //
 // Add a new row using mapped names
 async function addRow(titre,lat,lon) {
-  if (!tableId) {
-    console.error("Table ID not available yet.");
+
+  if (!mapping.Longitude || !mapping.Latitude) {
+    console.error(widgetRootMsg+"Mapping not ready");
     return;
   }
 
-//      const titreVal = document.getElementById('titre').value || null;
-
-      // Validate required fields
-      //if (isNaN(lngVal) || isNaN(latVal)) {
-      //  alert("Please enter valid numbers for Longitude and Latitude.");
-      //  return;
-      //}
-
   // Build the record object using real column IDs
-  const newRecord = {};
-  if (mapping.Longitude) newRecord[mapping.Longitude] = lon;
-  if (mapping.Latitude) newRecord[mapping.Latitude] = lat;
-  if (mapping.Titre && titre !== null) newRecord[mapping.Titre] = titre;
+ let newRecord = {
+    [mapping.Longitude]: lon,
+    [mapping.Latitude]: lat
+  };
+  if (mapping.Titre && titre) {
+    newRecord[mapping.Titre] = titre;
+  }
 
   try {
-    const ids = await grist.docApi.addRecords(tableId, [newRecord]);
-    console.log("New row added with IDs:", ids);
+    // null tableId works in URL widgets bound to a table
+    const ids = await grist.docApi.addRecords(null, [newRecord]);
+if (debug) console.log(widgetRootMsg+"New row added with IDs:", ids);
   } catch (err) {
-    console.error("Error adding row:", err);
+    console.error(widgetRootMsg+"Error adding row:", err);
   }
 }
 // 
@@ -467,27 +463,22 @@ if (debug) console.log(widgetRootMsg+"loaded");
 //
 // API GRIST : onOptions
 grist.onOptions((options,settings) => {
-  if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
-  if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
+if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
+if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
 });
 //
 // API GRIST : onRecords
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-grist.onRecords((table, tableMeta) => {
+grist.onRecords((table, colMapping) => {
 if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
-if (debug) console.log(widgetRootMsg+"onRecords tableMeta: "+JSON.stringify(tableMeta, null, 2));
+
   // reset geojsonFeatures
   geojsonFeatures.length=0;
 
-  if ( tableId == null ) {
-     tableId = tableMeta.tableId;
-    // tableMeta.columns is an object: { realColId: { id, label, type, ... }, ... }
-    // The mapping UI renames keys in `records` to your friendly names.
-    // We can reverse-map them to real IDs
-    for (const [friendlyName, colInfo] of Object.entries(tableMeta.columnsByName)) {
-      mapping[friendlyName] = colInfo.id; // real column ID
-    }
-  }
+  //reset mapping
+  mapping = colMapping;
+if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
+
 
   // Definition de la Bouding Box des données et de la liste de features
   table.forEach ( record => {
@@ -904,6 +895,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
