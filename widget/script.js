@@ -372,7 +372,7 @@ function handleNewRowClick(e) {
   // Remove both listeners after first click
   map.off('click', handleNewRowClick);
   document.removeEventListener('keydown', handleNewRowEscKey);
-  document.removeEventListener('mousemove', handleNewRowMouseMove);
+  document.removeEventListener('mousemove', handleNewRowMouseMove, true);
   // retour au pointeur par défaut
   map.getCanvas().style.cursor = cursorOnNewRowClick;
   // Suppression de l'instruction
@@ -385,7 +385,7 @@ function handleNewRowEscKey(e) {
   if (e.key === 'Escape') {
     map.off('click', handleNewRowClick);
     document.removeEventListener('keydown', handleNewRowEscKey);
-    document.removeEventListener('mousemove', handleNewRowMouseMove);
+    document.removeEventListener('mousemove', handleNewRowMouseMove, true);
     // retour au pointeur par défaut
     map.getCanvas().style.cursor = cursorOnNewRowClick;
     // Suppression de l'instruction
@@ -862,6 +862,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
