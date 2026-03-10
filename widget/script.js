@@ -397,12 +397,41 @@ function handleNewRowEscKey(e) {
 function handleNewRowMouseMove(e) {
    e.target.style.cursor = svgCursorUri;
 }
+//
+// Add a new row using mapped names
+async function addRow(titre,lat,lon) {
+  if (!tableId) {
+    console.error("Table ID not available yet.");
+    return;
+  }
+
+//      const titreVal = document.getElementById('titre').value || null;
+
+      // Validate required fields
+      //if (isNaN(lngVal) || isNaN(latVal)) {
+      //  alert("Please enter valid numbers for Longitude and Latitude.");
+      //  return;
+      //}
+
+  // Build the record object using real column IDs
+  const newRecord = {};
+  if (mapping.Longitude) newRecord[mapping.Longitude] = lon;
+  if (mapping.Latitude) newRecord[mapping.Latitude] = lat;
+  if (mapping.Titre && titre !== null) newRecord[mapping.Titre] = titre;
+
+  try {
+    const ids = await grist.docApi.addRecords(tableId, [newRecord]);
+    console.log("New row added with IDs:", ids);
+  } catch (err) {
+    console.error("Error adding row:", err);
+  }
+}
 // 
 //
 // API GRIST : ready
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 grist.ready({   
-  requiredAccess: 'read table',
+  requiredAccess: 'full',
   columns: [
     {
       name: "Titre",
@@ -431,7 +460,12 @@ grist.ready({
   allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
 });
 // Log version once on load
-console.log(widgetRootMsg+"loaded");
+if (debug) console.log(widgetRootMsg+"loaded");
+// Read mapping once
+const mapping = grist.widgetOptions.columns;
+const tableId = grist.widgetOptions.tableId;
+if (debug) console.log(widgetRootMsg+"Column mapping:", mapping);
+if (debug) console.log(widgetRootMsg+"TableId:", tableId);
 //
 // API GRIST : onOptions
 grist.onOptions((options,settings) => {
@@ -600,12 +634,12 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     document.getElementById('cancelNewRow').addEventListener('click', () => {
       newRowDialog.style.display = 'none';
     });
-    document.getElementById('saveNewRow').addEventListener('click', () => {
+    document.getElementById('saveNewRow').addEventListener('click', async () => {
       newRowDialog.style.display = 'none';
-      alert("Ajout d'une ligne en cours de mise en oeuvre : Libellé="+document.getElementById('newRowTitle').value
-            +" Lat="+Number(document.getElementById('newRowLat').value)
-            +" Lon="+Number(document.getElementById('newRowLon').value));
-      // To be done : addition of the new row in the grist table */
+      await addRow(document.getElementById('newRowTitle').value,
+                   Number(document.getElementById('newRowLat').value)
+                   Number(document.getElementById('newRowLon').value)
+      );
     });
     document.getElementById('cancelSettings').addEventListener('click', () => {
       modal.style.display = 'none';
@@ -862,6 +896,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
