@@ -431,7 +431,7 @@ if (debug) console.log(widgetRootMsg+"New row added with ID: ", result.id);
       // hoping the new record to be added to geojsonFeatures before the following call...
       ChangeMapSelection(geojsonFeatures.find(
             item => item.properties.id === result.id
-          ));
+      ));
     }
   } catch (err) {
     console.error(widgetRootMsg+"Error adding row:", err);
@@ -818,7 +818,7 @@ grist.onRecord(record => {
   // Nothing to do until a record is provided
   if ( !record ) return;
 
-if (debug) console.log(widgetRootMsg+"onRecord : "+record.id);
+if (debug) console.log(widgetRootMsg+"onRecord : id="+record.id+", internalCurPos="+internalCurPos+", currentRowId="+currentRowId);
 
   // Detect onRecord call related to internal setCursorPos
   if (internalCursorPos) {
@@ -913,6 +913,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
