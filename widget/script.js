@@ -393,6 +393,10 @@ function handleNewRowEscKey(e) {
     // Suppression de l'instruction
     map.removeControl(instructionControl);
     alreadyEditingNewRow = false;
+    // No newRowDialog display => need to reset the form fields before leaving
+    document.getElementById('newRowTitle').value = '';
+    document.getElementById('newRowLat').value = '';
+    document.getElementById('newRowLon').value = '';
   }
 }
 // To avoid external cursor changes while chosing the new row location
@@ -421,12 +425,12 @@ async function addRow(titre,lat,lon) {
     // null tableId works in URL widgets bound to a table
     const result = await grist.selectedTable.create({ fields: fields  });
 if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
-    if (result && result.length > 0) {
-if (debug) console.log(widgetRootMsg+"New row added with ID: ", result[0].id);
-      ChangeCurrentRow(result[0].id);
+    if (result && result.id) {
+if (debug) console.log(widgetRootMsg+"New row added with ID: ", result.id);
+      ChangeCurrentRow(result.id);
       // hoping the new record to be added to geojsonFeatures before the following call...
       ChangeMapSelection(geojsonFeatures.find(
-            item => item.properties.id === result[0].id
+            item => item.properties.id === result.id
           ));
     }
   } catch (err) {
@@ -640,6 +644,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 
     document.getElementById('cancelNewRow').addEventListener('click', () => {
       newRowDialog.style.display = 'none';
+      document.getElementById('newRowTitle').value = '';
+      document.getElementById('newRowLat').value = '';
+      document.getElementById('newRowLon').value = '';
     });
     document.getElementById('saveNewRow').addEventListener('click', async () => {
       newRowDialog.style.display = 'none';
@@ -647,6 +654,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
                    Number(document.getElementById('newRowLat').value),
                    Number(document.getElementById('newRowLon').value)
       );
+      document.getElementById('newRowTitle').value = '';
+      document.getElementById('newRowLat').value = '';
+      document.getElementById('newRowLon').value = '';
     });
     document.getElementById('cancelSettings').addEventListener('click', () => {
       modal.style.display = 'none';
@@ -903,6 +913,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
