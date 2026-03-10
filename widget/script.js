@@ -420,7 +420,7 @@ async function addRow(titre,lat,lon) {
   try {
     // null tableId works in URL widgets bound to a table
     const result = await grist.selectedTable.create({ fields: fields  });
-if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2);
+if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
     if (result && result.length > 0) {
 if (debug) console.log(widgetRootMsg+"New row added with ID: ", result[0].id);
       ChangeCurrentRow(result[0].id);
@@ -903,6 +903,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
