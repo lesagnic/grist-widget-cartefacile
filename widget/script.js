@@ -460,9 +460,9 @@ if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, 
 //            item => item.properties.id === result.id
 //      ));
 //    }
-//  } catch (err) {
-//    console.error(widgetRootMsg+"Error adding row:", err);
-//  }
+  } catch (err) {
+   console.error(widgetRootMsg+"Error adding row:", err);
+  }
 }
 // 
 //
@@ -949,6 +949,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
