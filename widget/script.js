@@ -119,12 +119,12 @@ if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id+", currentRowId
   if (id !== currentRowId) {
     currentRowId = id;
     internalCursorPos = true;
-    const index = currentRecords.findIndex(r => r.id === id);
-    if (index >= 0) {
-      grist.setCursorPos?.({ rowId: index });
-    } else {
-      console.warn(`Record ID ${id} not found in current view`);
-    }
+    //const index = currentRecords.findIndex(r => r.id === id);
+    //if (index >= 0) {
+      grist.setCursorPos?.({ rowId: id });
+    //} else {
+    //  console.warn(`Record ID ${id} not found in current view`);
+    //}
   }
 }
 //
@@ -949,6 +949,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
