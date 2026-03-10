@@ -775,9 +775,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       map.on('render', () => {
         if (!currentRowId || !map.getLayer('unclustered-point') ) return;
 
-        // Query features with currentRowId
-        const features = geojsonFeatures.find(item => item.properties.id === currentRowId);
-        // This query returns features with slicy different coordinates 
+        // Query features with currentRow
+        // This query returns features with approximayte coordinates, but
+        // the goal is to check whether the feature is rendered or not
         const features = map.queryRenderedFeatures(undefined, {
          layers: ['unclustered-point'],
          filter: ['==', ['get', 'id'], currentRowId]
@@ -787,7 +787,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         if ( features && features[0] ) {
           // if activePopup is null, the unclustered point is visible again 
           // => the pop up needs to be created
-          // provide the geojsonFeatures which as better coordinates than the on eretrived by the queryRenderFeatures
+          // create the popup with the coordinates from geojsonFeatures which as better the one retrieved by the queryRenderFeatures
           if ( !activePopup ) activePopup = NewActiveFeaturePopup(geojsonFeatures.find(item => item.properties.id === currentRowId));
         }
         else {
@@ -977,6 +977,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 });
 //
 /// END  OF FILE
+
 
 
 
