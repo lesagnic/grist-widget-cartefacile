@@ -113,9 +113,13 @@ function NewActiveFeaturePopup(f) {
     .setHTML(`${f.properties.title}`)
     .addTo(map);
 }
-// Change of the current row happens also in different contexts
+// Change of the current row is called only when it comes
+// from the widget ....
 function ChangeCurrentRow(id) {
-if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id+", currentRowId="+currentRowId+" internalCursorPos="+internalCursorPos+" index="+currentRecords.findIndex(r => r.id === id));
+if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id
+                       +", currentRowId="+currentRowId
+                       +", internalCursorPos="+internalCursorPos
+                       +" index="+currentRecords.findIndex(r => r.id === id));
   if (id !== currentRowId) {
     currentRowId = id;
     internalCursorPos = true;
@@ -126,6 +130,18 @@ if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id+", currentRowId
     //} else {
     //  console.warn(`Record ID ${id} not found in current view`);
     //}
+  }
+}
+// ... Set Current Row occurs only when it comes from an 
+// external widget
+function SetCurrentRow(id) {
+if (debug) console.log(widgetRootMsg+"SetCurrentRow : id="+id
+                       +", currentRowId="+currentRowId
+                       +", internalCursorPos="+internalCursorPos
+                       +" index="+currentRecords.findIndex(r => r.id === id));
+  if (id !== currentRowId) {
+    currentRowId = id;
+    internalCursorPos = false;
   }
 }
 //
@@ -869,7 +885,7 @@ if (debug) console.log(widgetRootMsg+"onRecord : id="+record.id+", internalCurso
   // the map loading and the intialization of the Geojson features
   if ( !mapReady ) {
 if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+record.id)
-    ChangeCurrentRow(record.id);
+    SetCurrentRow(record.id);
     // map is not ready yet: no need to ChangeMapFocus
     lateMapFocus = true;
     return;
@@ -944,11 +960,17 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
   }
 
-  ChangeCurrentRow(record.id);
-  // ... Change map focus (selection with zoom in)  except if the additional Row has been created by the widget
-  if ( internalAddRow ) ChangeMapSelection(recordFeature);
-  else ChangeMapFocus(recordFeature); // null if skippedrecord
+    // ... Change map focus (selection with zoom in)  except if the additional Row has been created by the widget
+  if ( internalAddRow ) {
+    ChangeCurrentRow(record.id);
+    ChangeMapSelection(recordFeature);
+  }
+  else {
+    SetCurrentRow(record.id);
+    ChangeMapFocus(recordFeature); // null if skippedrecord
+  }
   
 });
 //
 /// END  OF FILE
+
