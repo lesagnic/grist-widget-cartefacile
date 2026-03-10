@@ -115,7 +115,7 @@ function NewActiveFeaturePopup(f) {
 }
 // Change of the current row happens also in different contexts
 function ChangeCurrentRow(id) {
-if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id+", currentRowId="+currentRowId+" internalCursorPos="+internalCursorPos);
+if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id+", currentRowId="+currentRowId+" internalCursorPos="+internalCursorPos+" index="+currentRecords.findIndex(r => r.id === id));
   if (id !== currentRowId) {
     currentRowId = id;
     internalCursorPos = true;
@@ -949,6 +949,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
