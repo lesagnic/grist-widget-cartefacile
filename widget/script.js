@@ -71,6 +71,9 @@ let internalCursorPos = false;
 // Parameters model dialog box
 let modal = null;
 let newRowDialog = null;
+// Mapping and tableIdto add rows
+let mapping = {};
+let tableId = null;
 // 
 // Mapping management
 //
@@ -461,11 +464,6 @@ grist.ready({
 });
 // Log version once on load
 if (debug) console.log(widgetRootMsg+"loaded");
-// Read mapping once
-const mapping = grist.widgetOptions.columns;
-const tableId = grist.widgetOptions.tableId;
-if (debug) console.log(widgetRootMsg+"Column mapping:", mapping);
-if (debug) console.log(widgetRootMsg+"TableId:", tableId);
 //
 // API GRIST : onOptions
 grist.onOptions((options,settings) => {
@@ -480,6 +478,16 @@ grist.onRecords(table => {
 if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
+
+  // 
+  // Read mapping and tableId once
+  if ( tableId == null ) {
+    mapping = grist.widgetOptions.columns || {};
+    tableId = grist.widgetOptions.tableId || null;
+if (debug) console.log(widgetRootMsg+"Column mapping:", mapping);
+if (debug) console.log(widgetRootMsg+"TableId:", tableId);
+  }
+
 
   // Definition de la Bouding Box des données et de la liste de features
   table.forEach ( record => {
@@ -896,6 +904,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
