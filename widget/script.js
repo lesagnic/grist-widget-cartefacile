@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.13" // Increment at least last figure for new release
+const widgetVersion = "1.0.14" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -776,10 +776,13 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         if (!currentRowId || !map.getLayer('unclustered-point') ) return;
 
         // Query features with currentRowId
-        const features = map.queryRenderedFeatures(undefined, {
-          layers: ['unclustered-point'],
-          filter: ['==', ['get', 'id'], currentRowId]
-        });
+        const features = geojsonFeatures.find(item => item.properties.id === record.id);
+        // This query returns features with slicy different coordinates 
+        //const features = 
+        //  map.queryRenderedFeatures(undefined, {
+        //  layers: ['unclustered-point'],
+        //  filter: ['==', ['get', 'id'], currentRowId]
+        //});
         
         // Sync visibility of Popup and the unclustered point of the feature   
         if ( features && features[0] ) {
@@ -974,6 +977,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 });
 //
 /// END  OF FILE
+
 
 
 
