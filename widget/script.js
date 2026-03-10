@@ -68,6 +68,9 @@ let hoverPopup = null;
 // Detection of internal setCursorPos to leave quickly subsequent call to
 // onRecord
 let internalCursorPos = false;
+// When onRecord is called before the map is ready, lateMapFocus is set to true
+// in order to ChangeMapFocus as soon as the map is ready
+let lateMapFocus = false;
 // Parameters model dialog box
 let modal = null;
 let newRowDialog = null;
@@ -108,6 +111,7 @@ function NewActiveFeaturePopup(f) {
 }
 // Change of the current row happens also in different contexts
 function ChangeCurrentRow(id) {
+if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id+", currentRowId="+currentRowId+" internalCursorPos="+internalCursorPos);
   if (id !== currentRowId) {
     currentRowId = id;
     internalCursorPos = true;
@@ -347,10 +351,19 @@ function AddGristTable2Map () {
 if(debug) console.log(widgetRootMsg+"Map is ready!!!");
 
   // Select first line of the Grist table when creating the map
-  // if it has not been set first by a call of onRecord...
+  // if it has not been set first by a call to onRecord...
   if ( currentRowId==null ) {
+if(debug) console.log(widgetRootMsg+"currentRowId is null");
       ChangeCurrentRow(geojsonFeatures[0].properties.id);
       ChangeMapSelection(geojsonFeatures[0]);
+  }
+
+  if ( lateMapFocus ) {
+if(debug) console.log(widgetRootMsg+"lateMapFocus is true => Focus on:"+currentRowId);
+    ChangeMapFocus(geojsonFeatures.find(
+            item => item.properties.id === currentRowId
+      ));
+    lateMapFocus = false;
   }
 
   // Create Add hoverPopup
@@ -824,17 +837,22 @@ if (debug) console.log(widgetRootMsg+"onRecord : id="+record.id+", internalCurso
   if (internalCursorPos) {
     internalCursorPos = false;
     // check matching id in case external change arises before internal Curpos
-    if ( record.id == currentRowId ) return;
-  }
+    if ( record.id != currentRowId ) {
+      // Expecting the map is ready
+      ChangeMapSelection(geojsonFeatures.find(item => item.properties.id === record.id));
+    }
+    return;
+  } // On ne va pas plus loin si l'appel onrecord est consicutif à SetCurPos du widget.
+  
   // Ensure map is ready
   // Just change the currentRowId if not ready
   // This a a way to get the current row from a source widget before 
   // the map loading and the intialization of the Geojson features
   if ( !mapReady ) {
 if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+record.id)
-    //ChangeCurrentRow(record.id);
+    ChangeCurrentRow(record.id);
     // map is not ready yet: no need to ChangeMapFocus
-    //lateMapFocus = true;
+    lateMapFocus = true;
     return;
   }
 
@@ -913,6 +931,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
