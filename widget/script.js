@@ -95,6 +95,8 @@ let mapReady = false;
 let instructionControl = undefined;
 let alreadyEditingNewRow = false;
 //
+// SetCursorPos expect a position in the table not the record.id : keep track of the records to determine the position from the id.
+let currentRecords = [];
 //
 // Utilities function
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,7 +117,12 @@ if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id+", currentRowId
   if (id !== currentRowId) {
     currentRowId = id;
     internalCursorPos = true;
-    grist.setCursorPos?.({rowId: id}).catch(() => {});
+    const index = currentRecords.findIndex(r => r.id === id);
+    if (index >= 0) {
+      grist.setCursorPos?.({ rowId: index });
+    } else {
+      console.warn(`Record ID ${id} not found in current view`);
+    }
   }
 }
 //
@@ -499,6 +506,9 @@ if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
 
   // reset geojsonFeatures
   geojsonFeatures.length=0;
+
+  // reset currentRecords
+  currentRecords = table;
 
   //reset mapping
   mapping = colMapping;
@@ -931,6 +941,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
