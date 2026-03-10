@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.15" // Increment at least last figure for new release
+const widgetVersion = "1.0.16" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -778,17 +778,17 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         // Query features with currentRowId
         const features = geojsonFeatures.find(item => item.properties.id === currentRowId);
         // This query returns features with slicy different coordinates 
-        //const features = 
-        //  map.queryRenderedFeatures(undefined, {
-        //  layers: ['unclustered-point'],
-        //  filter: ['==', ['get', 'id'], currentRowId]
-        //});
+        const features = map.queryRenderedFeatures(undefined, {
+         layers: ['unclustered-point'],
+         filter: ['==', ['get', 'id'], currentRowId]
+        });
         
         // Sync visibility of Popup and the unclustered point of the feature   
         if ( features && features[0] ) {
           // if activePopup is null, the unclustered point is visible again 
           // => the pop up needs to be created
-          if ( !activePopup ) activePopup = NewActiveFeaturePopup(features[0]);
+          // provide the geojsonFeatures which as better coordinates than the on eretrived by the queryRenderFeatures
+          if ( !activePopup ) activePopup = NewActiveFeaturePopup(geojsonFeatures.find(item => item.properties.id === currentRowId));
         }
         else {
           // if the unclustered point is not visible, the active pop up
@@ -977,6 +977,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 });
 //
 /// END  OF FILE
+
 
 
 
