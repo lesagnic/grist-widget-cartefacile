@@ -409,18 +409,25 @@ async function addRow(titre,lat,lon) {
   }
 
   // Build the record object using real column IDs
- let newRecord = {
+ let fields = {
     [mapping.Longitude]: lon,
     [mapping.Latitude]: lat
   };
   if (mapping.Titre && titre) {
-    newRecord[mapping.Titre] = titre;
+    fields[mapping.Titre] = titre;
   }
 
   try {
     // null tableId works in URL widgets bound to a table
-    const ids = await grist.docApi.addRecords(null, [newRecord]);
-if (debug) console.log(widgetRootMsg+"New row added with IDs:", ids);
+    const result = await grist.selectedTable.create({ fields: fields  });
+    if (result && result.length > 0) {
+if (debug) console.log(widgetRootMsg+"New row added with ID: ", result[0].id);
+      ChangeCurrentRow(result[0].id);
+      // hoping the new record to be added to geojsonFeatures before the following call...
+      ChangeMapSelection(geojsonFeatures.find(
+            item => item.properties.id === result[0].id
+          ));
+    }
   } catch (err) {
     console.error(widgetRootMsg+"Error adding row:", err);
   }
@@ -895,6 +902,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
