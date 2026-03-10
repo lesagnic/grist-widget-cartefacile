@@ -471,24 +471,24 @@ grist.onOptions((options,settings) => {
   if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
 });
 //
-//
-grist.onSettings((settings) => {
-if (debug) console.log(widgetRootMsg+"Settings received:", settings);
-
-  // For URL widgets, mapped columns are in settings.customOptions.columns
-  mapping = settings.customOptions?.columns || {};
-  tableId = settings.tableId || null;
-
-  console.log("Mapping:", mapping);
-  console.log("Table ID:", tableId);
-});
-//
 // API GRIST : onRecords
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-grist.onRecords(table => {
+grist.onRecords((table, tableMeta) => {
 if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
+if (debug) console.log(widgetRootMsg+"onRecords tableMeta: "+tableMeta);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
+
+  if ( tableId = null ) {
+     tableId = tableMeta.tableId;
+
+    // tableMeta.columns is an object: { realColId: { id, label, type, ... }, ... }
+    // The mapping UI renames keys in `records` to your friendly names.
+    // We can reverse-map them to real IDs
+    for (const [friendlyName, colInfo] of Object.entries(tableMeta.columnsByName)) {
+      mapping[friendlyName] = colInfo.id; // real column ID
+    }
+  }
 
   // Definition de la Bouding Box des données et de la liste de features
   table.forEach ( record => {
@@ -905,6 +905,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
