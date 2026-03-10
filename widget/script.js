@@ -77,6 +77,8 @@ let clusterRadius = 30;
 // Flag set to true when map has been loaded. 
 let mapReady = false;
 //
+let instructionControl = null;
+//
 //
 // Utilities function
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -361,6 +363,8 @@ function handleNewRowClick(e) {
   document.removeEventListener('keydown', handleNewRowEscKey);
   // retour au pointeur par défaut
   map.getCanvas().style.cursor = cursorOnNewRowClick;
+  // Suppression de l'instruction
+  instructionControl.remove();
   newRowDialog.style.display = 'block';
 }
 // ESC key handler
@@ -370,6 +374,8 @@ function handleNewRowEscKey(e) {
     document.removeEventListener('keydown', handleNewRowEscKey);
     // retour au pointeur par défaut
     map.getCanvas().style.cursor = cursorOnNewRowClick;
+    // Suppression de l'instruction
+    instructionControl.remove();
   }
 }
 // 
@@ -514,6 +520,11 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button.type = 'button';
         button.title = "Ajout d'une ligne";
         button.onclick = () => {
+          // Add the control to the top-left corner
+          instructionControl = map.addControl(
+            new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler'),
+            'top-left'
+          );
           // pointeur en forme de croix
           cursorOnNewRowClick = map.getCanvas().style.cursor;
           map.getCanvas().style.cursor = 'crosshair' ;
@@ -543,6 +554,24 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       }
     }
     map.addControl(new WidgetControl(), 'top-right');
+
+    // Custom control class
+    class InstructionControl {
+      constructor(message) {
+        this.message = message;
+      }
+      onAdd(map) {
+        this.map = map;
+        this.container = document.createElement('div');
+        this.container.className = 'instruction-control';
+        this.container.textContent = this.message;
+        return this.container;
+      }
+      onRemove() {
+        this.container.parentNode.removeChild(this.container);
+        this.map = undefined;
+      }
+    }
 
     document.getElementById('cancelNewRow').addEventListener('click', () => {
       newRowDialog.style.display = 'none';
@@ -809,6 +838,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
