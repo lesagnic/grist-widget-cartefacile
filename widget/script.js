@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.9" // Increment at least last figure for new release
+const widgetVersion = "1.0.10" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -472,22 +472,23 @@ grist.onOptions((options,settings) => {
 });
 //
 //
+grist.onSettings((settings) => {
+if (debug) console.log(widgetRootMsg+"Settings received:", settings);
+
+  // For URL widgets, mapped columns are in settings.customOptions.columns
+  mapping = settings.customOptions?.columns || {};
+  tableId = settings.tableId || null;
+
+  console.log("Mapping:", mapping);
+  console.log("Table ID:", tableId);
+});
+//
 // API GRIST : onRecords
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 grist.onRecords(table => {
 if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
-
-  // 
-  // Read mapping and tableId once
-  if ( tableId == null ) {
-    mapping = grist.widgetOptions.columns || {};
-    tableId = grist.widgetOptions.tableId || null;
-if (debug) console.log(widgetRootMsg+"Column mapping:", mapping);
-if (debug) console.log(widgetRootMsg+"TableId:", tableId);
-  }
-
 
   // Definition de la Bouding Box des données et de la liste de features
   table.forEach ( record => {
@@ -904,6 +905,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
