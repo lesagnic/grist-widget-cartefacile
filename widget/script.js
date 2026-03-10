@@ -68,6 +68,8 @@ let hoverPopup = null;
 // Detection of internal setCursorPos to leave quickly subsequent call to
 // onRecord
 let internalCursorPos = false;
+// Detect internal add row
+let internalAddRow = false;
 // When onRecord is called before the map is ready, lateMapFocus is set to true
 // in order to ChangeMapFocus as soon as the map is ready
 let lateMapFocus = false;
@@ -442,20 +444,25 @@ async function addRow(titre,lat,lon) {
   }
 
   try {
+    // In case of success, grist.SelectTable.create will generate a call to onRecord
+    // Need to set internalCursorPos to true to 
+
     // null tableId works in URL widgets bound to a table
+    internalAddRow = true;
     const result = await grist.selectedTable.create({ fields: fields  });
 if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
-    if (result && result.id) {
-if (debug) console.log(widgetRootMsg+"New row added with ID: ", result.id);
-      ChangeCurrentRow(result.id);
-      // hoping the new record to be added to geojsonFeatures before the following call...
-      ChangeMapSelection(geojsonFeatures.find(
-            item => item.properties.id === result.id
-      ));
-    }
-  } catch (err) {
-    console.error(widgetRootMsg+"Error adding row:", err);
-  }
+// Delegate changeCurrentRow and mapSelection to onRecord
+//    if (result && result.id) {
+//if (debug) console.log(widgetRootMsg+"New row added with ID: ", result.id);
+//      ChangeCurrentRow(result.id);
+//      // hoping the new record to be added to geojsonFeatures before the following call...
+//      ChangeMapSelection(geojsonFeatures.find(
+//            item => item.properties.id === result.id
+//      ));
+//    }
+//  } catch (err) {
+//    console.error(widgetRootMsg+"Error adding row:", err);
+//  }
 }
 // 
 //
@@ -936,11 +943,13 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
   }
 
   ChangeCurrentRow(record.id);
-  // ... Change map focus (selection with zoom in)  
-  ChangeMapFocus(recordFeature); // null if skippedrecord
+  // ... Change map focus (selection with zoom in)  except if the additional Row has been created by the widget
+  if ( internalAddRow ) ChangeMapSelection(recordFeature);
+  else ChangeMapFocus(recordFeature); // null if skippedrecord
 
 
 });
+
 
 
 
