@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.10" // Increment at least last figure for new release
+const widgetVersion = "1.0.11" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -119,9 +119,10 @@ if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id+", currentRowId
   if (id !== currentRowId) {
     currentRowId = id;
     internalCursorPos = true;
+    grist.setCursorPos?.({ rowId: id });
     //const index = currentRecords.findIndex(r => r.id === id);
     //if (index >= 0) {
-      grist.setCursorPos?.({ rowId: id });
+    //  grist.setCursorPos?.({ rowId: index });
     //} else {
     //  console.warn(`Record ID ${id} not found in current view`);
     //}
@@ -150,7 +151,7 @@ if (debug) console.log(widgetRootMsg+"ChangeMapFocus : f: "+f);
 // Change the color of the marker corresponding to the current row,
 // delete the previous Popup and create a new on using the data of feature f
 function ChangeMapSelection(f) {
-
+if (debug) console.log(widgetRootMsg+"ChangeMapSelection : f: "+f);
   // Update paint property of the layer dynamically to highlighth the marker of the currentRow
   if (f) {
     map.setPaintProperty('unclustered-point', 'icon-color', [
@@ -445,23 +446,24 @@ async function addRow(titre,lat,lon) {
 
   try {
     // In case of success, grist.SelectTable.create will generate a call to onRecord
-    // Need to set internalCursorPos to true to 
-
-    // null tableId works in URL widgets bound to a table
+    // which will change the currentRowID and shall ChangeMapSelection instead of
+    // ChangeMapFocus, because the new row is created by the widget.
+    // internalAddRow flags this.
     internalAddRow = true;
     const result = await grist.selectedTable.create({ fields: fields  });
-if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
-// Delegate changeCurrentRow and mapSelection to onRecord
-//    if (result && result.id) {
-//if (debug) console.log(widgetRootMsg+"New row added with ID: ", result.id);
-//      ChangeCurrentRow(result.id);
-//      // hoping the new record to be added to geojsonFeatures before the following call...
-//      ChangeMapSelection(geojsonFeatures.find(
-//            item => item.properties.id === result.id
-//      ));
-//    }
+    if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
+    // Delegate changeCurrentRow and mapSelection to onRecord
+    //    if (result && result.id) {
+    //if (debug) console.log(widgetRootMsg+"New row added with ID: ", result.id);
+    //      ChangeCurrentRow(result.id);
+    //      // hoping the new record to be added to geojsonFeatures before the following call...
+    //      ChangeMapSelection(geojsonFeatures.find(
+    //            item => item.properties.id === result.id
+    //      ));
+    //    }
   } catch (err) {
-   console.error(widgetRootMsg+"Error adding row:", err);
+    internalAddRow = false; // creation unsuccessfull
+    console.error(widgetRootMsg+"Error adding row:", err);
   }
 }
 // 
@@ -894,7 +896,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
   }
 
-  // Having a valid record, let update the geojsonFeatures
+  // Having a valid record info, let update the geojsonFeatures
   ////////////////////////////////////////////////////////
   // Case (b) or (c) : There is a feature with this id
   else if ( recordFeature ) {
@@ -946,46 +948,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
   // ... Change map focus (selection with zoom in)  except if the additional Row has been created by the widget
   if ( internalAddRow ) ChangeMapSelection(recordFeature);
   else ChangeMapFocus(recordFeature); // null if skippedrecord
-
-
+  
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
+/// END  OF FILE
