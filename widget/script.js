@@ -78,6 +78,7 @@ let clusterRadius = 30;
 let mapReady = false;
 //
 let instructionControl = null;
+let alreadyEditingNewRow = false;
 //
 //
 // Utilities function
@@ -365,6 +366,7 @@ function handleNewRowClick(e) {
   map.getCanvas().style.cursor = cursorOnNewRowClick;
   // Suppression de l'instruction
   instructionControl.remove();
+  alreadyEditingNewRow = false;
   newRowDialog.style.display = 'block';
 }
 // ESC key handler
@@ -376,6 +378,7 @@ function handleNewRowEscKey(e) {
     map.getCanvas().style.cursor = cursorOnNewRowClick;
     // Suppression de l'instruction
     instructionControl.remove();
+    alreadyEditingNewRow = false;
   }
 }
 // 
@@ -520,18 +523,19 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button.type = 'button';
         button.title = "Ajout d'une ligne";
         button.onclick = () => {
-          // Add the control to the top-left corner
-          instructionControl = map.addControl(
-            new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler'),
-            'top-left'
-          );
-          // pointeur en forme de croix
-          cursorOnNewRowClick = map.getCanvas().style.cursor;
-          map.getCanvas().style.cursor = 'crosshair' ;
-          map.getCanvas().style.border = '1px solid #0FF';
-          // Listen for click events or ESC key
-          map.on('click', handleNewRowClick);
-          document.addEventListener('keydown', handleNewRowEscKey);
+          if ( !alreadyEditingNewRow ) {
+            alreadyEditingNewRow = true ;
+            // Add the control to the top-left corner
+            instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
+            map.addControl(instructionControl,'top-left');
+            // pointeur en forme de croix
+            cursorOnNewRowClick = map.getCanvas().style.cursor;
+            map.getCanvas().style.cursor = 'crosshair' ;
+            map.getCanvas().style.border = '1px solid #0FF';
+            // Listen for click events or ESC key
+            map.on('click', handleNewRowClick);
+            document.addEventListener('keydown', handleNewRowEscKey);
+          }
         };
         this._container.appendChild(button);
         // Bouton paramètres
@@ -839,6 +843,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
