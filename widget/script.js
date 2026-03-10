@@ -475,7 +475,7 @@ grist.onOptions((options,settings) => {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 grist.onRecords((table, tableMeta) => {
 if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
-if (debug) console.log(widgetRootMsg+"onRecords tableMeta: "+tableMeta);
+if (debug) console.log(widgetRootMsg+"onRecords tableMeta: "+JSON.stringify(tableMeta, null, 2));
   // reset geojsonFeatures
   geojsonFeatures.length=0;
 
@@ -904,6 +904,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
