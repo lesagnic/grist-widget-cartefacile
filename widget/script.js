@@ -818,7 +818,7 @@ grist.onRecord(record => {
   // Nothing to do until a record is provided
   if ( !record ) return;
 
-if (debug) console.log(widgetRootMsg+"onRecord : id="+record.id+", internalCurPos="+internalCurPos+", currentRowId="+currentRowId);
+if (debug) console.log(widgetRootMsg+"onRecord : id="+record.id+", internalCursorPos="+internalCursorPos+", currentRowId="+currentRowId);
 
   // Detect onRecord call related to internal setCursorPos
   if (internalCursorPos) {
@@ -913,6 +913,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 
 
 });
+
 
 
 
