@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.12" // Increment at least last figure for new release
+const widgetVersion = "1.0.13" // Increment at least last figure for new release
 //
 // Debug management
 //
@@ -104,6 +104,7 @@ let currentRecords = [];
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // The Active Popup of the selected feature is created in different contexts consistently
 function NewActiveFeaturePopup(f) {
+if (debug) console.log(widgetRootMsg+"NewActiveFeaturePopup : f="+JSON.stringify(f, null, 2)
   return new maplibregl.Popup({
       anchor: 'bottom', // render the popup above the anchor
       offset: popupOffset, // More or less the center of the marker circle
@@ -147,7 +148,7 @@ if (debug) console.log(widgetRootMsg+"SetCurrentRow : id="+id
 //
 // Change Map Selection and flyTo the selected feature
 function ChangeMapFocus(f) {
-if (debug) console.log(widgetRootMsg+"ChangeMapFocus : f: "+f);
+if (debug) console.log(widgetRootMsg+"ChangeMapFocus : f: "+JSON.stringify(f, null, 2));
   // Zoom in on the focus record when it is valid in "selected" widget mode
   if (f) {
       // Fit the map to the record
@@ -167,7 +168,7 @@ if (debug) console.log(widgetRootMsg+"ChangeMapFocus : f: "+f);
 // Change the color of the marker corresponding to the current row,
 // delete the previous Popup and create a new on using the data of feature f
 function ChangeMapSelection(f) {
-if (debug) console.log(widgetRootMsg+"ChangeMapSelection : f: "+f);
+if (debug) console.log(widgetRootMsg+"ChangeMapSelection : f: "+JSON.stringify(f, null, 2));
   // Update paint property of the layer dynamically to highlighth the marker of the currentRow
   if (f) {
     map.setPaintProperty('unclustered-point', 'icon-color', [
@@ -973,5 +974,6 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 });
 //
 /// END  OF FILE
+
 
 
