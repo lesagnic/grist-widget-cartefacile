@@ -106,6 +106,7 @@ let currentRecords = [];
 function NewActiveFeaturePopup(f) {
 if (debug) console.log(widgetRootMsg+"NewActiveFeaturePopup : f="+JSON.stringify(f, null, 2));
   return new maplibregl.Popup({
+      closeOnClick: false, // prevent popup to closewhen clickin outiside
       anchor: 'bottom', // render the popup above the anchor
       offset: popupOffset, // More or less the center of the marker circle
       className: 'maplibregl-popup'
@@ -469,16 +470,8 @@ async function addRow(titre,lat,lon) {
     internalAddRow = true;
     const result = await grist.selectedTable.create({ fields: fields  });
     if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
-    // Delegate changeCurrentRow and mapSelection to onRecord
-    //    if (result && result.id) {
-    //if (debug) console.log(widgetRootMsg+"New row added with ID: ", result.id);
-    //      ChangeCurrentRow(result.id);
-    //      // hoping the new record to be added to geojsonFeatures before the following call...
-    //      ChangeMapSelection(geojsonFeatures.find(
-    //            item => item.properties.id === result.id
-    //      ));
-    //    }
-  } catch (err) {
+    // Delegate changeCurrentRow and mapSelection to onRecord to avoid infinite loops
+  }  catch (err) {
     internalAddRow = false; // creation unsuccessfull
     console.error(widgetRootMsg+"Error adding row:", err);
   }
@@ -977,6 +970,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 });
 //
 /// END  OF FILE
+
 
 
 
