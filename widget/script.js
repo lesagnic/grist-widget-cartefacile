@@ -667,7 +667,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     // Ajout d'un sélecteur de carte
     map.addControl(new CarteFacile.MapSelectorControl);
 		// Ajout de la fonction de recherche Carte Facile
-    map.addControl(new CarteFacile.SearchControl,'top-left');
+    map.addControl(new CarteFacile.SearchControl(),'top-left');
 	// SearchControl recommended parameters : to be confirmed
 	//the ability to defined them with CDN
 	// ({
@@ -1131,6 +1131,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
