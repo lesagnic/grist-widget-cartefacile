@@ -644,21 +644,21 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button.type = 'button';
         button.title = "Ajout d'une ligne";
 				button.id = 'AddRowBtn';
-		    button.onclick = () =>
-						disableBtn('AddRowBtn');
-            // Add the control to the top-left corner
-            instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
-            map.addControl(instructionControl,'top-left');
-            // Temporary disabled : backup the current cursor
-            // cursorOnNewRowClick = map.getCanvas().style.cursor;
-            // Choose a specific cursor because crosshair appears sometimes white or black...
-            // map.getCanvas().style.cursor = 'crosshair' ;
-            map.getCanvas().style.cursor = svgCursorUri;
-            // Listen for click events or ESC key
-            map.on('click', handleNewRowClick);
-            document.addEventListener('keydown', handleNewRowEscKey);
-            // ... and ensure the mouse cursor remains
-            document.addEventListener('mousemove', handleNewRowMouseMove, true);
+		    button.onclick = () => {
+					disableBtn('AddRowBtn');
+          // Add the control to the top-left corner
+          instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
+          map.addControl(instructionControl,'top-left');
+          // Temporary disabled : backup the current cursor
+          // cursorOnNewRowClick = map.getCanvas().style.cursor;
+          // Choose a specific cursor because crosshair appears sometimes white or black...
+          // map.getCanvas().style.cursor = 'crosshair' ;
+          map.getCanvas().style.cursor = svgCursorUri;
+          // Listen for click events or ESC key
+          map.on('click', handleNewRowClick);
+          document.addEventListener('keydown', handleNewRowEscKey);
+          // ... and ensure the mouse cursor remains
+          document.addEventListener('mousemove', handleNewRowMouseMove, true);
         };
         this._container.appendChild(button);
         // Bouton paramètres
@@ -1021,6 +1021,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
