@@ -64,6 +64,7 @@
 
   		header.addEventListener("mousedown", function(e) {
     		isDragging = true;
+				modalContent.style.transform = ""; // remove centering transform
     		offsetX = e.clientX - modal.offsetLeft;
     		offsetY = e.clientY - modal.offsetTop;
     		document.addEventListener("mousemove", onMouseMove);
@@ -91,6 +92,7 @@
 
 </body>
 </html>
+
 
 
 
