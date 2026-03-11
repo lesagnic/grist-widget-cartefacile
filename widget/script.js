@@ -92,6 +92,7 @@ let clusterRadius = 30;
 let mapReady = false;
 //
 let instructionControl = undefined;
+let newRecordSelect = null;
 //
 // SetCursorPos expect a position in the table not the record.id : keep track of the records to determine the position from the id.
 let currentRecords = [];
@@ -437,9 +438,9 @@ function disableBtn ( btnId ) {
 function handleNewRowClick(e) {
   const lng = e.lngLat.lng.toFixed(6);
   const lat = e.lngLat.lat.toFixed(6);
-  const select = document.getElementById('newRowRecord');
+  newRecordSelect = document.getElementById('newRowRecord');
 	if ( select ) {
-		select.innerHTML = "";
+		newRecordSelect.innerHTML = "";
 		// Create the placeholder option
   	const placeholder = document.createElement("option");
   	placeholder.textContent = "Choisissez une ligne à mettre à jour..."; // visible text
@@ -447,14 +448,14 @@ function handleNewRowClick(e) {
   	placeholder.disabled = true;                     // can't be selected after change
   	placeholder.selected = true;                     // selected by default
   	placeholder.hidden = true;                       // hides from dropdown list
-		select.appendChild(placeholder);
+		newRecordSelect.appendChild(placeholder);
 		// Add new options in lookup key (i.e. more or less title) alphabetic order
 		Object.keys(recordLookup)
   			.sort((a, b) => a.localeCompare(b)) // localeCompare handles case & accents
   			.forEach(key => {
 	    		const option = document.createElement("option");
   	  		option.value = key;
-    			select.appendChild(option);
+    			newRecordSelect.appendChild(option);
 			});
 	}
   document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
@@ -472,6 +473,9 @@ function handleNewRowClick(e) {
 	// Enable the button again
 	enableBtn('AddRowBtn');
   newRowDialog.style.display = 'block';
+	// Run on load and whenever selection changes
+	handleRecordSelectChange();
+	newRecordSelect.addEventListener("change", handleRecordSelectChange);
 }
 // ESC key handler
 function handleNewRowEscKey(e) {
@@ -750,13 +754,17 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     }
 
     document.getElementById('cancelNewRow').addEventListener('click', () => {
-      newRowDialog.style.display = 'none';
+			// Stop listener
+			document.removeEventListener("change", handleRecordSelectChange);
+			newRowDialog.style.display = 'none';
     	document.getElementById('newRowRecord').value = '';
       document.getElementById('newRowTitle').value = '';
       document.getElementById('newRowLat').value = '';
       document.getElementById('newRowLon').value = '';
     });
     document.getElementById('saveNewRow').addEventListener('click', async () => {
+			// Stop listener
+			document.removeEventListener("change", handleRecordSelectChange);
       newRowDialog.style.display = 'none';
 			if ( Object.hasOwn(recordLookup, document.getElementById('newRowRecord').value) ) {
 				alert("Mise à jour d'une ligne en cours de mise en oeuvre : "+document.getElementById('newRowRecord').value);
@@ -797,7 +805,13 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         modal.style.display = 'none';
       }
       if (event.target === newRowDialog) {
+				// Stop listener
+				document.removeEventListener("change", handleRecordSelectChange);
         newRowDialog.style.display = 'none';
+    		document.getElementById('newRowRecord').value = '';
+      	document.getElementById('newRowTitle').value = '';
+      	document.getElementById('newRowLat').value = '';
+      	document.getElementById('newRowLon').value = '';
       }
     });
     //
@@ -1039,6 +1053,24 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
   
 });
 //
+//  Management of NewRecord Dialog Box
+//
+// To manage styling of record select input (greyed when empty)
+// Browsers don’t automatically update the value attribute when
+// the user changes selection — they update the property, not the
+// HTML attribute. So pure CSS trick doesn't work without this
+// JavaScript sync .
+function handleRecordSelectChange() {
+	const saveNewRowBtn = document.getElementById('saveNewRow');
+  if (newRecordSelect.value === "") {
+    newRecordSelect.style.color = "#888"; // grey
+		saveNewRowBtn.textContent = "Ajouter";
+  } else {
+    newRecordSelect.style.color = "#000"; // normal
+		saveNewRowBtn.textContent = "Actualiser";
+  }
+}
+//
 // Apply to both modals
 document.addEventListener("DOMContentLoaded", function() {
 	makeDraggable("widgetParameters");
@@ -1074,36 +1106,3 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
