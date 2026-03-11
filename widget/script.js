@@ -388,8 +388,9 @@ function AddGristTable2Map () {
 if(debug) console.log(widgetRootMsg+"Map is ready!!!");
 
   // Select first line of the Grist table when creating the map
-  // if it has not been set first by a call to onRecord...
-  if ( currentRowId==null ) {
+  // (if it has not been set first by a call to onRecord...)
+	// or whan a row has been removed
+  if ( currentRowId==null || recordRemoval) {
 if(debug) console.log(widgetRootMsg+"currentRowId is null");
       ChangeCurrentRow(geojsonFeatures[0].properties.id);
       ChangeMapSelection(geojsonFeatures[0]);
@@ -591,6 +592,9 @@ if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
 
+	// detect the removal of a record
+	const recordRemoval = currentRecords && currentRecords.length > table.length;	
+
   // reset currentRecords and recordLookup
   currentRecords = table;
   recordLookup = {};
@@ -662,8 +666,15 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     // Pas de bouton de Geolocalisation car l'objectif est de visualiser les données de la table
     // Ajout d'un sélecteur de carte
     map.addControl(new CarteFacile.MapSelectorControl);
-    // Création d'un contrôle personnalisé de recentrage sur les données de la table
+		// Ajout de la fonction de recherche Carte Facile
+    map.addControl(new CarteFacile.SearchControl({
+  		placeholder: 'Rechercher une adresse…',
+  		debounceMs: 300,    // Délai avant déclenchement (ms)
+  		minChars: 3,        // Nombre minimum de caractères
+  		maxResults: 5,      // Nombre maximum de résultats affichés
+		},'top-left');
 
+	      // Création d'un contrôle personnalisé pour les fonctionnalités du widget GRIST
     class WidgetControl {
       //private _container: HTMLElement;
       onAdd(map) {
@@ -921,6 +932,12 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         type: 'FeatureCollection',
         features: [...geojsonFeatures] // Again, need to clone the data
       });
+
+		  if ( recordRemoval ) {
+      	ChangeCurrentRow(geojsonFeatures[0].properties.id);
+      	ChangeMapSelection(geojsonFeatures[0]);
+			}
+
   }    
 
 });
@@ -1110,5 +1127,6 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
