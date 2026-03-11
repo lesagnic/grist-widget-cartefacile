@@ -667,12 +667,16 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     // Ajout d'un sélecteur de carte
     map.addControl(new CarteFacile.MapSelectorControl);
 		// Ajout de la fonction de recherche Carte Facile
-    map.addControl(new CarteFacile.SearchControl({
-  		placeholder: 'Rechercher une adresse…',
-  		debounceMs: 300,    // Délai avant déclenchement (ms)
-  		minChars: 3,        // Nombre minimum de caractères
-  		maxResults: 5,      // Nombre maximum de résultats affichés
-		}),'top-left');
+    map.addControl(new CarteFacile.SearchControl,'top-left');
+	// SearchControl recommended parameters : to be confirmed
+	//the ability to defined them with CDN
+	// ({
+  	//	placeholder: 'Rechercher une adresse…',
+  	//	debounceMs: 300,    // Délai avant déclenchement (ms)
+  	//	minChars: 3,        // Nombre minimum de caractères
+  	//	maxResults: 5,      // Nombre maximum de résultats affichés
+	//	})
+	  
 
 	      // Création d'un contrôle personnalisé pour les fonctionnalités du widget GRIST
     class WidgetControl {
@@ -1127,6 +1131,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
