@@ -640,7 +640,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     			this.classList.add('disabled');
   			};
       	button.onclick = () => {
-					this.disable();
+					button.disable();
           // Add the control to the top-left corner
           instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
           map.addControl(instructionControl,'top-left');
@@ -1016,6 +1016,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
