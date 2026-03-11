@@ -12,50 +12,52 @@
 	<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-   <!-- Conteneur HTML qui accueillera la carte -->
-  <div id="map"></div>
+	<!-- Conteneur HTML qui accueillera la carte -->
+	<div id="map"></div>
 
-  <!-- Fenêtre modal de gestion des  paramètres du widget -->
-  <div id="widgetParameters" class="widget-dialog-modal">
-    <div id="widgetParametersContent" class="widget-dialog-content">
-      <div id="widgetParametersHeader" class="widget-dialog-header">Paramètres</div>
-      <label>
-        Rayon d'aggrégation
-        <input type="number" id="clusterRadius" placeholder="0">
-      </label>
-    	<div class="widget-dialog-footer">
-        <button id="cancelSettings" class="btn btn-secondary">Annuler</button>
-        <button id="saveSettings" class="btn btn-primary">Enregistrer</button>
-      </div>
-    </div>
-  </div>
+	<!-- Fenêtre modal de gestion des  paramètres du widget -->
+	<div id="widgetParameters" class="widget-dialog-modal">
+		<div id="widgetParametersContent" class="widget-dialog-content">
+			<div id="widgetParametersHeader" class="widget-dialog-header">Paramètres</div>
+			<label>
+				Rayon d'aggrégation
+				<input type="number" id="clusterRadius" placeholder="0">
+			</label>
+			<div class="widget-dialog-footer">
+				<button id="cancelSettings" class="btn btn-secondary">Annuler</button>
+				<button id="saveSettings" class="btn btn-primary">Enregistrer</button>
+			</div
+		</div>
+	</div>
 
 	<!-- Fenêtre modal d'ajout d'une ligne -->
-  <div id="widgetNewRow" class="widget-dialog-modal">
-    <div id="widgetNewRowContent" class="widget-dialog-content">
-      <div id="widgetNewRowHeader" class="widget-dialog-header">Nouvelle ligne...</div>
-      <label id="newRowLabelTitle">
+	<div id="widgetNewRow" class="widget-dialog-modal">
+		<div id="widgetNewRowContent" class="widget-dialog-content">
+			<div id="widgetNewRowHeader" class="widget-dialog-header">Nouvelle ligne...</div>
+			<label id="newRowLabelTitle">
 				Libellé
-      	<input list="newRowTitleValues" id="newRowTitle" placeholder="Choisissez une ligne ou entrez un libellé "/>
+				<input list="newRowTitleValues" id="newRowTitle" placeholder="Choisissez une ligne ou entrez un libellé">
 			</label>
-			<datalist id="newRowTitleValues"/>
-      <label id="newRowLabelLatitude">
+			<datalist id="newRowTitleValues">
+				<!-- options To be managed in the widget -->
+			</datalist>
+			<label id="newRowLabelLatitude">
 				Latitude
-      	<input type="number" id="newRowLat" placeholder=""/>
+				<input type="number" id="newRowLat" placeholder="">
 			</label>
-      <label id="newRowLabelLongitude">
+			<label id="newRowLabelLongitude">
 				Longitude
-      	<input type="number" id="newRowLon" placeholder=""/>
+				<input type="number" id="newRowLon" placeholder="">
 			</label>
-      <div class="widget-dialog-footer">
-        <button id="cancelNewRow" class="btn btn-secondary">Annuler</button>
-        <button id="saveNewRow" class="btn btn-primary">Enregistrer</button>
-      </div>
-    </div>
-  </div>
-
+			<div class="widget-dialog-footer">
+				<button id="cancelNewRow" class="btn btn-secondary">Annuler</button>
+				<button id="saveNewRow" class="btn btn-primary">Enregistrer</button>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
+
 
 
 
