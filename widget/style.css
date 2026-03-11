@@ -171,7 +171,11 @@ select {
     -moz-appearance: none;
     background-image: none;
 }
-input:focus {
+/* Grey text when value is exactly "" */
+select[value=""] {
+  color: #888; /* placeholder grey */
+}
+input:focus, select:focus {
     outline: none;
     border-color: #4a90e2;
     box-shadow: 0 0 0 2px rgba(74,144,226,0.2);
@@ -200,6 +204,7 @@ input:focus {
 //.btn-primary:hover {
 //  background: #3f7ecb;
 //}
+
 
 
 
