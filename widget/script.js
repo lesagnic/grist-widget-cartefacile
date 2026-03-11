@@ -665,9 +665,12 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     map.addControl(new maplibregl.ScaleControl);
     // Pas de bouton de Geolocalisation car l'objectif est de visualiser les données de la table
     // Ajout d'un sélecteur de carte
-    map.addControl(new CarteFacile.MapSelectorControl);
+    map.addControl(new CarteFacile.MapSelectorControl({
+  		styles: ['simple', 'aerial'],
+  		overlays: ['administrativeBoundaries', 'cadastre']
+	}));
 		// Ajout de la fonction de recherche Carte Facile
-    map.addControl(new CarteFacile.SearchControl(),'top-left');
+    map.addControl(new CarteFacile.SearchControl());
 	// SearchControl recommended parameters : to be confirmed
 	//the ability to defined them with CDN
 	// ({
@@ -1131,6 +1134,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
