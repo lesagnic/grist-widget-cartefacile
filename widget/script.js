@@ -445,7 +445,7 @@ function handleNewRowClick(e) {
 	if ( datalist) {
 		datalist.innerHTML = "";
 		// Add new options in lookup key (i.e. more or less title) alphabetic order
-		Object.keys(lookup)
+		Object.keys(namedRecordLookup)
   			.sort((a, b) => a.localeCompare(b)) // localeCompare handles case & accents
   			.forEach(key => {
 	    		const option = document.createElement("option");
@@ -1067,6 +1067,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
