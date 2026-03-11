@@ -425,7 +425,7 @@ function disableBtn ( btnId ) {
 function handleNewRowClick(e) {
   const lng = e.lngLat.lng.toFixed(6);
   const lat = e.lngLat.lat.toFixed(6);
-  /*const datalist = document.getElementById('newRowTitleValues');
+  const datalist = document.getElementById('newRowTitleValues');
 	if ( datalist) {
 		datalist.innerHTML = "";
 		// Add new options
@@ -439,7 +439,7 @@ function handleNewRowClick(e) {
     			datalist.appendChild(option);
 			}
   		});
-	}*/
+	}
   document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
   document.getElementById('newRowLabelLatitude').textContent = mapping.Latitude;
   document.getElementById('newRowLabelLongitude').textContent = mapping.Longitude;
@@ -1044,6 +1044,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
