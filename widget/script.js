@@ -644,6 +644,10 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
           map.addControl(instructionControl,'top-left');
           // Use a dedicated cursor shape
           map.getCanvas().style.cursor = svgCursorUri;
+		  // Ensure controls keep their normal pointer
+		  document.querySelectorAll('.maplibregl-ctrl button').forEach(btn => {
+  			btn.style.cursor = 'pointer';
+		  });
           // Listen for click events or ESC key
           map.on('click', handleNewRowClick);
           document.addEventListener('keydown', handleNewRowEscKey);
@@ -1009,6 +1013,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
