@@ -455,6 +455,7 @@ function handleNewRowClick(e) {
   			.forEach(key => {
 	    		const option = document.createElement("option");
   	  		option.value = key;
+  	  		option.textContent = key;
     			newRecordSelect.appendChild(option);
 			});
 	}
@@ -1062,12 +1063,15 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 // JavaScript sync .
 function handleRecordSelectChange() {
 	const saveNewRowBtn = document.getElementById('saveNewRow');
+	const newRowTitle = document.getElementById('newRowTitle');
   if (newRecordSelect.value === "") {
     newRecordSelect.style.color = "#888"; // grey
 		saveNewRowBtn.textContent = "Ajouter";
   } else {
     newRecordSelect.style.color = "#000"; // normal
 		saveNewRowBtn.textContent = "Actualiser";
+		// Set newRowTitle with the title of the selected Record
+		newRowTitle.value = recordLookup[newRecordSelect.value].title;
   }
 }
 //
@@ -1106,4 +1110,5 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
