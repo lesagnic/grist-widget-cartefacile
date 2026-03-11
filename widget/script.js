@@ -404,6 +404,21 @@ if(debug) console.log(widgetRootMsg+"lateMapFocus is true => Focus on:"+currentR
 
 }
 //
+//
+function enableBtn ( btnId ) {
+	const btn = document.getElementById(btnId);
+	if ( btn ) {
+		btn.disabled = false;
+  	btn.classList.remove('disabled');
+	}
+}
+function disableBtn ( btnId ) {
+	const btn = document.getElementById(btnId);
+	if ( btn ) {
+		btn.disabled = true;
+  	btn.classList.add('disabled');
+	}
+}
 // Event handler for new row
 // Click handler
 function handleNewRowClick(e) {
@@ -421,8 +436,7 @@ function handleNewRowClick(e) {
   // Suppression de l'instruction
   map.removeControl(instructionControl);
 	// Enable the button again
-	document.getElementById('newRowButton')?.disabled = false;          // allow clicks
-  document.getElementById('newRowButton')?.classList.remove('disabled');
+	enableBtn('AddRowBtn');
   newRowDialog.style.display = 'block';
 }
 // ESC key handler
@@ -437,8 +451,7 @@ function handleNewRowEscKey(e) {
     // Suppression de l'instruction
     map.removeControl(instructionControl);
 		// Enable the button again
-		document.getElementById('newRowButton')?.disabled = false;
- 		document.getElementById('newRowButton')?.classList.remove('disabled');
+		enableBtn('AddRowBtn');
 		// No newRowDialog display => need to reset the form fields before leaving
     document.getElementById('newRowTitle').value = '';
     document.getElementById('newRowLat').value = '';
@@ -630,10 +643,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button.className = 'maplibregl-ctrl-icon add-row-btn';
         button.type = 'button';
         button.title = "Ajout d'une ligne";
-				button.id = 'newRowButton';
+				button.id = 'AddRowBtn';
 		    button.onclick = () =>
-						document.getElementById('newRowButton')?.disabled = true;          // allow clicks
-  					document.getElementById('newRowButton')?.classList.add('disabled');
+						disableBtn('AddRowBtn');
             // Add the control to the top-left corner
             instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
             map.addControl(instructionControl,'top-left');
@@ -1009,6 +1021,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
