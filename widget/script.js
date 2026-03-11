@@ -425,25 +425,25 @@ function disableBtn ( btnId ) {
 function handleNewRowClick(e) {
   const lng = e.lngLat.lng.toFixed(6);
   const lat = e.lngLat.lat.toFixed(6);
-  const datalist = document.getElementById('newRowTitleValues');
+  /*const datalist = document.getElementById('newRowTitleValues');
 	if ( datalist) {
 		datalist.innerHTML = "";
 		// Add new options
-  	currentRecords.forEach(record => {
+  		currentRecords.forEach(record => {
 			// On récupère les colonnes mappées
-    	const mapped = grist.mapColumnNames(record);
-    	// Only look at invalid record
-    	if (mapped.Titre && (!mapped.Longitude || !mapped.Latitude) ) {
-	    	const option = document.createElement("option");
-  	  	option.value = mapped.Titre;
-    		datalist.appendChild(option);
+    		const mapped = grist.mapColumnNames(record);
+    		// Only look at invalid record
+    		if (mapped.Titre && (!mapped.Longitude || !mapped.Latitude) ) {
+	    		const option = document.createElement("option");
+  	  			option.value = mapped.Titre;
+    			datalist.appendChild(option);
 			}
-  	});
-	}
+  		});
+	}*/
   document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
   document.getElementById('newRowLabelLatitude').textContent = mapping.Latitude;
   document.getElementById('newRowLabelLongitude').textContent = mapping.Longitude;
-	if (document.getElementById('newRowLat')) document.getElementById('newRowLat').value = lat;
+  if (document.getElementById('newRowLat')) document.getElementById('newRowLat').value = lat;
   if (document.getElementById('newRowLon')) document.getElementById('newRowLon').value = lng;
   // Remove both listeners after first click
   map.off('click', handleNewRowClick);
@@ -1044,6 +1044,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
