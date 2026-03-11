@@ -153,7 +153,7 @@ label {
     color: #555;
     text-transform: uppercase; /* Converts all letters to uppercase */
 }
-input[type="text"], input[type="number"] {
+input[type="text"], input[type="number"], input[list] {
     width: 100%;
     padding: 6px 8px;
     margin-top: 6px;
@@ -191,6 +191,7 @@ input:focus {
 //.btn-primary:hover {
 //  background: #3f7ecb;
 //}
+
 
 
 
