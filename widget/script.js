@@ -96,6 +96,22 @@ let instructionControl = undefined;
 // SetCursorPos expect a position in the table not the record.id : keep track of the records to determine the position from the id.
 let currentRecords = [];
 //
+// Lookup of records having a valid title (value of mapped.Titre) but not necessarily 
+// a valid geographic location (lat, lon or both not set)
+
+// having a valid title  to get the record.id using the title 
+// and set up quicly a datalist for the Title label of the new record Dialog Box
+let namedRecordLookup = {};
+// The lookup key structure is: title (lon,lat)
+function namedRecordKey(id, title, lat, lon) {
+	return id + ". " +title + " (" + lat + "," + lon + ")";
+}
+// Add a record to the lookup if title and id are valid
+// the key giove access to the record id and the title
+function addNamedRecord2Lookup (id, title, lat, lon) {
+	if ( title && id ) namedRecordLookup[namedRecordKey(id, title, lat, lon)] = { id: id, title: title}; 
+}
+//
 // Utilities function
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // The Active Popup of the selected feature is created in different contexts consistently
@@ -428,17 +444,14 @@ function handleNewRowClick(e) {
   const datalist = document.getElementById('newRowTitleValues');
 	if ( datalist) {
 		datalist.innerHTML = "";
-		// Add new options
-  		currentRecords.forEach(record => {
-			// On récupère les colonnes mappées
-    		const mapped = grist.mapColumnNames(record);
-    		// Only look at invalid record
-    		if (mapped.Titre && (!mapped.Longitude || !mapped.Latitude) ) {
+		// Add new options in lookup key (i.e. more or less title) alphabetic order
+		Object.keys(lookup)
+  			.sort((a, b) => a.localeCompare(b)) // localeCompare handles case & accents
+  			.forEach(key => {
 	    		const option = document.createElement("option");
-  	  			option.value = mapped.Titre;
+  	  			option.value = key;
     			datalist.appendChild(option);
-			}
-  		});
+			});
 	}
   document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
   document.getElementById('newRowLabelLatitude').textContent = mapping.Latitude;
@@ -568,8 +581,9 @@ if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
 
-  // reset currentRecords
+  // reset currentRecords and namedRecordLookup
   currentRecords = table;
+  namedRecordLookup = {};
 
   //reset mapping
   mapping = colMapping;
@@ -593,7 +607,11 @@ if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
       
     }
     else console.warn(widgetRootMsg+"Skipped record [id="+record.id+", Titre="+mapped.Titre+", Lat="+mapped.Latitude+", Lon="+mapped.Longitude+"]");
-  });
+
+		// Add the record to the lookup: will skip record not having a valid title and id
+		if ( mapped ) addNamedRecord2Lookup(record.id, mapped.Titre, mapped.Latitude, mapped.Longitude);
+  
+	});
 
   BoundingBox(geojsonFeatures);
 
@@ -734,10 +752,15 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     });
     document.getElementById('saveNewRow').addEventListener('click', async () => {
       newRowDialog.style.display = 'none';
-      await addRow(document.getElementById('newRowTitle').value,
+			if ( Object.hasOwn(namedRecordLookup, document.getElementById('newRowTitle').value) {
+				alert("Mise à jour d'une ligne en cours de mise en oeuvre : "+document.getElementById('newRowTitle').value);
+			}
+			else {
+      	await addRow(document.getElementById('newRowTitle').value,
                    Number(document.getElementById('newRowLat').value),
                    Number(document.getElementById('newRowLon').value)
-      );
+      	);
+			}
       document.getElementById('newRowTitle').value = '';
       document.getElementById('newRowLat').value = '';
       document.getElementById('newRowLon').value = '';
@@ -1044,6 +1067,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
