@@ -112,7 +112,7 @@ html,body, #map {
 }
 /* Modal content */
 .widget-dialog-content {
-	position : absolute; /* to make it draggable */
+	position: absolute; /* to make it draggable */
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(128,128,129,0.15);
@@ -186,6 +186,7 @@ input:focus {
 //.btn-primary:hover {
 //  background: #3f7ecb;
 //}
+
 
 
 
