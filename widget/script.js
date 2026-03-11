@@ -96,20 +96,16 @@ let instructionControl = undefined;
 // SetCursorPos expect a position in the table not the record.id : keep track of the records to determine the position from the id.
 let currentRecords = [];
 //
-// Lookup of records having a valid title (value of mapped.Titre) but not necessarily 
-// a valid geographic location (lat, lon or both not set)
-
-// having a valid title  to get the record.id using the title 
-// and set up quicly a datalist for the Title label of the new record Dialog Box
-let namedRecordLookup = {};
-// The lookup key structure is: title (lon,lat)
-function namedRecordKey(id, title, lat, lon) {
+// Lookup of records having at least a valid id
+let recordLookup = {};
+// The lookup key structure is: id. title (lon,lat)
+function recordKey(id, title, lat, lon) {
 	return id + ". " +title + " (" + lat + "," + lon + ")";
 }
 // Add a record to the lookup if title and id are valid
 // the key giove access to the record id and the title
-function addNamedRecord2Lookup (id, title, lat, lon) {
-	if ( title && id ) namedRecordLookup[namedRecordKey(id, title, lat, lon)] = { id: id, title: title}; 
+function addRecord2Lookup (id, title, lat, lon) {
+	if ( id ) recordLookup[recordKey(id, title, lat, lon)] = { id: id, title: title}; 
 }
 //
 // Utilities function
@@ -441,16 +437,16 @@ function disableBtn ( btnId ) {
 function handleNewRowClick(e) {
   const lng = e.lngLat.lng.toFixed(6);
   const lat = e.lngLat.lat.toFixed(6);
-  const datalist = document.getElementById('newRowTitleValues');
-	if ( datalist) {
-		datalist.innerHTML = "";
+  const select = document.getElementById('newRowRecordValues');
+	if ( select ) {
+		select.innerHTML = "";
 		// Add new options in lookup key (i.e. more or less title) alphabetic order
-		Object.keys(namedRecordLookup)
+		Object.keys(recordLookup)
   			.sort((a, b) => a.localeCompare(b)) // localeCompare handles case & accents
   			.forEach(key => {
 	    		const option = document.createElement("option");
   	  			option.value = key;
-    			datalist.appendChild(option);
+    			select.appendChild(option);
 			});
 	}
   document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
@@ -481,6 +477,7 @@ function handleNewRowEscKey(e) {
 		// Enable the button again
 		enableBtn('AddRowBtn');
 		// No newRowDialog display => need to reset the form fields before leaving
+    document.getElementById('newRowRecord').value = '';
     document.getElementById('newRowTitle').value = '';
     document.getElementById('newRowLat').value = '';
     document.getElementById('newRowLon').value = '';
@@ -581,9 +578,9 @@ if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   // reset geojsonFeatures
   geojsonFeatures.length=0;
 
-  // reset currentRecords and namedRecordLookup
+  // reset currentRecords and recordLookup
   currentRecords = table;
-  namedRecordLookup = {};
+  recordLookup = {};
 
   //reset mapping
   mapping = colMapping;
@@ -609,7 +606,7 @@ if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
     else console.warn(widgetRootMsg+"Skipped record [id="+record.id+", Titre="+mapped.Titre+", Lat="+mapped.Latitude+", Lon="+mapped.Longitude+"]");
 
 		// Add the record to the lookup: will skip record not having a valid title and id
-		if ( mapped ) addNamedRecord2Lookup(record.id, mapped.Titre, mapped.Latitude, mapped.Longitude);
+		if ( mapped ) addRecord2Lookup(record.id, mapped.Titre, mapped.Latitude, mapped.Longitude);
   
 	});
 
@@ -746,14 +743,15 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 
     document.getElementById('cancelNewRow').addEventListener('click', () => {
       newRowDialog.style.display = 'none';
+    	document.getElementById('newRowRecord').value = '';
       document.getElementById('newRowTitle').value = '';
       document.getElementById('newRowLat').value = '';
       document.getElementById('newRowLon').value = '';
     });
     document.getElementById('saveNewRow').addEventListener('click', async () => {
       newRowDialog.style.display = 'none';
-			if ( Object.hasOwn(namedRecordLookup, document.getElementById('newRowTitle').value) ) {
-				alert("Mise à jour d'une ligne en cours de mise en oeuvre : "+document.getElementById('newRowTitle').value);
+			if ( Object.hasOwn(recordLookup, document.getElementById('newRowRecord').value) ) {
+				alert("Mise à jour d'une ligne en cours de mise en oeuvre : "+document.getElementById('newRowRecord').value);
 			}
 			else {
       	await addRow(document.getElementById('newRowTitle').value,
@@ -761,6 +759,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
                    Number(document.getElementById('newRowLon').value)
       	);
 			}
+      document.getElementById('newRowRecord').value = '';
       document.getElementById('newRowTitle').value = '';
       document.getElementById('newRowLat').value = '';
       document.getElementById('newRowLon').value = '';
@@ -1067,6 +1066,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
