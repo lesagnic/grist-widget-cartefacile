@@ -116,7 +116,7 @@ html,body, #map {
     background-color: blue; //temporary => #fff
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.30);
-    width: 320px;
+    width: 200px;
     border: 1px solid #ddd;
     animation: fadeIn 0.2s ease-out;
 	/* Start centered */
@@ -186,6 +186,7 @@ input:focus {
 //.btn-primary:hover {
 //  background: #3f7ecb;
 //}
+
 
 
 
