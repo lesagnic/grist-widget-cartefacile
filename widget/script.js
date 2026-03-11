@@ -485,7 +485,16 @@ async function addRow(titre,lat,lon) {
     internalAddRow = true;
     const result = await grist.selectedTable.create({ fields: fields  });
     if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
-    // Delegate changeCurrentRow and mapSelection to onRecord to avoid infinite loops
+		if (result && result.id > 0) {
+			// Need to wait for a backgrounf call to onRecords (table has changed !!!) and potential
+			// unwanted call to onRecord by a connected source widget
+			setTimeout(() => {
+				f = geojsonFeatures.find(item => item.properties.id === result.id );
+				ChangeCurrentRow(result.id);
+				// The new record may not be valid
+				if (f) ChangeMapSelection(f);
+      }, 500); // adjust delay if needed
+		}
   }  catch (err) {
     internalAddRow = false; // creation unsuccessfull
     console.error(widgetRootMsg+"Error adding row:", err);
@@ -1017,6 +1026,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
