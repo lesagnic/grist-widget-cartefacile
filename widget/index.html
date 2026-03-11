@@ -34,22 +34,15 @@
 	<div id="widgetNewRow" class="widget-dialog-modal">
 		<div id="widgetNewRowContent" class="widget-dialog-content">
 			<div id="widgetNewRowHeader" class="widget-dialog-header">Nouvelle ligne...</div>
-			<label id="newRowLabelTitle">
-				Libellé
-				<input id="newRowTitle" name="Titre" type="text" placeholder="Choisissez une ligne ou entrez un libellé">
-	<!--			<input id="newRowTitle" name="Titre" list="newRowTitleValues" placeholder="Choisissez une ligne ou entrez un libellé"> -->
-			</label>
-			<!--<datalist id="newRowTitleValues">-->
+			<label id="newRowLabelTitle" for="newRowTitle">Libellé</label>
+			<input id="newRowTitle" name="Titre" list="newRowTitleValues" placeholder="Choisissez une ligne ou entrez un libellé">
+			<datalist id="newRowTitleValues">
 				<!-- options To be managed in the widget -->
-			<!--</datalist>-->
-			<label id="newRowLabelLatitude">
-				Latitude
-				<input id="newRowLat" name="Latitude" type="number" placeholder="">
-			</label>
-			<label id="newRowLabelLongitude">
-				Longitude
-				<input id="newRowLon" name="Longitude" type="number" placeholder="">
-			</label>
+			</datalist>
+			<label id="newRowLabelLatitude" for="newRowlat">Latitude</label>
+			<input id="newRowLat" name="Latitude" type="number" placeholder="">
+			<label id="newRowLabelLongitude" for="newRowLon">Longitude</label>
+			<input id="newRowLon" name="Longitude" type="number" placeholder="">
 			<div class="widget-dialog-footer">
 				<button id="cancelNewRow" class="btn btn-secondary">Annuler</button>
 				<button id="saveNewRow" class="btn btn-primary">Enregistrer</button>
@@ -58,6 +51,7 @@
 	</div>
 </body>
 </html>
+
 
 
 
