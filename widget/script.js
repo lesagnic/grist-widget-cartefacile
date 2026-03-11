@@ -382,9 +382,13 @@ if(debug) console.log(widgetRootMsg+"currentRowId is null");
       ChangeMapSelection(geojsonFeatures[0]);
   }
 
+  // Late map focus arise when loading the page if the connected widget
+	// cursor position is not on the first row. Since it is not a user
+	// choice to focus on this record, we just apply a MapSelection
+	// instead of a MapFocus to provide an overview of the full table
   if ( lateMapFocus ) {
 if(debug) console.log(widgetRootMsg+"lateMapFocus is true => Focus on:"+currentRowId);
-    ChangeMapFocus(geojsonFeatures.find(
+    ChangeMapSelection(geojsonFeatures.find(
             item => item.properties.id === currentRowId
       ));
     lateMapFocus = false;
@@ -1013,6 +1017,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
