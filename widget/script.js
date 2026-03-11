@@ -979,21 +979,11 @@ document.addEventListener("DOMContentLoaded", function() {
 function makeDraggable(modalId) {
   const content = document.getElementById(`${modalId}Content`);
   const header = document.getElementById(`${modalId}Header`);
-
-	// Temporary
-	if (!content || !header) {
-    console.warn(`Draggable setup failed: Missing element(s) for ${modalId}`);
-    return;
-  }
-	else console.log("Draggable setup succeeded");
-
   let offsetX = 0, offsetY = 0, isDragging = false;
 
   header.addEventListener("mousedown", function(e) {
     isDragging = true;
-		content.style.transform = ""; // remove centering transform
-    // Temporary: Ensure position is absolute so left/top work
-    content.style.position = content.style.position || "absolute";
+	content.style.transform = ""; // remove centering transform
     offsetX = e.clientX - content.offsetLeft;
     offsetY = e.clientY - content.offsetTop;
     document.addEventListener("mousemove", onMouseMove);
@@ -1014,6 +1004,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
