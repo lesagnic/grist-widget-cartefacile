@@ -439,7 +439,7 @@ function handleNewRowClick(e) {
   const lng = e.lngLat.lng.toFixed(6);
   const lat = e.lngLat.lat.toFixed(6);
   newRecordSelect = document.getElementById('newRowRecord');
-	if ( select ) {
+	if ( newRecordSelect ) {
 		newRecordSelect.innerHTML = "";
 		// Create the placeholder option
   	const placeholder = document.createElement("option");
@@ -1106,3 +1106,4 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
