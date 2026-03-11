@@ -42,9 +42,6 @@ const clusterMaxZoom = 14; // From Map Libre example
 // to ensure that the feature marker will be visible
 const focusZoom = clusterMaxZoom + 0.1;
 //
-// Cursor styling management
-let cursorOnMouseEnter = '';
-let cursorOnNewRowClick = '';
 // Cursor specific shape for chossing new row location
 const svgCursor = `
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
@@ -430,8 +427,6 @@ function handleNewRowClick(e) {
   map.off('click', handleNewRowClick);
   document.removeEventListener('keydown', handleNewRowEscKey);
   document.removeEventListener('mousemove', handleNewRowMouseMove, true);
-  // temporary disbled : retour au pointeur par défaut
-  // map.getCanvas().style.cursor = cursorOnNewRowClick;
   map.getCanvas().style.cursor = '';
   // Suppression de l'instruction
   map.removeControl(instructionControl);
@@ -445,8 +440,6 @@ function handleNewRowEscKey(e) {
     map.off('click', handleNewRowClick);
     document.removeEventListener('keydown', handleNewRowEscKey);
     document.removeEventListener('mousemove', handleNewRowMouseMove, true);
-		// temporary disbled : retour au pointeur par défaut
-		// map.getCanvas().style.cursor = cursorOnNewRowClick;
 		map.getCanvas().style.cursor = '';
     // Suppression de l'instruction
     map.removeControl(instructionControl);
@@ -649,10 +642,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
           // Add the control to the top-left corner
           instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
           map.addControl(instructionControl,'top-left');
-          // Temporary disabled : backup the current cursor
-          // cursorOnNewRowClick = map.getCanvas().style.cursor;
-          // Choose a specific cursor because crosshair appears sometimes white or black...
-          // map.getCanvas().style.cursor = 'crosshair' ;
+          // Use a dedicated cursor shape
           map.getCanvas().style.cursor = svgCursorUri;
           // Listen for click events or ESC key
           map.on('click', handleNewRowClick);
@@ -813,7 +803,6 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 
       map.on('mouseenter', 'unclustered-point', (e) => {
         if ( e.features[0].properties.id != currentRowId ) {
-          cursorOnMouseEnter = map.getCanvas().style.cursor;
           map.getCanvas().style.cursor = 'pointer';
           hoverPopup
             .setLngLat(e.features[0].geometry.coordinates.slice())
@@ -823,16 +812,15 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       });
 
       map.on('mouseleave', 'unclustered-point', () => {
-        map.getCanvas().style.cursor = cursorOnMouseEnter;
+        map.getCanvas().style.cursor = '';
         hoverPopup.remove();
       });
 
       map.on('mouseenter', 'clusters', () => {
-        cursorOnMouseEnter = map.getCanvas().style.cursor;
         map.getCanvas().style.cursor = 'pointer';
       });
       map.on('mouseleave', 'clusters', () => {
-        map.getCanvas().style.cursor = cursorOnMouseEnter;
+        map.getCanvas().style.cursor = '';
       });  
    
     }); // end map.on
@@ -1021,6 +1009,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
