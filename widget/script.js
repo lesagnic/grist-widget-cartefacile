@@ -437,16 +437,23 @@ function disableBtn ( btnId ) {
 function handleNewRowClick(e) {
   const lng = e.lngLat.lng.toFixed(6);
   const lat = e.lngLat.lat.toFixed(6);
-  const select = document.getElementById('newRowRecordValues');
+  const select = document.getElementById('newRowRecord');
 	if ( select ) {
 		select.innerHTML = "";
+		// Create the placeholder option
+  	const placeholder = document.createElement("option");
+  	placeholder.textContent = "Choisissez une ligne à mettre à jour..."; // visible text
+  	placeholder.value = "";                          // empty value
+  	placeholder.disabled = true;                     // can't be selected after change
+  	placeholder.selected = true;                     // selected by default
+  	placeholder.hidden = true;                       // hides from dropdown list
+		select.appendChild(placeholder);
 		// Add new options in lookup key (i.e. more or less title) alphabetic order
 		Object.keys(recordLookup)
   			.sort((a, b) => a.localeCompare(b)) // localeCompare handles case & accents
   			.forEach(key => {
 	    		const option = document.createElement("option");
-  	  			option.value = key;
-  	  			option.textContent = key;
+  	  		option.value = key;
     			select.appendChild(option);
 			});
 	}
@@ -1067,6 +1074,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
