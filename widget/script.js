@@ -969,7 +969,52 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
   
 });
 //
+// Apply to both modals
+document.addEventListener("DOMContentLoaded", function() {
+	makeDraggable("widgetParameters");
+	makeDraggable("widgetNewRow");		
+});
+//
+// Reusable function to make any modal draggable
+function makeDraggable(modalId) {
+  const content = document.getElementById(`${modalId}Content`);
+  const header = document.getElementById(`${modalId}Header`);
+
+	// Temporary
+	if (!content || !header) {
+    console.warn(`Draggable setup failed: Missing element(s) for ${modalId}`);
+    return;
+  }
+	else console.log("Draggable setup succeeded");
+
+  let offsetX = 0, offsetY = 0, isDragging = false;
+
+  header.addEventListener("mousedown", function(e) {
+    isDragging = true;
+		content.style.transform = ""; // remove centering transform
+    // Temporary: Ensure position is absolute so left/top work
+    content.style.position = content.style.position || "absolute";
+    offsetX = e.clientX - content.offsetLeft;
+    offsetY = e.clientY - content.offsetTop;
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  });
+
+  function onMouseMove(e) {
+    if (!isDragging) return;
+    content.style.left = (e.clientX - offsetX) + "px";
+    content.style.top = (e.clientY - offsetY) + "px";
+  }
+
+  function onMouseUp() {
+    isDragging = false;
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+  }
+}
+//
 /// END  OF FILE
+
 
 
 
