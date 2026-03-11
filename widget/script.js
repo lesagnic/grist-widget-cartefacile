@@ -78,8 +78,6 @@ let modal = null;
 let newRowDialog = null;
 // Columns Mapping for AddRows
 let mapping = {};
-// Widget Control
-widgetControl = null;
 // 
 // Mapping management
 //
@@ -97,8 +95,6 @@ let clusterRadius = 30;
 let mapReady = false;
 //
 let instructionControl = undefined;
-// temporary disabled
-// let alreadyEditingNewRow = false;
 //
 // SetCursorPos expect a position in the table not the record.id : keep track of the records to determine the position from the id.
 let currentRecords = [];
@@ -425,7 +421,8 @@ function handleNewRowClick(e) {
   // Suppression de l'instruction
   map.removeControl(instructionControl);
 	// Enable the button again
-	widgetControl._addRowBtn.enable();
+	document.getElementById('newRowButton')?.disabled = false;          // allow clicks
+  document.getElementById('newRowButton')?.classList.remove('disabled');
   newRowDialog.style.display = 'block';
 }
 // ESC key handler
@@ -440,8 +437,9 @@ function handleNewRowEscKey(e) {
     // Suppression de l'instruction
     map.removeControl(instructionControl);
 		// Enable the button again
-		widgetControl._addRowBtn.enable();
-    // No newRowDialog display => need to reset the form fields before leaving
+		document.getElementById('newRowButton')?.disabled = false;
+ 		document.getElementById('newRowButton')?.classList.remove('disabled');
+		// No newRowDialog display => need to reset the form fields before leaving
     document.getElementById('newRowTitle').value = '';
     document.getElementById('newRowLat').value = '';
     document.getElementById('newRowLon').value = '';
@@ -608,66 +606,60 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         this._container = document.createElement('div');
         this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
         // fit-bounds-btn => Driver mode
-        this._fitBoundsBtn = document.createElement('button');
-        this._fitBoundsBtn.className = 'maplibregl-ctrl-icon fit-bounds-btn';
-        this._fitBoundsBtn.type = 'button';
-        this._fitBoundsBtn.title = 'Toutes les lignes';
-        this._fitBoundsBtn.onclick = () => {
+        let button = document.createElement('button');
+        button.className = 'maplibregl-ctrl-icon fit-bounds-btn';
+        button.type = 'button';
+        button.title = 'Toutes les lignes';
+        button.onclick = () => {
           FitBounds();
         };
-        this._container.appendChild(this._fitBoundsBtn);
+        this._container.appendChild(button);
         // Bouton Mode Driven : Zoom sur le marker sélectionné
-        this._oneRowBtn = document.createElement('button');
-        this._oneRowBtn.className = 'maplibregl-ctrl-icon one-row-btn'; 
-        this._oneRowBtn.type = 'button';
-        this._oneRowBtn.title = 'Ligne sélectionnée';
-        this._oneRowBtn.onclick = () => {
+        button = document.createElement('button');
+        button.className = 'maplibregl-ctrl-icon one-row-btn'; 
+        button.type = 'button';
+        button.title = 'Ligne sélectionnée';
+        button.onclick = () => {
           ChangeMapFocus(geojsonFeatures.find(
             item => item.properties.id === currentRowId
           ));
         };
-        this._container.appendChild(this._oneRowBtn);
+        this._container.appendChild(button);
         // Bouton ajout d'une ligne
-        this._addRowBtn = document.createElement('button');
-        this._addRowBtn.className = 'maplibregl-ctrl-icon add-row-btn';
-        this._addRowBtn.type = 'button';
-        this._addRowBtn.title = "Ajout d'une ligne";
-				this._addRowBtn.enable = function() {
-    			this._addRowBtn.disabled = false;          // allow clicks
-    			this._addRowBtn.classList.remove('disabled');
-  			};
- 				this._addRowBtn.disable = function() {
-    			this._addRowBtn.disabled = true;          // disable clicks
-    			this._addRowBtn.classList.add('disabled');
-  			};
-      	this._addRowBtn.onclick = () => {
-					this._addRowBtn.disable();
-          // Add the control to the top-left corner
-          instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
-          map.addControl(instructionControl,'top-left');
-          // Temporary disabled : backup the current cursor
-          // cursorOnNewRowClick = map.getCanvas().style.cursor;
-          // Choose a specific cursor because crosshair appears sometimes white or black...
-          // map.getCanvas().style.cursor = 'crosshair' ;
-          map.getCanvas().style.cursor = svgCursorUri;
-          // Listen for click events or ESC key
-          map.on('click', handleNewRowClick);
-          document.addEventListener('keydown', handleNewRowEscKey);
-          // ... and ensure the mouse cursor remains
-          document.addEventListener('mousemove', handleNewRowMouseMove, true);
+        button = document.createElement('button');
+        button.className = 'maplibregl-ctrl-icon add-row-btn';
+        button.type = 'button';
+        button.title = "Ajout d'une ligne";
+				button.id = 'newRowButton';
+		    button.onclick = () =>
+						document.getElementById('newRowButton')?.disabled = true;          // allow clicks
+  					document.getElementById('newRowButton')?.classList.add('disabled');
+            // Add the control to the top-left corner
+            instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
+            map.addControl(instructionControl,'top-left');
+            // Temporary disabled : backup the current cursor
+            // cursorOnNewRowClick = map.getCanvas().style.cursor;
+            // Choose a specific cursor because crosshair appears sometimes white or black...
+            // map.getCanvas().style.cursor = 'crosshair' ;
+            map.getCanvas().style.cursor = svgCursorUri;
+            // Listen for click events or ESC key
+            map.on('click', handleNewRowClick);
+            document.addEventListener('keydown', handleNewRowEscKey);
+            // ... and ensure the mouse cursor remains
+            document.addEventListener('mousemove', handleNewRowMouseMove, true);
         };
-        this._container.appendChild(this._addRowBtn);
+        this._container.appendChild(button);
         // Bouton paramètres
-        this._parametersBtn = document.createElement('button');
-        this._parametersBtn.className = 'maplibregl-ctrl-icon parameters-btn';
-        this._parametersBtn.type = 'button';
-        this._parametersBtn.title = 'Paramètres';
+        button = document.createElement('button');
+        button.className = 'maplibregl-ctrl-icon parameters-btn';
+        button.type = 'button';
+        button.title = 'Paramètres';
         //button.textContent = '⚙️'; // 
-        this._parametersBtn.onclick = () => {
+        button.onclick = () => {
           document.getElementById('clusterRadius').value = clusterRadius;
           modal.style.display = 'block';
         };
-        this._container.appendChild(this._parametersBtn);
+        this._container.appendChild(button);
         return this._container;
       }
       onRemove() {
@@ -676,7 +668,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         this._map = undefined;
       }
     }
-    widgetControl = map.addControl(new WidgetControl(), 'top-right');
+    map.addControl(new WidgetControl(), 'top-right');
 
     // Custom control class
     class InstructionControl {
@@ -1017,11 +1009,6 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
-
-
-
-
-
 
 
 
