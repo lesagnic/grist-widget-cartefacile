@@ -441,11 +441,10 @@ function handleNewRowClick(e) {
   	});
 	}
   document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
-  document.getElementById('newRowLabelLatidude').textContent = mapping.Latitude;
+  document.getElementById('newRowLabelLatitude').textContent = mapping.Latitude;
   document.getElementById('newRowLabelLongitude').textContent = mapping.Longitude;
   document.getElementById('newRowLat').value = lat;
   document.getElementById('newRowLon').value = lng;
-
   // Remove both listeners after first click
   map.off('click', handleNewRowClick);
   document.removeEventListener('keydown', handleNewRowEscKey);
@@ -1045,6 +1044,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
