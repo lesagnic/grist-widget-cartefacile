@@ -752,7 +752,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     });
     document.getElementById('saveNewRow').addEventListener('click', async () => {
       newRowDialog.style.display = 'none';
-			if ( Object.hasOwn(namedRecordLookup, document.getElementById('newRowTitle').value) {
+			if ( Object.hasOwn(namedRecordLookup, document.getElementById('newRowTitle').value) ) {
 				alert("Mise à jour d'une ligne en cours de mise en oeuvre : "+document.getElementById('newRowTitle').value);
 			}
 			else {
@@ -1067,6 +1067,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
