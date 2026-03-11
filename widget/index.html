@@ -85,12 +85,15 @@
 		}
 
 		// Apply to both modals
-		makeDraggable("widgetParameters");
-		makeDraggable("widgetNewRow");		
+		document.addEventListener("DOMContentLoaded", function() {
+			makeDraggable("widgetParameters");
+			makeDraggable("widgetNewRow");		
+		});
 	</script>  // End of dragable script
 
 </body>
 </html>
+
 
 
 
