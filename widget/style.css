@@ -42,6 +42,11 @@ html,body, #map {
     background-position: center;
     background-repeat: no-repeat;    
 }
+/* Grey styling to disable a control button */
+.maplibregl-ctrl button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 /* style d'un contrôle Map Libre pour fournir des instructions dans le coin gauche */
 .instruction-control {
 	background: rgba(255, 255, 255, 0.6);
@@ -186,6 +191,7 @@ input:focus {
 //.btn-primary:hover {
 //  background: #3f7ecb;
 //}
+
 
 
 
