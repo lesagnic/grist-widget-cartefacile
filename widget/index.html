@@ -23,7 +23,7 @@
         Rayon d'aggrégation
         <input type="number" id="clusterRadius" placeholder="0">
       </label>
-       <div class="widget-dialog-footer">
+    	<div class="widget-dialog-footer">
         <button id="cancelSettings" class="btn btn-secondary">Annuler</button>
         <button id="saveSettings" class="btn btn-primary">Enregistrer</button>
       </div>
@@ -57,25 +57,24 @@
 	<script
 		// Reusable function to make any modal draggable
 		function makeDraggable(modalId) {
-  		const modal = document.getElementById(`${modalId}Content`);
+  		const content = document.getElementById(`${modalId}Content`);
   		const header = document.getElementById(`${modalId}Header`);
 
   		let offsetX = 0, offsetY = 0, isDragging = false;
 
   		header.addEventListener("mousedown", function(e) {
     		isDragging = true;
-				modalContent.style.transform = ""; // remove centering transform
-    		offsetX = e.clientX - modal.offsetLeft;
-    		offsetY = e.clientY - modal.offsetTop;
+				content.style.transform = ""; // remove centering transform
+    		offsetX = e.clientX - content.offsetLeft;
+    		offsetY = e.clientY - content.offsetTop;
     		document.addEventListener("mousemove", onMouseMove);
     		document.addEventListener("mouseup", onMouseUp);
   		});
 
   		function onMouseMove(e) {
     		if (!isDragging) return;
-    		modal.style.left = (e.clientX - offsetX) + "px";
-    		modal.style.top = (e.clientY - offsetY) + "px";
-    		modal.style.transform = ""; // remove center transform after drag
+    		content.style.left = (e.clientX - offsetX) + "px";
+    		content.style.top = (e.clientY - offsetY) + "px";
   		}
 
   		function onMouseUp() {
@@ -92,6 +91,7 @@
 
 </body>
 </html>
+
 
 
 
