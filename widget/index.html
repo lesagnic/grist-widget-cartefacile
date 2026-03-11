@@ -33,24 +33,27 @@
 	<!-- Fenêtre modal d'ajout d'une ligne -->
 	<div id="widgetNewRow" class="widget-dialog-modal">
 		<div id="widgetNewRowContent" class="widget-dialog-content">
-			<div id="widgetNewRowHeader" class="widget-dialog-header">Nouvelle ligne...</div>
-			<label id="newRowLabelTitle" for="newRowTitle">Libellé</label>
-			<input id="newRowTitle" name="Titre" list="newRowTitleValues" placeholder="Choisissez une ligne ou entrez un libellé">
-			<datalist id="newRowTitleValues">
+			<div id="widgetNewRowHeader" class="widget-dialog-header">Ajout/Mise à jour d'une ligne</div>
+			<label id="newRowLabelRecord" for="newRowRecord">Ligne à modifier (le cas échéant)</label>
+			<input id="newRowRecord" list="newRowRecordValues" placeholder="Choisissez une ligne à mettre à jour">
+			<select id="newRowRecordValues">
 				<!-- options To be managed in the widget -->
-			</datalist>
+			</select>
+			<label id="newRowLabelTitle" for="newRowTitle">Libellé</label>
+			<input id="newRowTitle" name="Titre" type="text" placeholder="A renseigner">
 			<label id="newRowLabelLatitude" for="newRowlat">Latitude</label>
 			<input id="newRowLat" name="Latitude" type="number" placeholder="">
 			<label id="newRowLabelLongitude" for="newRowLon">Longitude</label>
 			<input id="newRowLon" name="Longitude" type="number" placeholder="">
 			<div class="widget-dialog-footer">
 				<button id="cancelNewRow" class="btn btn-secondary">Annuler</button>
-				<button id="saveNewRow" class="btn btn-primary">Enregistrer</button>
+				<button id="saveNewRow" class="btn btn-primary">Ajouter</button>
 			</div>
 		</div>
 	</div>
 </body>
 </html>
+
 
 
 
