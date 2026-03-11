@@ -425,8 +425,27 @@ function disableBtn ( btnId ) {
 function handleNewRowClick(e) {
   const lng = e.lngLat.lng.toFixed(6);
   const lat = e.lngLat.lat.toFixed(6);
+  const datalist = document.getElementById('newRowTitleValues');
+	if ( datalist) {
+		datalist.innerHTML = "";
+		// Add new options
+  	currentRecords.forEach(record => {
+			// On récupère les colonnes mappées
+    	const mapped = grist.mapColumnNames(record);
+    	// Only look at invalid record
+    	if (mapped.Titre && (!mapped.Longitude || !mapped.Latitude) ) {
+	    	const option = document.createElement("option");
+  	  	option.value = mapped.Titre;
+    		datalist.appendChild(option);
+			}
+  	});
+	}
+  document.getElementById('newRowLabelTitle').value = mapping.Titre;
+  document.getElementById('newRowLabelLatidude').value = mapping.Latitude;
+  document.getElementById('newRowLabelLongitude').value = mapping.Longitude;
   document.getElementById('newRowLat').value = lat;
   document.getElementById('newRowLon').value = lng;
+
   // Remove both listeners after first click
   map.off('click', handleNewRowClick);
   document.removeEventListener('keydown', handleNewRowEscKey);
@@ -1026,6 +1045,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
