@@ -70,6 +70,8 @@ let internalAddRow = false;
 // When onRecord is called before the map is ready, lateMapFocus is set to true
 // in order to ChangeMapFocus as soon as the map is ready
 let lateMapFocus = false;
+// Detect removal of a row
+let recordRemoval = false;
 // Parameters model dialog box
 let modal = null;
 let newRowDialog = null;
@@ -593,7 +595,7 @@ if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
   geojsonFeatures.length=0;
 
 	// detect the removal of a record
-	const recordRemoval = currentRecords && currentRecords.length > table.length;	
+	recordRemoval = currentRecords && currentRecords.length > table.length;	
 
   // reset currentRecords and recordLookup
   currentRecords = table;
@@ -1134,6 +1136,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
