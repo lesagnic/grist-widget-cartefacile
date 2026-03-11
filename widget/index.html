@@ -18,7 +18,6 @@
   <!-- Fenêtre modal de gestion des  paramètres du widget -->
   <div id="widgetParameters" class="widget-dialog-modal">
     <div class="widget-dialog-content">
-	  // Need to identify the header to make the dialog draggable
       <div id="widgetParametersHeader" class="widget-dialog-header">Paramètres</div>
       <label>
         Rayon d'aggrégation
@@ -31,10 +30,7 @@
     </div>
   </div>
 
-	<!-- 
-				Fenêtre modal d'ajout d'une ligne
-	-->
-	<!-- La fenêtre -->
+	<!-- Fenêtre modal d'ajout d'une ligne -->
   <div id="widgetNewRow" class="widget-dialog-modal">
     <div class="widget-dialog-content">
       <div id="widgetNewRowHeader" class="widget-dialog-header">Nouvelle ligne</div>
@@ -57,7 +53,7 @@
     </div>
   </div>
 	
-	<!-- Drag functions -->
+	<!-- Function to make the dialog boxes dragable -->
 	<script
 		// Reusable function to make any modal draggable
 		function makeDraggable(modalId) {
@@ -95,6 +91,7 @@
 
 </body>
 </html>
+
 
 
 
