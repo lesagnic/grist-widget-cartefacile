@@ -672,7 +672,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
   		debounceMs: 300,    // Délai avant déclenchement (ms)
   		minChars: 3,        // Nombre minimum de caractères
   		maxResults: 5,      // Nombre maximum de résultats affichés
-		},'top-left');
+		}),'top-left');
 
 	      // Création d'un contrôle personnalisé pour les fonctionnalités du widget GRIST
     class WidgetControl {
@@ -1127,6 +1127,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
