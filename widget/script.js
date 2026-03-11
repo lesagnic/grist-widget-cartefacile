@@ -446,6 +446,7 @@ function handleNewRowClick(e) {
   			.forEach(key => {
 	    		const option = document.createElement("option");
   	  			option.value = key;
+  	  			option.textContent = key;
     			select.appendChild(option);
 			});
 	}
@@ -1066,6 +1067,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
