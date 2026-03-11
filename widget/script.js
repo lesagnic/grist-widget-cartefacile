@@ -95,7 +95,8 @@ let clusterRadius = 30;
 let mapReady = false;
 //
 let instructionControl = undefined;
-let alreadyEditingNewRow = false;
+// temporary disabled
+// let alreadyEditingNewRow = false;
 //
 // SetCursorPos expect a position in the table not the record.id : keep track of the records to determine the position from the id.
 let currentRecords = [];
@@ -416,11 +417,13 @@ function handleNewRowClick(e) {
   map.off('click', handleNewRowClick);
   document.removeEventListener('keydown', handleNewRowEscKey);
   document.removeEventListener('mousemove', handleNewRowMouseMove, true);
-  // retour au pointeur par défaut
-  map.getCanvas().style.cursor = cursorOnNewRowClick;
+  // temporary disbled : retour au pointeur par défaut
+  // map.getCanvas().style.cursor = cursorOnNewRowClick;
+  map.getCanvas().style.cursor = '';
   // Suppression de l'instruction
   map.removeControl(instructionControl);
-  alreadyEditingNewRow = false;
+	// Enable the button again
+	document.getElementById('newRowButton')?.enable();
   newRowDialog.style.display = 'block';
 }
 // ESC key handler
@@ -429,11 +432,13 @@ function handleNewRowEscKey(e) {
     map.off('click', handleNewRowClick);
     document.removeEventListener('keydown', handleNewRowEscKey);
     document.removeEventListener('mousemove', handleNewRowMouseMove, true);
-    // retour au pointeur par défaut
-    map.getCanvas().style.cursor = cursorOnNewRowClick;
+		// temporary disbled : retour au pointeur par défaut
+		// map.getCanvas().style.cursor = cursorOnNewRowClick;
+		map.getCanvas().style.cursor = '';
     // Suppression de l'instruction
     map.removeControl(instructionControl);
-    alreadyEditingNewRow = false;
+		// Enable the button again
+		document.getElementById('newRowButton')?.enable();
     // No newRowDialog display => need to reset the form fields before leaving
     document.getElementById('newRowTitle').value = '';
     document.getElementById('newRowLat').value = '';
@@ -625,14 +630,22 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         button.className = 'maplibregl-ctrl-icon add-row-btn';
         button.type = 'button';
         button.title = "Ajout d'une ligne";
-        button.onclick = () => {
-          if ( !alreadyEditingNewRow ) {
-            alreadyEditingNewRow = true ;
+				button.id = 'newRowButton';
+				button.enable = function() {
+    			this.disabled = false;          // allow clicks
+    			this.classList.remove('disabled');
+  			};
+ 				button.disable = function() {
+    			this.disabled = true;          // disable clicks
+    			this.classList.add('disabled');
+  			};
+       button.onclick = () => 
+						this.disable();
             // Add the control to the top-left corner
             instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
             map.addControl(instructionControl,'top-left');
-            // pointeur en forme de croix
-            cursorOnNewRowClick = map.getCanvas().style.cursor;
+            // Temporary disabled : backup the current cursor
+            // cursorOnNewRowClick = map.getCanvas().style.cursor;
             // Choose a specific cursor because crosshair appears sometimes white or black...
             // map.getCanvas().style.cursor = 'crosshair' ;
             map.getCanvas().style.cursor = svgCursorUri;
@@ -641,7 +654,6 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
             document.addEventListener('keydown', handleNewRowEscKey);
             // ... and ensure the mouse cursor remains
             document.addEventListener('mousemove', handleNewRowMouseMove, true);
-          }
         };
         this._container.appendChild(button);
         // Bouton paramètres
@@ -1004,6 +1016,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
