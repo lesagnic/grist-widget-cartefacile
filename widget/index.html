@@ -31,7 +31,10 @@
     </div>
   </div>
 
-	<!-- Fenêtre modal d'ajout d'une ligne -->
+	<!-- 
+				Fenêtre modal d'ajout d'une ligne
+	-->
+	<!-- La fenêtre -->
   <div id="widgetNewRow" class="widget-dialog-modal">
     <div class="widget-dialog-content">
       <div id="widgetNewRowHeader" class="widget-dialog-header">Nouvelle ligne</div>
@@ -53,9 +56,46 @@
       </div>
     </div>
   </div>
+	
+	<!-- Drag functions -->
+	<script
+		// Reusable function to make any modal draggable
+		function makeDraggable(modalId) {
+  		const modal = document.getElementById(modalId);
+  		const header = document.getElementById(`${modalId}Header`);
+
+  		let offsetX = 0, offsetY = 0, isDragging = false;
+
+  		header.addEventListener("mousedown", function(e) {
+    		isDragging = true;
+    		offsetX = e.clientX - modal.offsetLeft;
+    		offsetY = e.clientY - modal.offsetTop;
+    		document.addEventListener("mousemove", onMouseMove);
+    		document.addEventListener("mouseup", onMouseUp);
+  		});
+
+  		function onMouseMove(e) {
+    		if (!isDragging) return;
+    		modal.style.left = (e.clientX - offsetX) + "px";
+    		modal.style.top = (e.clientY - offsetY) + "px";
+    		modal.style.transform = ""; // remove center transform after drag
+  		}
+
+  		function onMouseUp() {
+    		isDragging = false;
+    		document.removeEventListener("mousemove", onMouseMove);
+    		document.removeEventListener("mouseup", onMouseUp);
+  		}
+		}
+
+		// Apply to both modals
+		makeDraggable("widgetParameters");
+		makeDraggable("widgetNewRow");		
+	</script>  // End of dragable script
 
 </body>
 </html>
+
 
 
 
