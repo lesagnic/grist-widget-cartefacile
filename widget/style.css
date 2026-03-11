@@ -113,10 +113,10 @@ html,body, #map {
 /* Modal content */
 .widget-dialog-content {
 	position: absolute; /* to make it draggable */
-    background-color: blue; //temporary => #fff
+    background-color: white;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.30);
-    width: 200px;
+    width: 250px;
     border: 1px solid #ddd;
     animation: fadeIn 0.2s ease-out;
 	/* Start centered */
@@ -186,6 +186,7 @@ input:focus {
 //.btn-primary:hover {
 //  background: #3f7ecb;
 //}
+
 
 
 
