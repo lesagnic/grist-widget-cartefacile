@@ -502,9 +502,9 @@ function handleNewRowClick(e) {
 	map.off('click', handleNewRowClick);
 	document.removeEventListener('keydown', handleNewRowEscKey);
 	document.removeEventListener('mousemove', handleNewRowMouseMove, true);
-	// 3.2 Restore defualt curosr
+	// 3.2 Restore default cursor
 	map.getCanvas().style.cursor = '';
-	// 3.4 Stops Instruction ControlSuppression de l'instruction
+	// 3.4 Stops Instruction Control @InstructionControl
 	map.removeControl(instructionControl);
 	// 3.5 Enable AddRowBtn button again
 	enableBtn('AddRowBtn');
@@ -514,7 +514,7 @@ function handleNewRowClick(e) {
 	// Only need change the display styling of the Dialog Box div
 	newRowDialog.style.display = 'block';
 	//
-	// 5. Activate Dialob Box Listeners
+	// 5. Activate Dialog Box Listeners
 	//
 	// 5.1 For simplicity, there are permanent listeners on click on 
 	// the Dialog Box Button an on click outside the Dialog Box
@@ -527,56 +527,61 @@ function handleNewRowClick(e) {
 	// ...and whenever selection changes
 	newRecordSelect.addEventListener("change", handleRecordSelectChange);
 }
-// Temporary end of Clean up
 //
 // ESC key handler
+// Run in parallel to handleNewRowClick to stop listening to a click on te map
 function handleNewRowEscKey(e) {
-  if (e.key === 'Escape') {
-    map.off('click', handleNewRowClick);
-    document.removeEventListener('keydown', handleNewRowEscKey);
-    document.removeEventListener('mousemove', handleNewRowMouseMove, true);
+	if (e.key === 'Escape') {
+		map.off('click', handleNewRowClick);
+		document.removeEventListener('keydown', handleNewRowEscKey);
+		document.removeEventListener('mousemove', handleNewRowMouseMove, true);
 		map.getCanvas().style.cursor = '';
-    // Suppression de l'instruction
-    map.removeControl(instructionControl);
+		// Suppression de l'instruction
+		map.removeControl(instructionControl);
 		// Enable the button again
 		enableBtn('AddRowBtn');
 		// No newRowDialog display => need to reset the form fields before leaving
-    document.getElementById('newRowRecord').value = '';
-    document.getElementById('newRowTitle').value = '';
-    document.getElementById('newRowLat').value = '';
-    document.getElementById('newRowLon').value = '';
-  }
-}
-// To avoid external cursor changes while chosing the new row location
-function handleNewRowMouseMove(e) {
-   e.target.style.cursor = svgCursorUri;
+		document.getElementById('newRowRecord').value = '';
+		document.getElementById('newRowTitle').value = '';
+		document.getElementById('newRowLat').value = '';
+		document.getElementById('newRowLon').value = '';
+	}
 }
 //
-// Add a new row using mapped names
+// To avoid external cursor changes while chosing the new row location
+function handleNewRowMouseMove(e) {
+	e.target.style.cursor = svgCursorUri;
+}
+//
+// @EditTable : Add a new row using mapped names
 async function addOrUpdateRow(id,titre,lat,lon) {
-
-  if (!mapping.Longitude || !mapping.Latitude) {
-    console.error(widgetRootMsg+"Mapping not ready");
-    return;
-  }
-
-  // Build the record object using real column IDs
- 	let fields = {
-    [mapping.Longitude]: lon,
-    [mapping.Latitude]: lat
-  };
-  if (mapping.Titre && titre) {
-    fields[mapping.Titre] = titre;
-  }
-
-  try {
-		// Update row	
+	// Check mappings
+	if (!mapping.Longitude || !mapping.Latitude || !mapping.Titre) {
+		console.error(widgetRootMsg+"Column Mapping not ready");
+		return;
+	}
+	// Build the record object using real column IDs
+	// TBD : clarifiy whether titre, lon, lat have to checked
+	// At this stage, titre can't be reset which may be a useless constraint
+	// for the user 
+	let fields = {
+		[mapping.Longitude]: lon,
+		[mapping.Latitude]: lat
+	};
+	if ( titre ) fields[mapping.Titre] = titre;
+	//
+	// Proceed to Table update with error catching
+	//
+	try {
+		//
+		// Option 1 : Update row when a valid id is provided	
 		if ( id > 0 ) {
+			// 1.1 Call GRIST API for update
 			const result = await grist.selectedTable.update({ 
 				id: id,
 				fields: fields
 			});
-    	if (debug) console.log(widgetRootMsg+"Update Row result: ", JSON.stringify(result, null, 2));
+if (debug) console.log(widgetRootMsg+"Update Row result: ", JSON.stringify(result, null, 2));
 			// result seems to be always undefined
 			// There are subsequent calls to onRecords and onRecord which mays or not result to 
 			// a map focus on the updated row. Typically, if the recod was invalid, it is necessary
@@ -584,21 +589,21 @@ async function addOrUpdateRow(id,titre,lat,lon) {
 			// TBD : confirm whether Add and Update should result to Map focus or Map Selection from
 			// a user perspective...
 			setTimeout(() => {
-					f = geojsonFeatures.find(item => item.properties.id === id );
-					ChangeCurrentRow(id);
-					// The new record may not be valid
-					if (f) ChangeMapFocus(f);
-      }, 500); // adjust delay if needed
-		}
-		// Add row
-		else {
+				f = geojsonFeatures.find(item => item.properties.id === id );
+				ChangeCurrentRow(id);
+				// The new record may not be valid
+				if (f) ChangeMapFocus(f);
+			}, 500); // adjust delay if needed
+		// 
+		//	Option 2 : Add row
+		} else {
 			// In case of success, grist.SelectTable.create will generate a call to onRecord
-    	// which will change the currentRowID and shall ChangeMapSelection instead of
-    	// ChangeMapFocus, because the new row is created by the widget.
-    	// internalAddRow flags this.
-    	internalAddRow = true;
-    	const result = await grist.selectedTable.create({ fields: fields  });
-    	if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
+			// which will change the currentRowID and shall ChangeMapSelection instead of
+			// ChangeMapFocus, because the new row is created by the widget.
+			// internalAddRow flags this.
+			internalAddRow = true;
+    		const result = await grist.selectedTable.create({ fields: fields  });
+    if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
 			if (result && result.id > 0) {
 				// Need to wait for a backgrounf call to onRecords (table has changed !!!) and potential
 				// unwanted call to onRecord by a connected source widget
@@ -607,14 +612,17 @@ async function addOrUpdateRow(id,titre,lat,lon) {
 					ChangeCurrentRow(result.id);
 					// The new record may not be valid
 					if (f) ChangeMapSelection(f);
-      	}, 500); // adjust delay if needed
-			}
-		}
-  }  catch (err) {
-    internalAddRow = false; // creation unsuccessfull
-    console.error(widgetRootMsg+"Error adding row:", err);
-  }
-}
+    			}, 500); // adjust delay if needed
+			} // end of if result
+		} // end of option 2
+	//
+	// If not successfull
+  	} catch (err) {
+    	internalAddRow = false; // creation unsuccessfull
+    	console.error(widgetRootMsg+"Error adding row:", err);
+	}
+} // end of function addOrUpdateRow
+// Temporary end of Clean up
 // 
 //
 // API GRIST : ready
@@ -1284,6 +1292,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
