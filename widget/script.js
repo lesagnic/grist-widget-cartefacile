@@ -758,8 +758,15 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
   		styles: ['simple', 'aerial'],
   		overlays: ['administrativeBoundaries', 'cadastre', 'levelCurves']
 	}));
-if (debug) console.log("CarteFacile LayerGroup:\n"+CarteFacile.LayerGroup);
-		// Ajout de la fonction de recherche Carte Facile
+	// TBD: the styles and the overlays listed in MapSelectorControl parameter are made available
+	// but are not displayed except 'simple' style. I understand that the function CarteFacile.hideLayer
+	// and Cartefacile.showLayer can be used to hide and show layers considering that an overlay and style
+	// involve each many layers displays at different scales... For example :
+	// CarteFacile.showLayer(map, ['buildings', 'street_labels']);
+	// CarteFacile.LayerGroup is used below in debug mode to display the layer groups available.
+	// This will help to determine how efficiently show the needed layers
+if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.LayerGroup, null, 2));
+	// Ajout de la fonction de recherche Carte Facile
     map.addControl(new CarteFacile.SearchControl({
   		placeholder: 'Rechercher une adresse…',
   		debounceMs: 300,    // Délai avant déclenchement (ms)
@@ -1292,6 +1299,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
