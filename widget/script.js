@@ -511,7 +511,7 @@ function handleNewRowMouseMove(e) {
 }
 //
 // Add a new row using mapped names
-async function addRow(titre,lat,lon) {
+async function addOrUpdateRow(id,titre,lat,lon) {
 
   if (!mapping.Longitude || !mapping.Latitude) {
     console.error(widgetRootMsg+"Mapping not ready");
@@ -519,7 +519,7 @@ async function addRow(titre,lat,lon) {
   }
 
   // Build the record object using real column IDs
- let fields = {
+ 	let fields = {
     [mapping.Longitude]: lon,
     [mapping.Latitude]: lat
   };
@@ -528,22 +528,34 @@ async function addRow(titre,lat,lon) {
   }
 
   try {
-    // In case of success, grist.SelectTable.create will generate a call to onRecord
-    // which will change the currentRowID and shall ChangeMapSelection instead of
-    // ChangeMapFocus, because the new row is created by the widget.
-    // internalAddRow flags this.
-    internalAddRow = true;
-    const result = await grist.selectedTable.create({ fields: fields  });
-    if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
-		if (result && result.id > 0) {
-			// Need to wait for a backgrounf call to onRecords (table has changed !!!) and potential
-			// unwanted call to onRecord by a connected source widget
-			setTimeout(() => {
-				f = geojsonFeatures.find(item => item.properties.id === result.id );
-				ChangeCurrentRow(result.id);
-				// The new record may not be valid
-				if (f) ChangeMapSelection(f);
-      }, 500); // adjust delay if needed
+		// Update row	
+		if ( id > 0 ) {
+			  const result = await grist.selectedTable.update({ 
+					id: id,
+					fields: fields
+				});
+    	if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
+			// TBD : look at the result and onRecord/onRecords subsequent calls to define what to do next
+		}
+		// Add row
+		else {
+			// In case of success, grist.SelectTable.create will generate a call to onRecord
+    	// which will change the currentRowID and shall ChangeMapSelection instead of
+    	// ChangeMapFocus, because the new row is created by the widget.
+    	// internalAddRow flags this.
+    	internalAddRow = true;
+    	const result = await grist.selectedTable.create({ fields: fields  });
+    	if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
+			if (result && result.id > 0) {
+				// Need to wait for a backgrounf call to onRecords (table has changed !!!) and potential
+				// unwanted call to onRecord by a connected source widget
+				setTimeout(() => {
+					f = geojsonFeatures.find(item => item.properties.id === result.id );
+					ChangeCurrentRow(result.id);
+					// The new record may not be valid
+					if (f) ChangeMapSelection(f);
+      	}, 500); // adjust delay if needed
+			}
 		}
   }  catch (err) {
     internalAddRow = false; // creation unsuccessfull
@@ -802,12 +814,17 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 			document.removeEventListener("change", handleRecordSelectChange);
       newRowDialog.style.display = 'none';
 			if ( Object.hasOwn(recordLookup, document.getElementById('newRowRecord').value) ) {
-				alert("Mise à jour d'une ligne en cours de mise en oeuvre : "+document.getElementById('newRowRecord').value);
+      	await addOrUpdateRow(recordLookup[document.getElementById('newRowRecord').value].id,
+					document.getElementById('newRowTitle').value,
+          Number(document.getElementById('newRowLat').value),
+          Number(document.getElementById('newRowLon').value)
+      	);
 			}
 			else {
-      	await addRow(document.getElementById('newRowTitle').value,
-                   Number(document.getElementById('newRowLat').value),
-                   Number(document.getElementById('newRowLon').value)
+      	await addOrUpdateRow(0,
+					document.getElementById('newRowTitle').value,
+          Number(document.getElementById('newRowLat').value),
+          Number(document.getElementById('newRowLon').value)
       	);
 			}
       document.getElementById('newRowRecord').value = '';
@@ -954,13 +971,15 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
   		// Hide menu on map click or move
   		map.on('click', () => contextMenu.style.display = 'none');
  		 	map.on('movestart', () => contextMenu.style.display = 'none');
-  		// Action 1: Add record to table (TBD)
+  		// Action 1: Add record to table
+			// TBD : Use NewRecord Dialog Box throug a generic function managing
+			// this action, action 2 and the action related to add row from the widget control
   		document.getElementById('contextMenuAdd').addEventListener('click', () => {
 				alert("Mise en oeuvre en cours de l'ajout d'une ligne au point ("+clickedLngLat.lat.toFixed(5)+","+clickedLngLat.lng.toFixed(5)+")");
     		contextMenu.style.display = 'none';
   		});
-			// Action 2: Update Record (TBD)
-  		document.getElementById('contextMenuAdd').addEventListener('click', () => {
+			// Action 2: Update Record (TBD: See action 1)
+  		document.getElementById('contextMenuUpdate').addEventListener('click', () => {
 				alert("Mise en oeuvre en cours de la mise à jour d'une ligne au point ("
 							+clickedLngLat.lat.toFixed(5)
 							+","
@@ -1201,6 +1220,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
