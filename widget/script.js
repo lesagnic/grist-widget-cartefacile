@@ -45,11 +45,11 @@ const focusZoom = clusterMaxZoom + 0.1;
 // Cursor specific shape for chossing new row location
 const svgCursor = `
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-  <circle cx="8" cy="8" r="2" fill="none" stroke="black" stroke-width="1"/>
-  <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_1" x1="8" y1="1" x2="8" y2="6" stroke="black" stroke-width="1"/>
-  <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" x1="8" y1="15" x2="8" y2="10" stroke="black" stroke-width="1"/>
-  <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" x1="1" y1="8" x2="6" y2="8" stroke="black" stroke-width="1"/>
-  <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" x1="10" y1="8" x2="15" y2="8" stroke="black" stroke-width="1"/>
+	<circle cx="8" cy="8" r="2" fill="none" stroke="black" stroke-width="1"/>
+	<line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_1" x1="8" y1="1" x2="8" y2="6" stroke="black" stroke-width="1"/>
+	<line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" x1="8" y1="15" x2="8" y2="10" stroke="black" stroke-width="1"/>
+	<line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" x1="1" y1="8" x2="6" y2="8" stroke="black" stroke-width="1"/>
+	<line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" x1="10" y1="8" x2="15" y2="8" stroke="black" stroke-width="1"/>
 </svg>
 `;
 const svgCursorUri = `url('data:image/svg+xml;base64,${btoa(svgCursor)}') 8 8, auto`;
@@ -119,67 +119,61 @@ function addRecord2Lookup (id, title, lat, lon) {
 // The Active Popup of the selected feature is created in different contexts consistently
 function NewActiveFeaturePopup(f) {
 if (debug) console.log(widgetRootMsg+"NewActiveFeaturePopup : f="+JSON.stringify(f, null, 2));
-  return new maplibregl.Popup({
-      closeOnClick: false, // prevent popup to closewhen clickin outiside
-      anchor: 'bottom', // render the popup above the anchor
-      offset: popupOffset, // More or less the center of the marker circle
-      className: 'maplibregl-popup'
-    })
-    .setLngLat(f.geometry.coordinates)
-    .setHTML(`${f.properties.title}`)
-    .addTo(map);
+	return new maplibregl.Popup({
+		closeOnClick: false, // prevent popup to closewhen clickin outiside
+		anchor: 'bottom', // render the popup above the anchor
+		offset: popupOffset, // More or less the center of the marker circle
+		className: 'maplibregl-popup'
+	})
+	.setLngLat(f.geometry.coordinates)
+	.setHTML(`${f.properties.title}`)
+	.addTo(map);
 }
 // Change of the current row is called only when it comes
 // from the widget ....
 function ChangeCurrentRow(id) {
 if (debug) console.log(widgetRootMsg+"ChangeCurrentRow : id="+id
-                       +", currentRowId="+currentRowId
-                       +", internalCursorPos="+internalCursorPos
-                       +" index="+currentRecords.findIndex(r => r.id === id));
-  if (id !== currentRowId) {
-    currentRowId = id;
-    internalCursorPos = true;
-    grist.setCursorPos?.({ rowId: id });
-    //const index = currentRecords.findIndex(r => r.id === id);
-    //if (index >= 0) {
-    //  grist.setCursorPos?.({ rowId: index });
-    //} else {
-    //  console.warn(`Record ID ${id} not found in current view`);
-    //}
-  }
+		+", currentRowId="+currentRowId
+		+", internalCursorPos="+internalCursorPos
+		+" index="+currentRecords.findIndex(r => r.id === id));
+	if (id !== currentRowId) {
+		currentRowId = id;
+		internalCursorPos = true;
+		grist.setCursorPos?.({ rowId: id });
+	}
 }
 // ... Set Current Row occurs only when it comes from an 
 // external widget
 function SetCurrentRow(id) {
 if (debug) console.log(widgetRootMsg+"SetCurrentRow : id="+id
-                       +", currentRowId="+currentRowId
-                       +", internalCursorPos="+internalCursorPos
-                       +" index="+currentRecords.findIndex(r => r.id === id));
-  if (id !== currentRowId) {
-    currentRowId = id;
-    internalCursorPos = false;
-  }
+		+", currentRowId="+currentRowId
+		+", internalCursorPos="+internalCursorPos
+    	+" index="+currentRecords.findIndex(r => r.id === id));
+	if (id !== currentRowId) {
+		currentRowId = id;
+		internalCursorPos = false;
+	}
 }
 //
 // Change Map Selection and flyTo the selected feature
 function ChangeMapFocus(f) {
 if (debug) console.log(widgetRootMsg+"ChangeMapFocus : f: "+JSON.stringify(f, null, 2));
-  // Zoom in on the focus record when it is valid in "selected" widget mode
-  if (f) {
-      // Fit the map to the record
-      map.flyTo({
-        center: f.geometry.coordinates,
-        zoom: focusZoom,
-        speed: 3.0,       // Lower is slower
-        curve: 1.42,       // Flight curvature
-        easing: t => t,   // Linear easing
-        essential: true   // Required for accessibility
-      });
-  }
-  // Map Selection to be applied even if not f (for unselection)
-  ChangeMapSelection(f);
-
+	// Zoom in on the focus record when it is valid in "selected" widget mode
+	if (f) {
+		// Fit the map to the record
+		map.flyTo({
+			center: f.geometry.coordinates,
+			zoom: focusZoom,
+			speed: 3.0,       // Lower is slower
+			curve: 1.42,       // Flight curvature
+			easing: t => t,   // Linear easing
+			essential: true   // Required for accessibility
+		});
+	}
+	// Map Selection to be applied even if not f (for unselection)
+	ChangeMapSelection(f);
 }
+//
 // Change the color of the marker corresponding to the current row,
 // delete the previous Popup and create a new on using the data of feature f
 function ChangeMapSelection(f) {
@@ -195,77 +189,65 @@ if (debug) console.log(widgetRootMsg+"ChangeMapSelection : f: "+JSON.stringify(f
   }
   else { // no selection
     map.setPaintProperty('unclustered-point', 'icon-color', defaultColor);
-  }
-    
+  }    
   // Change active Popup    
   if (activePopup) activePopup.remove();
   if (f) activePopup = NewActiveFeaturePopup(f);
-
 }
+//
 // Return the BoundingBox of a set of features
 // A feature is expected to be a GeoJson objects.
 // It should have a geometry composed of a valid couple of coordinates (Lon,Lat)
 function BoundingBox(features) {
-   // Initialisation des coordonnées de la Bouding Box avec une valeur improbable
-  let westLng  = null;
-  let southLat = null;
-  let eastLng  = null;
-  let northLat = null;
-
-  if (!features) return;
-
-  // ... calcul de la bounding box
-  features.forEach(f => {
-      if ( westLng == null || westLng > f.geometry.coordinates[0] ) {
-        westLng = f.geometry.coordinates[0];
-      }
-      if ( southLat == null || southLat > f.geometry.coordinates[1] ) {
-        southLat = f.geometry.coordinates[1];
-      }
-      if ( eastLng == null || eastLng < f.geometry.coordinates[0] ) {
-        eastLng = f.geometry.coordinates[0];
-      }
-      if ( northLat == null || northLat < f.geometry.coordinates[1] ) {
-        northLat = f.geometry.coordinates[1];
-      } 
-  });
-
-  // Use the nullish coalescing operator (??) To keep a valid BBox when source data are emptied, 
-  BBox[0] = westLng ?? BBox[0]; // BBox[0] set to westlng only if westLng is not null and defined
-  BBox[1] = southLat ?? BBox[1]; 
-  BBox[2] = eastLng ?? BBox[2];
-  BBox[3] = northLat ?? BBox[3];
-
+	// Set local null bbox coordinates to keep the previous
+	// BBOX in case the new bbox is invalid
+	let westLng  = null;
+	let southLat = null;
+	let eastLng  = null;
+	let northLat = null;
+	//exit when no features
+	if (!features) return;
+	// ... calcul de la bounding box
+	features.forEach(f => {
+		if ( westLng == null || westLng > f.geometry.coordinates[0] ) westLng = f.geometry.coordinates[0];
+		if ( southLat == null || southLat > f.geometry.coordinates[1] ) southLat = f.geometry.coordinates[1];
+		if ( eastLng == null || eastLng < f.geometry.coordinates[0] ) eastLng = f.geometry.coordinates[0];
+		if ( northLat == null || northLat < f.geometry.coordinates[1] ) northLat = f.geometry.coordinates[1];
+	});
+	// Use the nullish coalescing operator (??) To keep a valid BBox when source data are emptied, 
+	BBox[0] = westLng ?? BBox[0]; // BBox[0] set to westlng only if westLng is not null and defined
+	BBox[1] = southLat ?? BBox[1]; 
+	BBox[2] = eastLng ?? BBox[2];
+	BBox[3] = northLat ?? BBox[3];
 }
 //
-// Calcul dynamique du padding pour le recentrage en fonction de la BBoc
+// FitBounds Dynamic padding computation
 function getDynamicPadding() {
-    // Calculate approximate geographic span
-    const lonDiff = Math.abs(BBox[2] - BBox[0]);
-    const latDiff = Math.abs(BBox[3] - BBox[1]);
-
-    // Heuristic: smaller area → bigger padding
-    const maxDiff = Math.max(lonDiff, latDiff);
-    if (maxDiff < 0.1) { // very close points
-        return 75;
-    } else if (maxDiff < 1) { // same city
-        return 50;
-    } else if (maxDiff < 5) { // same region
-        return 30;
-    } else { // large area (e.g., whole country)
-        return 10;
-    }
+	// Calculate approximate geographic span
+	const lonDiff = Math.abs(BBox[2] - BBox[0]);
+	const latDiff = Math.abs(BBox[3] - BBox[1]);
+	// Heuristic: smaller area → bigger padding
+	const maxDiff = Math.max(lonDiff, latDiff);
+	if (maxDiff < 0.1) { // very close points
+		return 75;
+	} else if (maxDiff < 1) { // same city
+		return 50;
+	} else if (maxDiff < 5) { // same region
+		return 30;
+	} else { // large area (e.g., whole country)
+		return 10;
+	}
 }
 //
 // Fit the map to the bounding box with padding
 // Note : At least two calls, on through the widget buttons, another when
 // creating the map. This function ensures the consistency.
 function FitBounds() {
-  map.fitBounds(BBox, {
-    padding: getDynamicPadding(),   // pixels
-    maxZoom: highestZoomLevel,      // prevent zooming in too far
-     duration: 1000                 // animation duration in ms
-  });
+	map.fitBounds(BBox, {
+		padding: getDynamicPadding(),	// pixels
+		maxZoom: highestZoomLevel,		// prevent zooming in too far
+		duration: 1000					// animation duration in ms
+	});
 }
 //
 // Mapping of the map data is by default clustered
@@ -276,156 +258,180 @@ function FitBounds() {
 // parameter. It is called once when the map is loaded
 // using the default cluster radius value
 function AddGristTable2Map () {
-
-  // Clustered Source
-  if (clusterRadius> 0) {
-
-    if (!map.getSource('markers')) {
-      map.addSource('markers', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [...geojsonFeatures] // Need to clone geojsonFeatures instead of passing it by reference
-        },
-        cluster: true,
-        clusterMaxZoom: clusterMaxZoom, // Maximum zoom level to cluster
-        clusterRadius: clusterRadius // Radius of each cluster in pixels
-        // 50 est trop grand 
-      });
-    }
-
-    // Add a layer to display clusters:
-    map.addLayer({
-      id: 'clusters', 
-      type: 'circle',
-      source: 'markers',
-      filter: ['has', 'point_count'], // important !!!
-      paint: {
-        // Use step expressions (https://maplibre.org/maplibre-style-spec/#expressions-step)
-        // with three steps to implement three types of circles:
-        //   * Blue, 20px circles when point count is less than 100
-        //   * Yellow, 30px circles when point count is between 100 and 750
-        //   * Pink, 40px circles when point count is greater than or equal to 750
-        'circle-color': [
-          'step',
-          ['get', 'point_count'],
-          '#51bbd6', // Blue
-          100,
-          '#f1f075', // Yellow
-          750,
-          '#f28cb1'  // Pink
-        ],
-        'circle-radius': [
-          'step',
-          ['get', 'point_count'],
-          10,
-          100,
-          15,
-          750,
-          20
-        ]
-      }
-    });
-
-    //Add a layer for cluster labels
-    map.addLayer({
-      id: 'cluster-count',
-      type: 'symbol', 
-      source: 'markers', 
-      filter: ['has', 'point_count'],
-      layout: { 
-        'text-field': '{point_count_abbreviated}',
-        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-        'text-size': 12
-      } 
-    });
-
-  } 
-  //
-  // Unclustered source
-  else {
-      map.addSource('markers', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [...geojsonFeatures] // Need to clone geojsonFeatures instead of passing it by reference
-        },
-        cluster: false
-      });
-  } //  if (clusterRadius > 0)
-
-  // Check whether the marker icon has to be added to the map
-  if (!map.hasImage('custom-marker')) {   
-      const img = new Image();
-      img.onload = () => {
-        map.addImage('custom-marker', img, { sdf: true });
-      };
-      img.src = `data:image/png;base64,${base64EncodedMarker}`;       
-  }
-     
-  let iconColor = defaultColor;
-  // apply selectedColor when id=currentRowId or defaultColor
-  if ( !currentRowId ) iconColor = [
-    'case',
-    ['==', ['coalesce', ['get', 'id'], ''], ['literal', currentRowId || '']],
-    selectedColor, // Selected point color
-    defaultColor  // Default color
-  ];
-  map.addLayer({
-    id: 'unclustered-point',
-    type: 'symbol',
-    source: 'markers',
-    filter: ['!', ['has', 'point_count']],
-    layout: {
-      'icon-image': 'custom-marker', // built-in SDF icon
-      'icon-size': markerIconSize,
-      'icon-anchor': 'bottom',
-      'icon-allow-overlap': true
-    },
-    paint: {
-      'icon-color': iconColor
-    }
-  });
-
-  
-  // Map is now ready for style changes through onRecord
-  mapReady = true;
+	//
+	// Option 1 : With Clustering
+	if (clusterRadius> 0) 
+		// 1.1 Set up the source
+		if (!map.getSource('markers')) {
+			map.addSource('markers', {
+				type: 'geojson',
+				data: {
+					type: 'FeatureCollection',
+					features: [...geojsonFeatures] // Need to clone geojsonFeatures instead of passing it by reference
+				},
+				cluster: true,
+				clusterMaxZoom: clusterMaxZoom, // Maximum zoom level to cluster
+				clusterRadius: clusterRadius // Radius of each cluster in pixels
+			});
+		}
+		// 1.2 Add a layer to display clusters:
+		map.addLayer({
+			id: 'clusters', 
+			type: 'circle',
+			source: 'markers',
+			filter: ['has', 'point_count'], // important !!! Identifiy clustered source features
+			paint: {
+				// Use step expressions (https://maplibre.org/maplibre-style-spec/#expressions-step)
+				// with three steps to implement three types of circles:
+				//   * Blue, 20px circles when point count is less than 100
+				//   * Yellow, 30px circles when point count is between 100 and 750
+				//   * Pink, 40px circles when point count is greater than or equal to 750
+				'circle-color': [
+					'step',
+					['get', 'point_count'],
+					'#51bbd6', // Blue
+					100,
+					'#f1f075', // Yellow
+					750,
+					'#f28cb1'  // Pink
+   		 		],
+				'circle-radius': [
+					'step',
+					['get', 'point_count'],
+					10,
+					100,
+					15,
+					750,
+					20
+				]
+			}
+		});
+		// 1.3 Add a layer for cluster labels
+		map.addLayer({
+			id: 'cluster-count',
+			type: 'symbol', 
+			source: 'markers', 
+			filter: ['has', 'point_count'],
+			layout: { 
+				'text-field': '{point_count_abbreviated}',
+				'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+				'text-size': 12
+			} 
+		});
+	}
+	//
+	// Option 2 : Without clustering
+	else {
+	  // Just need to set the source
+		map.addSource('markers', {
+			type: 'geojson',
+			data: {
+				type: 'FeatureCollection',
+				features: [...geojsonFeatures] // Need to clone geojsonFeatures instead of passing it by reference
+			},
+			cluster: false
+		});
+	} //  END OF if (clusterRadius > 0) else
+	//
+	// 3 : Set up the table row geographic representation
+	//
+	// 3.1 Check whether the marker icon (representing table rows in the map)
+	// has to be added to the map
+	if (!map.hasImage('custom-marker')) {   
+		const img = new Image();
+		img.onload = () => {
+			map.addImage('custom-marker', img, { sdf: true });
+		};
+		img.src = `data:image/png;base64,${base64EncodedMarker}`;       
+	}
+	//
+	// 3.2 Highlight current row marker (define the color rule)
+	// Apply selectedColor when id=currentRowId or defaultColor
+	let iconColor = defaultColor;
+	if ( !currentRowId ) iconColor = [
+		'case',
+		['==', ['coalesce', ['get', 'id'], ''], ['literal', currentRowId || '']],
+		selectedColor, // Selected point color
+		defaultColor  // Default color
+	];
+	//
+	// 3.3 Add the layer of the GRIST table markers (unclustered points)
+	map.addLayer({
+		id: 'unclustered-point',
+		type: 'symbol',
+		source: 'markers',
+		filter: ['!', ['has', 'point_count']],
+		layout: {
+			'icon-image': 'custom-marker', // built-in SDF icon
+			'icon-size': markerIconSize,
+			'icon-anchor': 'bottom',
+			'icon-allow-overlap': true
+		},
+		paint: {
+			'icon-color': iconColor
+		}
+	});
+	// 
+	// 3.4 At this stage, the map is ready
+	// It is possible to call ChangeMapSelection and ChangeMapFocus 
+	// typically when receiving change record selection through onRecord
+	mapReady = true;
 if(debug) console.log(widgetRootMsg+"Map is ready!!!");
-
-  // Select first line of the Grist table when creating the map
-  // (if it has not been set first by a call to onRecord...)
-	// or whan a row has been removed
-  if ( currentRowId==null || recordRemoval) {
-if(debug) console.log(widgetRootMsg+"currentRowId is null");
-      ChangeCurrentRow(geojsonFeatures[0].properties.id);
-      ChangeMapSelection(geojsonFeatures[0]);
-  }
-	// In case of record removal, it seems more appropriate
-	// to relocate the map to an overview of the table records
-	if ( recordRemoval ) FitBounds();
-
-  // Late map focus arise when loading the page if the connected widget
+	//
+	// 4. Set the initial row selection and display the table row representation
+	//
+	// 4.1 Option 1 : There has not been any selection yet
+	// Select first line of the Grist table when creating the map
+	// (if it has not been set first by a call to onRecord...)
+	if (currentRowId == null) {
+if(debug) console.log(widgetRootMsg+"AddGristTable2Map: currentRowId is null");
+		ChangeCurrentRow(geojsonFeatures[0].properties.id);
+		ChangeMapSelection(geojsonFeatures[0]);
+	}
+	//
+	// 4.2 Option 2 : A record has been removed
+	// TBD - Confirm whether :
+	// 1. This can really arise here
+	// 2. Best behaviour is always to select the first valid record,
+	//    i.e. there  is a case where the currentRowId would not
+	//    be the deleted one
+	// 3. It is more appropriate to relocate the map to an overview 
+	// of the table records
+	if ( recordRemoval ) {
+if(debug) console.log(widgetRootMsg+"AddGristTable2Map: a record has been removed (currentRowId="+currentRowId);
+		ChangeCurrentRow(geojsonFeatures[0].properties.id);
+		ChangeMapSelection(geojsonFeatures[0]);
+		// In case of record removal, 
+		FitBounds();
+		recordRemoval = false; // reset for security
+	}
+	//
+	// 4.3 Option 3 : Late Map Focus
+	// Late map focus arise when loading the page if the connected widget
 	// cursor position is not on the first row. Since it is not a user
 	// choice to focus on this record, we just apply a MapSelection
 	// instead of a MapFocus to provide an overview of the full table
-  if ( lateMapFocus ) {
+	if ( lateMapFocus ) {
 if(debug) console.log(widgetRootMsg+"lateMapFocus is true => Focus on:"+currentRowId);
-    ChangeMapSelection(geojsonFeatures.find(
-            item => item.properties.id === currentRowId
-      ));
-    lateMapFocus = false;
-  }
-
-  // Create Add hoverPopup
-  if ( !hoverPopup ) hoverPopup = new maplibregl.Popup({
-    closeButton: false,
-    closeOnClick: false,
-    anchor: 'bottom', // render the popup above the anchor
-    offset: popupOffset, // More or less the center of the marker circle
-    className: 'maplibregl-popup'
-  });
+		ChangeMapSelection(geojsonFeatures.find(
+			item => item.properties.id === currentRowId
+    	));
+		lateMapFocus = false;
+	}
+	//
+	// 5. Hover Poppup
+	//
+  	// Create Add hoverPopup
+	if ( !hoverPopup ) hoverPopup = new maplibregl.Popup({
+		closeButton: false,
+		closeOnClick: false,
+		anchor: 'bottom', // render the popup above the anchor
+		offset: popupOffset, // More or less the center of the marker circle
+		className: 'maplibregl-popup'
+	});
 
 }
+// Temporary end of Clean up
 //
 //
 function enableBtn ( btnId ) {
@@ -1231,6 +1237,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
