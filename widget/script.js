@@ -260,9 +260,9 @@ function FitBounds() {
 function AddGristTable2Map () {
 	//
 	// Option 1 : With Clustering
-	if (clusterRadius> 0) { 
+	if (clusterRadius > 0) {
 		// 1.1 Set up the source
-		if (!map.getSource('markers')) {
+		if ( !map.getSource('markers') ) {
 			map.addSource('markers', {
 				type: 'geojson',
 				data: {
@@ -318,10 +318,9 @@ function AddGristTable2Map () {
 				'text-size': 12
 			} 
 		});
-	}
 	//
 	// Option 2 : Without clustering
-	else {
+	} else {
 	  // Just need to set the source
 		map.addSource('markers', {
 			type: 'geojson',
@@ -1237,6 +1236,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
