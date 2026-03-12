@@ -430,68 +430,105 @@ if(debug) console.log(widgetRootMsg+"lateMapFocus is true => Focus on:"+currentR
 	});
 
 }
-// Temporary end of Clean up
 //
+// @WidgetControl : Management of GRIST Widget Control
 //
-function enableBtn ( btnId ) {
-	const btn = document.getElementById(btnId);
-	if ( btn ) {
-		btn.disabled = false;
-  	btn.classList.remove('disabled');
-	}
-}
+// Disable a Button
 function disableBtn ( btnId ) {
 	const btn = document.getElementById(btnId);
 	if ( btn ) {
 		btn.disabled = true;
-  	btn.classList.add('disabled');
+		btn.classList.add('disabled');
 	}
 }
-// Event handler for new row
-// Click handler
+// Enable a Button
+function enableBtn ( btnId ) {
+	const btn = document.getElementById(btnId);
+	if ( btn ) {
+		btn.disabled = false;
+		btn.classList.remove('disabled');
+	}
+}
+// 
+// @WidgetControl, @AddRowBtn
+//
+// @AddRowBtn Click handler
+// After a click event related to this function, it :
 function handleNewRowClick(e) {
-  const lng = e.lngLat.lng.toFixed(6);
-  const lat = e.lngLat.lat.toFixed(6);
-  newRecordSelect = document.getElementById('newRowRecord');
+	//
+	// 1. Gets the geograpohic coordinates of the click
+	const lng = e.lngLat.lng.toFixed(6);
+	const lat = e.lngLat.lat.toFixed(6);
+	//
+	// 2. Prepares the Add/Update Dialog Box
+	//
+	// 2.1 Setup the select input  @RowsSelector
+	newRecordSelect = document.getElementById('newRowRecord');
 	if ( newRecordSelect ) {
 		newRecordSelect.innerHTML = "";
-		// Create the placeholder option
-  	const placeholder = document.createElement("option");
-  	placeholder.textContent = "Choisissez une ligne à mettre à jour..."; // visible text
-  	placeholder.value = "";                          // empty value
-  	placeholder.disabled = true;                     // can't be selected after change
-  	placeholder.selected = true;                     // selected by default
-  	placeholder.hidden = true;                       // hides from dropdown list
+		// 2.2.1 Create the placeholder option
+		const placeholder = document.createElement("option");
+		placeholder.textContent = "Choisissez une ligne à mettre à jour..."; // visible text
+		placeholder.value = "";                          // empty value
+		placeholder.disabled = true;                     // can't be selected after change
+		placeholder.selected = true;                     // selected by default
+		placeholder.hidden = true;                       // hides from dropdown list
 		newRecordSelect.appendChild(placeholder);
-		// Add new options in lookup key (i.e. more or less title) alphabetic order
+		// 2.2.2. Add new option for each identified record in recordLookup key alphabetic order
+		// (more or less in record.id order)
+		// TBD : Ensure a formatting of recordLookup Keys ensuring id numeric order 
 		Object.keys(recordLookup)
   			.sort((a, b) => a.localeCompare(b)) // localeCompare handles case & accents
   			.forEach(key => {
-	    		const option = document.createElement("option");
-  	  		option.value = key;
-  	  		option.textContent = key;
-    			newRecordSelect.appendChild(option);
+				const option = document.createElement("option");
+  				option.value = key;
+  				option.textContent = key;
+				newRecordSelect.appendChild(option);
 			});
-	}
-  document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
-  document.getElementById('newRowLabelLatitude').textContent = mapping.Latitude;
-  document.getElementById('newRowLabelLongitude').textContent = mapping.Longitude;
-  if (document.getElementById('newRowLat')) document.getElementById('newRowLat').value = lat;
-  if (document.getElementById('newRowLon')) document.getElementById('newRowLon').value = lng;
-  // Remove both listeners after first click
-  map.off('click', handleNewRowClick);
-  document.removeEventListener('keydown', handleNewRowEscKey);
-  document.removeEventListener('mousemove', handleNewRowMouseMove, true);
-  map.getCanvas().style.cursor = '';
-  // Suppression de l'instruction
-  map.removeControl(instructionControl);
-	// Enable the button again
+	} // END if (recorrdSelect)
+	//
+	// 2.2 : Replace Dialog Box labels with mapped column names @UserContext
+	document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
+	document.getElementById('newRowLabelLatitude').textContent = mapping.Latitude;
+	document.getElementById('newRowLabelLongitude').textContent = mapping.Longitude;
+	//
+	// 2.3 : Set Dialog box Lon/Lat inputs using the coordinates of the click
+	if (document.getElementById('newRowLat')) document.getElementById('newRowLat').value = lat;
+	if (document.getElementById('newRowLon')) document.getElementById('newRowLon').value = lng;
+	//
+	// 3. Restore the context before Add row Button click @AddRowBtn
+	//
+	// 3.1. Remove listeners
+	map.off('click', handleNewRowClick);
+	document.removeEventListener('keydown', handleNewRowEscKey);
+	document.removeEventListener('mousemove', handleNewRowMouseMove, true);
+	// 3.2 Restore defualt curosr
+	map.getCanvas().style.cursor = '';
+	// 3.4 Stops Instruction ControlSuppression de l'instruction
+	map.removeControl(instructionControl);
+	// 3.5 Enable AddRowBtn button again
 	enableBtn('AddRowBtn');
-  newRowDialog.style.display = 'block';
-	// Run on load and whenever selection changes
+	//
+	// 4. Display the Add/Update Dialog Box
+	//
+	// Only need change the display styling of the Dialog Box div
+	newRowDialog.style.display = 'block';
+	//
+	// 5. Activate Dialob Box Listeners
+	//
+	// 5.1 For simplicity, there are permanent listeners on click on 
+	// the Dialog Box Button an on click outside the Dialog Box
+	// since they an work only when the Dialog Box is visible
+	//
+	// 5.2 Listen to the change event of the record select input
+	// TBD : See whether it should not be permanente as well
+	// Run on load ...
 	handleRecordSelectChange();
+	// ...and whenever selection changes
 	newRecordSelect.addEventListener("change", handleRecordSelectChange);
 }
+// Temporary end of Clean up
+//
 // ESC key handler
 function handleNewRowEscKey(e) {
   if (e.key === 'Escape') {
@@ -711,10 +748,16 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
     // Ajout d'un sélecteur de carte
     map.addControl(new CarteFacile.MapSelectorControl({
   		styles: ['simple', 'aerial'],
-  		overlays: ['administrativeBoundaries', 'cadastre']
+  		overlays: ['administrativeBoundaries', 'cadastre', 'levelCurves']
 	}));
+if (debug) console.log("CarteFacile LayerGroup:\n"+CarteFacile.LayerGroup);
 		// Ajout de la fonction de recherche Carte Facile
-    map.addControl(new CarteFacile.SearchControl());
+    map.addControl(new CarteFacile.SearchControl({
+  		placeholder: 'Rechercher une adresse…',
+  		debounceMs: 300,    // Délai avant déclenchement (ms)
+  		minChars: 3,        // Nombre minimum de caractères
+  		maxResults: 6      // Nombre maximum de résultats affichés
+	}));
 	// SearchControl recommended parameters : to be confirmed
 	//the ability to defined them with CDN
 	// ({
@@ -1236,6 +1279,11 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+/// For future use :
+
+//
+// @EditDialogBox : Functions for the management of the Dialog Box used to Add new
+//  Table Rows and Update the mapped columns
 
 
 
