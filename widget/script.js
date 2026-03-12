@@ -530,12 +530,23 @@ async function addOrUpdateRow(id,titre,lat,lon) {
   try {
 		// Update row	
 		if ( id > 0 ) {
-			  const result = await grist.selectedTable.update({ 
-					id: id,
-					fields: fields
-				});
-    	if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
-			// TBD : look at the result and onRecord/onRecords subsequent calls to define what to do next
+			const result = await grist.selectedTable.update({ 
+				id: id,
+				fields: fields
+			});
+    	if (debug) console.log(widgetRootMsg+"Update Row result: ", JSON.stringify(result, null, 2));
+			// result seems to be always undefined
+			// There are subsequent calls to onRecords and onRecord which mays or not result to 
+			// a map focus on the updated row. Typically, if the recod was invalid, it is necessary
+			// to apply a map focus after a certain time (waiting calls to onRecords/onRecord)
+			// TBD : confirm whether Add and Update should result to Map focus or Map Selection from
+			// a user perspective...
+			setTimeout(() => {
+					f = geojsonFeatures.find(item => item.properties.id === id );
+					ChangeCurrentRow(id);
+					// The new record may not be valid
+					if (f) ChangeMapMapFocus(f);
+      }, 500); // adjust delay if needed
 		}
 		// Add row
 		else {
@@ -1220,6 +1231,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
