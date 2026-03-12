@@ -769,7 +769,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
  		'boundaries_regions',
 		'boundaries',
 		'buildings',
-		'streets",
+		'streets',
 		'street_labels'
 	]);
 	// CarteFacile.LayerGroup is used below in debug mode to display the layer groups available.
@@ -1308,6 +1308,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
