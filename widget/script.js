@@ -78,7 +78,7 @@ let newRowDialog = null;
 // Columns Mapping for AddRows
 let mapping = {};
 // Context menu
-const contextMenu = document.getElementById('contextMenu');
+let contextMenu = null;
 let clickedLngLat = null;
 // 
 // Mapping management
@@ -649,13 +649,21 @@ if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
 if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 // END DEBUG
 
-  // Init dialogs
+	//
+  // Init dialog Box and context Menu
+	//
+	// Parameters Box
   if (!modal) {
     modal = document.getElementById('widgetParameters');
   }
+	// Row Box
   if (!newRowDialog) {
     newRowDialog = document.getElementById('widgetNewRow');
   }
+	// Context Menu : Init
+	if (!contextMenu) {
+		contextMenu = document.getElementById('contextMenu');
+	}
   
   // When the map does not exists : need to create it
   if (!map ) {
@@ -1193,6 +1201,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
