@@ -397,6 +397,9 @@ if(debug) console.log(widgetRootMsg+"currentRowId is null");
       ChangeCurrentRow(geojsonFeatures[0].properties.id);
       ChangeMapSelection(geojsonFeatures[0]);
   }
+	// In case of record removal, it seems more appropriate
+	// to relocate the map to an overview of the table records
+	if ( recordRemoval ) FitBounds();
 
   // Late map focus arise when loading the page if the connected widget
 	// cursor position is not on the first row. Since it is not a user
@@ -942,7 +945,11 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
         features: [...geojsonFeatures] // Again, need to clone the data
       });
 
-		  if ( recordRemoval ) {
+			// In case of record removal, it seems more appropriate
+			// to relocate the map to an overview of the table records
+			// and to select the first valid record
+		  if ( recordRemoval ) 
+		  	FitBounds();
       	ChangeCurrentRow(geojsonFeatures[0].properties.id);
       	ChangeMapSelection(geojsonFeatures[0]);
 			}
@@ -1136,6 +1143,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
