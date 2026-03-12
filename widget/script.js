@@ -260,7 +260,7 @@ function FitBounds() {
 function AddGristTable2Map () {
 	//
 	// Option 1 : With Clustering
-	if (clusterRadius> 0) 
+	if (clusterRadius> 0) { 
 		// 1.1 Set up the source
 		if (!map.getSource('markers')) {
 			map.addSource('markers', {
@@ -1237,6 +1237,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
