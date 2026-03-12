@@ -545,7 +545,7 @@ async function addOrUpdateRow(id,titre,lat,lon) {
 					f = geojsonFeatures.find(item => item.properties.id === id );
 					ChangeCurrentRow(id);
 					// The new record may not be valid
-					if (f) ChangeMapMapFocus(f);
+					if (f) ChangeMapFocus(f);
       }, 500); // adjust delay if needed
 		}
 		// Add row
@@ -1231,6 +1231,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
