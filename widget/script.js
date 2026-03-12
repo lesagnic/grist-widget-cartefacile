@@ -953,7 +953,12 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
   		});
 			// Action 2: Update Record (TBD)
   		document.getElementById('contextMenuAdd').addEventListener('click', () => {
-				alert("Mise en oeuvre en cours de la mise à jour d'une igne au point ("+clickedLngLat.lat.toFixed(5)+","+clickedLngLat.lng.toFixed(5)+")");
+				alert("Mise en oeuvre en cours de la mise à jour d'une ligne au point ("
+							+clickedLngLat.lat.toFixed(5)
+							+","
+							+clickedLngLat.lng.toFixed(5)
+							+")"
+				);
     		contextMenu.style.display = 'none';
   		});
   		// Action 3: Show coordinates
@@ -993,7 +998,7 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 			// In case of record removal, it seems more appropriate
 			// to relocate the map to an overview of the table records
 			// and to select the first valid record
-		  if ( recordRemoval ) 
+		  if ( recordRemoval ) {
 		  	FitBounds();
       	ChangeCurrentRow(geojsonFeatures[0].properties.id);
       	ChangeMapSelection(geojsonFeatures[0]);
@@ -1188,6 +1193,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
