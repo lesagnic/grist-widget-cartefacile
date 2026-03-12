@@ -77,6 +77,9 @@ let modal = null;
 let newRowDialog = null;
 // Columns Mapping for AddRows
 let mapping = {};
+// Context menu
+const contextMenu = document.getElementById('contextMenu');
+let clickedLngLat = null;
 // 
 // Mapping management
 //
@@ -925,8 +928,50 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
       map.on('mouseleave', 'clusters', () => {
         map.getCanvas().style.cursor = '';
       });  
+
+			//
+			// ContextMenu
+			//
+			// Intercept right-click
+  		map.on('contextmenu', (e) => {
+    		e.preventDefault(); // Prevent default browser menu
+    		clickedLngLat = e.lngLat;
+    		// Position the menu at mouse location
+    		contextMenu.style.left = e.point.x + 'px';
+    		contextMenu.style.top = e.point.y + 'px';
+    		contextMenu.style.display = 'block';
+				// TBD : Grey Update record contexte menu item if there isn't 
+				// any record marker at this location
+  		});
+  		// Hide menu on map click or move
+  		map.on('click', () => contextMenu.style.display = 'none');
+ 		 	map.on('movestart', () => contextMenu.style.display = 'none');
+  		// Action 1: Add record to table (TBD)
+  		document.getElementById('contextMenuAdd').addEventListener('click', () => {
+				alert("Mise en oeuvre en cours de l'ajout d'une ligne au point ("+clickedLngLat.lat.toFixed(5)+","+clickedLngLat.lng.toFixed(5)+")");
+    		contextMenu.style.display = 'none';
+  		});
+			// Action 2: Update Record (TBD)
+  		document.getElementById('contextMenuAdd').addEventListener('click', () => {
+				alert("Mise en oeuvre en cours de la mise à jour d'une igne au point ("+clickedLngLat.lat.toFixed(5)+","+clickedLngLat.lng.toFixed(5)+")");
+    		contextMenu.style.display = 'none';
+  		});
+  		// Action 3: Show coordinates
+			// TBD : Enhance presentation possibly using a Dialog Box
+  		document.getElementById('contextMenuShow').addEventListener('click', () => {
+    		alert(`Latitude: ${clickedLngLat.lat.toFixed(5)}\nLongitude: ${clickedLngLat.lng.toFixed(5)}`);
+    		contextMenu.style.display = 'none';
+  		});
+  		// Hide menu if clicking outside
+			// TBD : check whether this event does not already exist
+  		document.addEventListener('click', (e) => {
+    		if (!contextMenu.contains(e.target)) {
+      		contextMenu.style.display = 'none';
+    		}
+  		});
    
-    }); // end map.on
+    }); // end map.on load
+		
   } // if (!map)
 
   // when there is already a map :
@@ -1143,6 +1188,7 @@ function makeDraggable(modalId) {
 }
 //
 /// END  OF FILE
+
 
 
 
