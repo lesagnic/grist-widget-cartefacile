@@ -1138,7 +1138,7 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 			// TBD : check whether this event does not already exist
 			document.addEventListener('click', (e) => {
 				// @ContextMenu cancel
-				if (!contextMenu.contains(e.target)) {
+				if (contextMenu && !contextMenu.contains(e.target)) {
 					contextMenu.style.display = 'none';
 				}
 			});
@@ -1360,6 +1360,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
