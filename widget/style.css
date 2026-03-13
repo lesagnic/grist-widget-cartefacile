@@ -175,6 +175,11 @@ select {
 select[value=""] {
   color: #888; /* placeholder grey */
 }
+/* Style the dropdown options */
+select option {
+	font-size: 12px;
+	color: black;
+}
 input:focus, select:focus {
     outline: none;
     border-color: #4a90e2;
