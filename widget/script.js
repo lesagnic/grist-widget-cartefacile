@@ -656,7 +656,7 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: f="+JSON.stringify(
 	if (f && f.properties.id > 0) {
 		editRecordSelect.value = recordKey(
 			f.properties.id,
-			f.properties.titre,properties
+			f.properties.titre,
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		);
