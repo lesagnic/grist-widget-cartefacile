@@ -823,7 +823,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
-	}
+	});
 	updateRecordBtn.addEventListener('click', async () => {
 		recordBox.style.display = 'none';
 		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordRecord').value) ) {
@@ -838,7 +838,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
-	}
+	});
 	deleteRecordBtn.addEventListener('click', async () => {
 		recordBox.style.display = 'none';
 		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordRecord').value) ) {
@@ -854,7 +854,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
-	}								 
+	});						 
 	//
 	makeDraggable("widgetParameters");
 	makeDraggable("widgetEditRecord");		
@@ -1389,6 +1389,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
