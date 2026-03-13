@@ -652,8 +652,8 @@ function handleEditRecordClick(e) {
 	if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 	if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 	const f = ClosestNearByFeature(e);
-if (debug) console.log(widgetRootMsg+"handleEditRecordClick: f="+JSON.stringify(f, null, 2));	
-	if (f && f.properties.id > 0) {
+if (debug) console.log(widgetRootMsg+"handleEditRecordClick: id=";+f.properties.id+"f="+JSON.stringify(f, null, 2));	
+	if (f && f.properties.id ) {
 if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordKey(
 			f.properties.id,
 			f.properties.titre,
