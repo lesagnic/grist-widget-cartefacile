@@ -811,23 +811,6 @@ if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
 if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
 if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 //
-// Init dialog Box and context Menu
-// @ParameterBox : init
-if (!parameterBox) {
-	parameterBox = document.getElementById('widgetParameters');
-}
-// @RecordBox : init
-if (!recordBox) {
-	recordBox = document.getElementById('widgetNewRow');
-}
-// @ContextMenu : init
-if (debug) console.log(widgetRootMsg+"Context menu:"+contextMenu);
-if (!contextMenu) {
-if (debug) console.log(widgetRootMsg+"Context menu is null");
-	contextMenu = document.getElementById('contextMenu');
-if (debug) console.log(widgetRootMsg+"Context menu after getElementById: "+contextMenu);
-}
-//
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // API GRIST : onOptions
 // @GristAPI, @GristOnOptions
@@ -1325,6 +1308,23 @@ function handleRecordSelectChange() {
 //
 // Apply to all modal Dialog Boxes
 document.addEventListener("DOMContentLoaded", function() {
+	//
+	// Init dialog Box and context Menu
+	// @ParameterBox : init
+	if (!parameterBox) {
+		parameterBox = document.getElementById('widgetParameters');
+	}
+	// @RecordBox : init
+	if (!recordBox) {
+		recordBox = document.getElementById('widgetNewRow');
+	}
+	// @ContextMenu : init
+if (debug) console.log(widgetRootMsg+"Context menu:"+contextMenu);
+	if (!contextMenu) {
+if (debug) console.log(widgetRootMsg+"Context menu is null");
+		contextMenu = document.getElementById('contextMenu');
+if (debug) console.log(widgetRootMsg+"Context menu after getElementById: "+contextMenu);
+	}
 	makeDraggable("widgetParameters");
 	makeDraggable("widgetNewRow");		
 });
@@ -1363,6 +1363,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
