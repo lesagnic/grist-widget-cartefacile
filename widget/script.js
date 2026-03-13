@@ -295,6 +295,37 @@ function FitBounds() {
 	});
 }
 //
+function ClosestNearByFeature(e) {
+	const point = e.point; // pixel coordinates
+	const lngLat = e.lngLat; // geographic coordinates
+	//
+	// Search radius in pixels
+	const radiusPx = 50;
+	const bbox = [
+		[point.x - radiusPx, point.y - radiusPx],
+		[point.x + radiusPx, point.y + radiusPx]
+  	];
+  	// Query only your point layer
+  	const features = map.queryRenderedFeatures(bbox, {
+		layers: ['unclustered-point']
+	});
+	// No Nearby feature
+  	if (!features.length) null;
+	// Sort by distance from click
+  	const sorted = features
+		.map(f => {
+			const coords = f.geometry.coordinates; // [lng, lat]
+			const dist = turf.distance(
+				turf.point([lngLat.lng, lngLat.lat]),
+				turf.point(coords),
+        		{ units: 'meters' }
+      		);
+      		return { feature: f, distance: dist };
+		})
+    	.sort((a, b) => a.distance - b.distance);
+	return sorted[0].feature);
+}
+//
 // Mapping of the map data is by default clustered
 // but it is possible to change the cluster radius
 // possibly any positive integer including 0 (no cluster).
@@ -611,13 +642,27 @@ function handleEditRecordClick(e) {
 	const lat = e.lngLat.lat.toFixed(6);
 	//
 	// 2. Prepares the Add/Update Dialog Box
-	// 2.1 : Set Dialog box Lon/Lat inputs using the coordinates of the click
+	//
 	if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 	if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
-	// 2.2 Hide update and delete button, show add button
-	addRecordBtn.disabled = false;
-	updateRecordBtn.disabled = true;
-	deleteRecordBtn.disabled = true;
+	const f = ClosestNearByFeature(e);
+	if (f && f.properties.id>0) {
+		editRecordSelect.value = recordKey(
+			f.properties.id,
+			f.properties.titre,
+			f.geometry.coordinates[1],
+			f.geometry.coordinates[0]
+		);
+		addRecordBtn.disabled = true;
+		updateRecordBtn.disabled = false;
+		deleteRecordBtn.disabled = true;
+	}
+	else {
+		editRecordSelect.value = "";
+		addRecordBtn.disabled = false;
+		updateRecordBtn.disabled = true;
+		deleteRecordBtn.disabled = true;
+	}
 	//
 	// 3. Restore the context before Add row Button click @AddRowBtn
 	//
@@ -674,9 +719,9 @@ if (debug) console.log(widgetRootMsg+"addOrUpdateRow: id"+id+
 		return;
 	}
 	// Build the record object using real column IDs
-	// TBD : clarifiy whether titre, lon, lat have to checked
-	// At this stage, titre can't be reset which may be a useless constraint
-	// for the user 
+	// For number columns (lat, lon), field value for the colmun ID
+	// has to be set to null when value from the dialog box is an
+	// Any other solution result with an error or 0
 	let fields = {};
 	fields[mapping.Titre] = titre;
 	if ( lat==="" ) fields[mapping.Latitude] = null;
@@ -1395,6 +1440,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
