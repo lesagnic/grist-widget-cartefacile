@@ -801,6 +801,32 @@ grist.ready({
 });
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// AT THIS STAGE, NEED TO WAIT FOR DOM CONTENT TO BE LOADED
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Apply to all modal Dialog Boxes
+document.addEventListener("DOMContentLoaded", function() {
+	//
+	// Init dialog Box and context Menu
+	// @ParameterBox : init
+	if (!parameterBox) {
+		parameterBox = document.getElementById('widgetParameters');
+	}
+	// @RecordBox : init
+	if (!recordBox) {
+		recordBox = document.getElementById('widgetNewRow');
+	}
+	// @ContextMenu : init
+if (debug) console.log(widgetRootMsg+"Context menu:"+contextMenu);
+	if (!contextMenu) {
+if (debug) console.log(widgetRootMsg+"Context menu is null");
+		contextMenu = document.getElementById('contextMenu');
+if (debug) console.log(widgetRootMsg+"Context menu after getElementById: "+contextMenu);
+	}
+	makeDraggable("widgetParameters");
+	makeDraggable("widgetNewRow");		
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Trace and init when GRIST is ready
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -1306,29 +1332,6 @@ function handleRecordSelectChange() {
   }
 }
 //
-// Apply to all modal Dialog Boxes
-document.addEventListener("DOMContentLoaded", function() {
-	//
-	// Init dialog Box and context Menu
-	// @ParameterBox : init
-	if (!parameterBox) {
-		parameterBox = document.getElementById('widgetParameters');
-	}
-	// @RecordBox : init
-	if (!recordBox) {
-		recordBox = document.getElementById('widgetNewRow');
-	}
-	// @ContextMenu : init
-if (debug) console.log(widgetRootMsg+"Context menu:"+contextMenu);
-	if (!contextMenu) {
-if (debug) console.log(widgetRootMsg+"Context menu is null");
-		contextMenu = document.getElementById('contextMenu');
-if (debug) console.log(widgetRootMsg+"Context menu after getElementById: "+contextMenu);
-	}
-	makeDraggable("widgetParameters");
-	makeDraggable("widgetNewRow");		
-});
-//
 // Reusable function to make any modal Dialog Boxes draggable
 function makeDraggable(modalId) {
   const content = document.getElementById(`${modalId}Content`);
@@ -1356,6 +1359,9 @@ function makeDraggable(modalId) {
     document.removeEventListener("mouseup", onMouseUp);
   }
 }
+
+
+});
 //
 /// END  OF FILE
 /// For future use :
@@ -1363,6 +1369,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
