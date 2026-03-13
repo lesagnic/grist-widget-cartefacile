@@ -204,6 +204,9 @@ input:focus, select:focus {
 //.btn-primary:hover {
 //  background: #3f7ecb;
 //}
+.btn:disabled {
+	display: none;
+}
 /* 
   Context menu styling
 */
@@ -230,6 +233,7 @@ input:focus, select:focus {
 #contextMenu li:hover {
     background: #eee;
 }
+
 
 
 
