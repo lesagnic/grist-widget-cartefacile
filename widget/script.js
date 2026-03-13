@@ -654,7 +654,6 @@ function handleEditRecordClick(e) {
 	const f = ClosestNearByFeature(e);
 	let gf = null;
 	if (f && f.properties.id ) gf = geojsonFeatures.find(item => item.properties.id === f.properties.id);
-if (debug) console.log(widgetRootMsg+"handleEditRecordClick: id="+f.properties.id+", f="+JSON.stringify(f, null, 2));	
 	if (gf) {
 if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordKey(
 			gf.properties.id,
@@ -668,12 +667,7 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 			gf.geometry.coordinates[1],
 			gf.geometry.coordinates[0]
 		);
-		document.getElementById('editRecordTitle').value <= recordKey(
-			gf.properties.id,
-			gf.properties.title,
-			gf.geometry.coordinates[1],
-			gf.geometry.coordinates[0]
-		);
+		document.getElementById('editRecordTitle').value = gf.properties.title;
 		addRecordBtn.disabled = true;
 		updateRecordBtn.disabled = false;
 		deleteRecordBtn.disabled = true;
