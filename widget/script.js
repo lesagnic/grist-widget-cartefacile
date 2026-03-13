@@ -298,8 +298,8 @@ function FitBounds() {
 function ClosestNearByFeature(e) {
 if(debug) console.log(widgetRootMsg+"ClosestNearByFeature: x="+e.point.x
 					  +", y="+e.point.y
-					  +", lat="+e.latlng.lat
-					  +", lon="+e.latlng.lng
+					  +", lat="+e.lngLat.lat
+					  +", lon="+e.lngLat.lng
 );
 	const point = e.point; // pixel coordinates
 	const lngLat = e.lngLat; // geographic coordinates
