@@ -316,7 +316,7 @@ if(debug) console.log(widgetRootMsg+"ClosestNearByFeature: x="+e.point.x
 	});
 	// No Nearby feature
 if (debug) console.log(widgetRootMsg+"ClosestNearByFeature: nbfeatures="+features.length);
-	if (features.length === 0) null;
+	if (features.length) return null;
 	// Sort by distance from click
   	const sorted = features
 		.map(f => {
