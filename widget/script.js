@@ -3,6 +3,57 @@
 const widgetName = "Grist Widget Carte Facile";
 const widgetVersion = "1.0.16" // Increment at least last figure for new release
 //
+// Features
+//
+//	@GristAPI: Grist widget event handlers
+//		@GristReady: set mapped columns (@MappedColumns), requiredAccess, allowSelectBy
+//		@GristOnOptions: debug trace
+//		@GristOnRecords: set recordLookup (@Recordlookup), BBox (@BoundingBox)
+//		@GristOnRecord
+//	@RecordBox: Record Dialog Box to edit the records of the GRIST Table)
+let recordBox = null;
+//		@RecordBoxSelector : select input for records
+//	@ParameterBox: Dialog Box to edit widget parameters
+let parameterBox = null;
+//	@ContextMenu: Context menu (on right click)
+let contextMenu = null; // context Menu HTML element
+let clickedLngLat = null; // geographic location of the right click event
+//		@AddRecord
+//		@UpdateRecord
+//		@ShowCoordinates
+//	@InstructionControl: Display user instructions in a 'top'left Map Libre Control
+let instructionControl = null;
+//		SetInstruction: Display a (new) instruction
+//		UnsetInstruction: Remove the (last) instruction
+//	@WidgetControl : Management of GRIST Widget main Control
+//		@WcBtnMngt: Disable/Enable a Button
+//		@HandleNewRowClick 
+//		@HandleNewRowEscKey
+//		@FitBoundsBtn => @FitBounds
+//		@MapFocusBtn => @MapFocus
+//		@AddRowBtn => @HandleNewRowClick, @HandleNewRowEscKey
+//		@ParameterBtn => ... TBD
+//	@Recordlookup : Easy access to record data from record key
+let recordLookup = {};
+//	@BoundingBox : Bounding Box of valid rows ([0]=>west, [1]=>south, [2]=>east, [3] = north)
+let BBox = [];
+//	@MapLibre : management of of the map
+let mapLibre = null; // reference to the map
+//		@FitBounds : Zoom on the BBox (@BoundingBox)
+//		@NavigationControl: Navigation Built-in Map Libre Control
+//		@ScaleControl: Scale Built-in Map Libre Control
+//		@MapSelectorControl: Built-in Carte Facile Control (select style and overlay to display)
+//		@SearchControl: new Built-in Carte Facile Control (find a place by name)
+//		@Marker : each record a represented on the map with a marker symbol
+//		@Cluster: Agregation of records in high density area
+//		@SelectedMarker: Highlight the marker of the selected record with a different color
+//		@SelectedPopup: Display the selected record title in a Popup
+//		@HoverPopup: Display the record title on a Popup when the cursor is hover a record marker
+//	@CursorShape
+//	@OutsideClick
+//		
+//
+//
 // Debug management
 //
 // Set debug to true to send log to the console
@@ -12,7 +63,7 @@ const widgetRootMsg = `${widgetName} v${widgetVersion} `;
 // Debug message template to be used (Replace "Debug on" with your message)
 if (debug) console.log(widgetRootMsg+"Debug on");
 //
-// Styling of markers
+// Styling of markers (@Marker)
 //
 // Base 64 encoding of the marker PNG File
 // The PNG can be black & white (2-colours) but transparency
@@ -23,6 +74,7 @@ const defaultColor = '#0070C0';   // blue
 const selectedColor = '#548235';  // green
 // marker.png height is 82 pixels. It is reduced using markerIconSize factor
 const markerIconSize = 0.25;
+// Styling of Popup (@HoverPopup, @SelectedPopup)
 const popupOffset = 13; // 2/3 of marker height after resizing
 //
 // Zoom management
@@ -67,43 +119,31 @@ let hoverPopup = null;
 let internalCursorPos = false;
 // Detect internal add row
 let internalAddRow = false;
-// When onRecord is called before the map is ready, lateMapFocus is set to true
-// in order to ChangeMapFocus as soon as the map is ready
+// When onRecord is called before the mapLibre is ready, lateMapFocus is set to true
+// in order to ChangeMapFocus as soon as the mapLibre is ready
 let lateMapFocus = false;
 // Detect removal of a row
 let recordRemoval = false;
-// Parameters model dialog box
-let modal = null;
-let newRowDialog = null;
 // Columns Mapping for AddRows
 let mapping = {};
-// Context menu
-let contextMenu = null;
-let clickedLngLat = null;
 // 
 // Mapping management
 //
-// reference to the map
-let map = null;
 // list of features corresponding to valid rows
 let geojsonFeatures = [];
-// Bouding Box ogf valid rows
-let BBox = [];
-// It is used in onRecord to avoid style changes when the map is not yet loaded
+// It is used in onRecord to avoid style changes when the mapLibre is not yet loaded
 // Cluster radius (0=>no cluster) in pixels. This can be changed by the users
 // via the widget buttons to fit the feature density.
 let clusterRadius = 30;
-// Flag set to true when map has been loaded. 
+// Flag set to true when mapLibre has been loaded. 
 let mapReady = false;
 //
-let instructionControl = undefined;
 let newRecordSelect = null;
 //
 // SetCursorPos expect a position in the table not the record.id : keep track of the records to determine the position from the id.
 let currentRecords = [];
 //
-// Lookup of records having at least a valid id
-let recordLookup = {};
+
 // The lookup key structure is: id. title (lon,lat)
 function recordKey(id, title, lat, lon) {
 	return id + ". " +title + " (" + lat + "," + lon + ")";
@@ -127,7 +167,7 @@ if (debug) console.log(widgetRootMsg+"NewActiveFeaturePopup : f="+JSON.stringify
 	})
 	.setLngLat(f.geometry.coordinates)
 	.setHTML(`${f.properties.title}`)
-	.addTo(map);
+	.addTo(mapLibre);
 }
 // Change of the current row is called only when it comes
 // from the widget ....
@@ -161,7 +201,7 @@ if (debug) console.log(widgetRootMsg+"ChangeMapFocus : f: "+JSON.stringify(f, nu
 	// Zoom in on the focus record when it is valid in "selected" widget mode
 	if (f) {
 		// Fit the map to the record
-		map.flyTo({
+		mapLibre.flyTo({
 			center: f.geometry.coordinates,
 			zoom: focusZoom,
 			speed: 3.0,       // Lower is slower
@@ -180,7 +220,7 @@ function ChangeMapSelection(f) {
 if (debug) console.log(widgetRootMsg+"ChangeMapSelection : f: "+JSON.stringify(f, null, 2));
   // Update paint property of the layer dynamically to highlighth the marker of the currentRow
   if (f) {
-    map.setPaintProperty('unclustered-point', 'icon-color', [
+    mapLibre.setPaintProperty('unclustered-point', 'icon-color', [
       'case',
       ['==', ['coalesce', ['get', 'id'], ''], ['literal', currentRowId || '']],
       selectedColor,
@@ -188,7 +228,7 @@ if (debug) console.log(widgetRootMsg+"ChangeMapSelection : f: "+JSON.stringify(f
     ]);
   }
   else { // no selection
-    map.setPaintProperty('unclustered-point', 'icon-color', defaultColor);
+    mapLibre.setPaintProperty('unclustered-point', 'icon-color', defaultColor);
   }    
   // Change active Popup    
   if (activePopup) activePopup.remove();
@@ -243,7 +283,7 @@ function getDynamicPadding() {
 // Note : At least two calls, on through the widget buttons, another when
 // creating the map. This function ensures the consistency.
 function FitBounds() {
-	map.fitBounds(BBox, {
+	mapLibre.fitBounds(BBox, {
 		padding: getDynamicPadding(),	// pixels
 		maxZoom: highestZoomLevel,		// prevent zooming in too far
 		duration: 1000					// animation duration in ms
@@ -262,8 +302,8 @@ function AddGristTable2Map () {
 	// Option 1 : With Clustering
 	if (clusterRadius > 0) {
 		// 1.1 Set up the source
-		if ( !map.getSource('markers') ) {
-			map.addSource('markers', {
+		if ( !mapLibre.getSource('markers') ) {
+			mapLibre.addSource('markers', {
 				type: 'geojson',
 				data: {
 					type: 'FeatureCollection',
@@ -275,7 +315,7 @@ function AddGristTable2Map () {
 			});
 		}
 		// 1.2 Add a layer to display clusters:
-		map.addLayer({
+		mapLibre.addLayer({
 			id: 'clusters', 
 			type: 'circle',
 			source: 'markers',
@@ -307,7 +347,7 @@ function AddGristTable2Map () {
 			}
 		});
 		// 1.3 Add a layer for cluster labels
-		map.addLayer({
+		mapLibre.addLayer({
 			id: 'cluster-count',
 			type: 'symbol', 
 			source: 'markers', 
@@ -322,7 +362,7 @@ function AddGristTable2Map () {
 	// Option 2 : Without clustering
 	} else {
 	  // Just need to set the source
-		map.addSource('markers', {
+		mapLibre.addSource('markers', {
 			type: 'geojson',
 			data: {
 				type: 'FeatureCollection',
@@ -336,10 +376,10 @@ function AddGristTable2Map () {
 	//
 	// 3.1 Check whether the marker icon (representing table rows in the map)
 	// has to be added to the map
-	if (!map.hasImage('custom-marker')) {   
+	if ( !mapLibre.hasImage('custom-marker') ) {   
 		const img = new Image();
 		img.onload = () => {
-			map.addImage('custom-marker', img, { sdf: true });
+			mapLibre.addImage('custom-marker', img, { sdf: true });
 		};
 		img.src = `data:image/png;base64,${base64EncodedMarker}`;       
 	}
@@ -355,7 +395,7 @@ function AddGristTable2Map () {
 	];
 	//
 	// 3.3 Add the layer of the GRIST table markers (unclustered points)
-	map.addLayer({
+	mapLibre.addLayer({
 		id: 'unclustered-point',
 		type: 'symbol',
 		source: 'markers',
@@ -431,9 +471,116 @@ if(debug) console.log(widgetRootMsg+"lateMapFocus is true => Focus on:"+currentR
 
 }
 //
-// @WidgetControl : Management of GRIST Widget Control
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// @InstructionControl : Display user instructions in a 'top'left Map Libre Control
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Disable a Button
+// InstructionControl class
+class InstructionControl {
+	constructor(message) {
+		this._message = message;
+	}
+	onAdd(mapLibre) {
+		this._map = mapLibre;
+		this._container = document.createElement('div');
+		this._container.className = 'maplibregl-ctrl instruction-control';
+		this._container.textContent = this._message;
+		return this._container;
+	}
+	onRemove() {
+		this._container?.remove();
+		this._map = undefined;
+	}
+}
+//
+function SetInstruction(message) {
+	if ( instructionControl ) UnsetInstruction();
+	// Add the control to the top-left corner
+	instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
+	if (mapLibre && instructionControl) mapLibre.addControl(instructionControl,'top-left');
+}
+// @UnsetInstruction
+function UnsetInstruction() {
+	if (mapLibre && instructionControl) mapLibre.removeControl(instructionControl);
+	instructionControl = null;
+}
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// @WidgetControl: Management of GRIST Widget main Control
+// This control exposes a set of buttons, each of them supporting a basic feature of the widget
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Widget Control class
+class WidgetControl {
+	// onAdd
+	onAdd(mapLibre) {
+		this._map = mapLibre;
+		this._container = document.createElement('div');
+		this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+		// @FitBoundsBtn
+		let button = document.createElement('button');
+		button.className = 'maplibregl-ctrl-icon fit-bounds-btn';
+		button.type = 'button';
+		button.title = 'Toutes les lignes';
+		button.onclick = () => {
+			FitBounds(); // @FitBounds
+		};
+		this._container.appendChild(button);
+		// @MapFocusBtn
+		button = document.createElement('button');
+		button.className = 'maplibregl-ctrl-icon one-row-btn'; 
+		button.type = 'button';
+		button.title = 'Ligne sélectionnée';
+		button.onclick = () => {
+			ChangeMapFocus(geojsonFeatures.find(
+				item => item.properties.id === currentRowId
+			));
+        };
+		this._container.appendChild(button);
+		// @AddRowBtn
+		button = document.createElement('button');
+		button.className = 'maplibregl-ctrl-icon add-row-btn';
+		button.type = 'button';
+		button.title = "Ajout d'une ligne";
+		button.id = 'AddRowBtn';
+		button.onclick = () => {
+			disableBtn('AddRowBtn');
+			// Help the user
+			SetInstruction('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
+			// Use a dedicated cursor shape
+			mapLibre.getCanvas().style.cursor = svgCursorUri;
+			// Ensure controls keep their normal pointer
+			document.querySelectorAll('.maplibregl-ctrl button').forEach(btn => {
+  				btn.style.cursor = 'pointer';
+			});
+			// Listen for click events or ESC key
+			mapLibre.on('click', handleNewRowClick);
+			document.addEventListener('keydown', handleNewRowEscKey);
+			// ... and ensure the mouse cursor remains
+			document.addEventListener('mousemove', handleNewRowMouseMove, true);
+		};
+		this._container.appendChild(button);
+        // @ParameterBtn
+		button = document.createElement('button');
+		button.className = 'maplibregl-ctrl-icon parameters-btn';
+		button.type = 'button';
+		button.title = 'Paramètres';
+		button.onclick = () => {
+			document.getElementById('clusterRadius').value = clusterRadius;
+    		parameterBox.style.display = 'block';
+		};
+		this._container.appendChild(button);
+		return this._container;
+	} // End onAdd()
+	onRemove() {
+		this._container?.remove();
+        this._container = null;
+        this._map = undefined;
+	} // End onRemove()
+}
+//
+// @WcBtnMngt: Disable a Button
+// TBD : Determine whether disableBtn/enableBtn should not be WidgetControl class methods
 function disableBtn ( btnId ) {
 	const btn = document.getElementById(btnId);
 	if ( btn ) {
@@ -441,7 +588,7 @@ function disableBtn ( btnId ) {
 		btn.classList.add('disabled');
 	}
 }
-// Enable a Button
+// @WcBtnMngt: Enable a Button
 function enableBtn ( btnId ) {
 	const btn = document.getElementById(btnId);
 	if ( btn ) {
@@ -450,9 +597,7 @@ function enableBtn ( btnId ) {
 	}
 }
 // 
-// @WidgetControl, @AddRowBtn
-//
-// @AddRowBtn Click handler
+// @WidgetControl, @HandleNewRowClick
 // After a click event related to this function, it :
 function handleNewRowClick(e) {
 	//
@@ -462,7 +607,7 @@ function handleNewRowClick(e) {
 	//
 	// 2. Prepares the Add/Update Dialog Box
 	//
-	// 2.1 Setup the select input  @RowsSelector
+	// 2.1 Setup the select input (@RecordBoxSelector)
 	newRecordSelect = document.getElementById('newRowRecord');
 	if ( newRecordSelect ) {
 		newRecordSelect.innerHTML = "";
@@ -499,20 +644,20 @@ function handleNewRowClick(e) {
 	// 3. Restore the context before Add row Button click @AddRowBtn
 	//
 	// 3.1. Remove listeners
-	map.off('click', handleNewRowClick);
+	mapLibre.off('click', handleNewRowClick);
 	document.removeEventListener('keydown', handleNewRowEscKey);
 	document.removeEventListener('mousemove', handleNewRowMouseMove, true);
 	// 3.2 Restore default cursor
-	map.getCanvas().style.cursor = '';
-	// 3.4 Stops Instruction Control @InstructionControl
-	map.removeControl(instructionControl);
+	mapLibre.getCanvas().style.cursor = '';
+	// 3.4 Remove instruction control
+	UnsetInstruction();
 	// 3.5 Enable AddRowBtn button again
-	enableBtn('AddRowBtn');
+	enableBtn('AddRowBtn'); // 
 	//
 	// 4. Display the Add/Update Dialog Box
 	//
 	// Only need change the display styling of the Dialog Box div
-	newRowDialog.style.display = 'block';
+	recordBox.style.display = 'block';
 	//
 	// 5. Activate Dialog Box Listeners
 	//
@@ -528,19 +673,17 @@ function handleNewRowClick(e) {
 	newRecordSelect.addEventListener("change", handleRecordSelectChange);
 }
 //
-// ESC key handler
+// @WidgetControl, @HandleNewRowEscKey : ESC key handler
 // Run in parallel to handleNewRowClick to stop listening to a click on te map
 function handleNewRowEscKey(e) {
 	if (e.key === 'Escape') {
-		map.off('click', handleNewRowClick);
+		mapLibre.off('click', handleNewRowClick);
 		document.removeEventListener('keydown', handleNewRowEscKey);
 		document.removeEventListener('mousemove', handleNewRowMouseMove, true);
-		map.getCanvas().style.cursor = '';
-		// Suppression de l'instruction
-		map.removeControl(instructionControl);
-		// Enable the button again
-		enableBtn('AddRowBtn');
-		// No newRowDialog display => need to reset the form fields before leaving
+		mapLibre.getCanvas().style.cursor = '';
+		UnsetInstruction(); // Remove instruction control
+		enableBtn('AddRowBtn'); // Enable the button again
+		// No recordBox display => need to reset the form fields before leaving
 		document.getElementById('newRowRecord').value = '';
 		document.getElementById('newRowTitle').value = '';
 		document.getElementById('newRowLat').value = '';
@@ -603,7 +746,7 @@ if (debug) console.log(widgetRootMsg+"Update Row result: ", JSON.stringify(resul
 			// internalAddRow flags this.
 			internalAddRow = true;
     		const result = await grist.selectedTable.create({ fields: fields  });
-    if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
+if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
 			if (result && result.id > 0) {
 				// Need to wait for a backgrounf call to onRecords (table has changed !!!) and potential
 				// unwanted call to onRecord by a connected source widget
@@ -622,501 +765,410 @@ if (debug) console.log(widgetRootMsg+"Update Row result: ", JSON.stringify(resul
     	console.error(widgetRootMsg+"Error adding row:", err);
 	}
 } // end of function addOrUpdateRow
-// Temporary end of Clean up
-// 
 //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // API GRIST : ready
+// @GristAPI, @GristReady
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 grist.ready({   
-  requiredAccess: 'full',
-  columns: [
-    {
-      name: "Titre",
-      title: "Libellé",
-      optional: false,
-      description: "Valeur ou libellé de l'objet géoréférencé", // Ne s'affiche pas si multiple
-      allowMultiple: false // Permet l'attribution de plusieurs colonnes.
-    },
-    {
-      name: "Latitude",
-      title: "Latitude",
-      optional: false,
-      type: "Numeric", // Quel type de colonne nous attendons.
-      description: "Latitude", // Description du champ.
-      allowMultiple: false // Permet l'attribution de plusieurs colonnes.
-    },
-    {
-      name: "Longitude",
-      title: "Longitude",
-      optional: false,
-      type: "Numeric", // Quel type de colonne nous attendons.
-      description: "Longitude", // Description du champ.
-      allowMultiple: false // Permet l'attribution de plusieurs colonnes.
-    }
-  ],
-  allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
+	requiredAccess: 'full',
+	columns: [
+		{
+			name: "Titre",
+			title: "Libellé",
+			optional: false,
+			description: "Valeur ou libellé de l'objet géoréférencé", // Ne s'affiche pas si multiple
+			allowMultiple: false // Permet l'attribution de plusieurs colonnes.
+		},
+		{
+			name: "Latitude",
+			title: "Latitude",
+			optional: false,
+			type: "Numeric", // Quel type de colonne nous attendons.
+			description: "Latitude", // Description du champ.
+			allowMultiple: false // Permet l'attribution de plusieurs colonnes.
+		},
+		{
+			name: "Longitude",
+			title: "Longitude",
+			optional: false,
+			type: "Numeric", // Quel type de colonne nous attendons.
+			description: "Longitude", // Description du champ.
+			allowMultiple: false // Permet l'attribution de plusieurs colonnes
+		}
+	],
+	allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
 });
-// Log version once on load
-if (debug) console.log(widgetRootMsg+"loaded");
 //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Trace and init when GRIST is ready
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Log version once on load
+if (debug) console.log(widgetRootMsg+"Widget is ready");
+// Send widget location info to the console...
+if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
+if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
+if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
+//
+// Init dialog Box and context Menu
+// @ParameterBox : init
+if (!parameterBox) {
+	parameterBox = document.getElementById('widgetParameters');
+}
+// @RecordBox : init
+if (!recordBox) {
+	recordBox = document.getElementById('widgetNewRow');
+}
+// @ContextMenu : init
+if (!contextMenu) {
+	contextMenu = document.getElementById('contextMenu');
+}
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // API GRIST : onOptions
+// @GristAPI, @GristOnOptions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 grist.onOptions((options,settings) => {
 if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
 if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
 });
 //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // API GRIST : onRecords
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// @GristAPI, @GristOnRecords
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 grist.onRecords((table, colMapping) => {
 if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
-
-  // reset geojsonFeatures
-  geojsonFeatures.length=0;
-
+	//
+	// 0. Init
+	// reset geojsonFeatures
+	geojsonFeatures.length=0;
 	// detect the removal of a record
 	recordRemoval = currentRecords && currentRecords.length > table.length;	
-
-  // reset currentRecords and recordLookup
-  currentRecords = table;
-  recordLookup = {};
-
-  //reset mapping
-  mapping = colMapping;
+	// reset currentRecords and recordLookup
+	currentRecords = table;
+	recordLookup = {};
+	//reset mapping
+	mapping = colMapping;
 if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
-
-
-  // Definition de la Bouding Box des données et de la liste de features
-  table.forEach ( record => {
-
-    // On récupère les colonnes mappées
-    const mapped = grist.mapColumnNames(record);
-
-    // Utilisation des données du reccord ...
-    if ( mapped && mapped.Longitude && mapped.Latitude && mapped.Titre && record.id ) {
-
-      geojsonFeatures[geojsonFeatures.length] = {
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [mapped.Longitude, mapped.Latitude] },
-        properties: { id: record.id, title: mapped.Titre }
-      }; 
-      
-    }
-    else console.warn(widgetRootMsg+"Skipped record [id="+record.id+", Titre="+mapped.Titre+", Lat="+mapped.Latitude+", Lon="+mapped.Longitude+"]");
-
-		// Add the record to the lookup: will skip record not having a valid title and id
+	//
+	// 1. Definition de la Bouding Box des données et de la liste de features
+	table.forEach ( record => {
+		// Get mapped columns (@MappedColumns)
+		const mapped = grist.mapColumnNames(record);
+		// Add a geojsonFeature from record data
+		if ( mapped && mapped.Longitude && mapped.Latitude && mapped.Titre && record.id ) {
+			geojsonFeatures[geojsonFeatures.length] = {
+				type: 'Feature',
+				geometry: { type: 'Point', coordinates: [mapped.Longitude, mapped.Latitude] },
+				properties: { id: record.id, title: mapped.Titre }
+			};
+		}
+		else console.warn(widgetRootMsg+
+						  "Skipped record [id="+record.id+
+						  ", Titre="+mapped.Titre+
+						  ", Lat="+mapped.Latitude+
+						  ", Lon="+mapped.Longitude+"]");
+		// Add the record to the recordLookup (@Recordlookup)
 		if ( mapped ) addRecord2Lookup(record.id, mapped.Titre, mapped.Latitude, mapped.Longitude);
-  
-	});
-
-  BoundingBox(geojsonFeatures);
-
-  if ( !BBox || !BBox[0] || !BBox[1] || !BBox[2] || !BBox[3]) {
-    console.warn(widgetRootMsg+": Bounds not fully defined ["+BBox[0]+", "+BBox[1]+", "+BBox[2]+", "+BBox[3]+"]");
-    return;
-  }
-
-// DEBUG
-// Send widget location info to the console...
-if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
-if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
-if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
-// END DEBUG
-
+	}); // End table.forEach
 	//
-  // Init dialog Box and context Menu
+	// 2. Compute BBox (@BoundingBox)
+	BoundingBox(geojsonFeatures);
+	if ( !BBox || !BBox[0] || !BBox[1] || !BBox[2] || !BBox[3]) {
+		console.warn(widgetRootMsg+": Bounds not fully defined ["+BBox[0]+", "+BBox[1]+", "+BBox[2]+", "+BBox[3]+"]");
+    	return;
+  	}
 	//
-	// Parameters Box
-  if (!modal) {
-    modal = document.getElementById('widgetParameters');
-  }
-	// Row Box
-  if (!newRowDialog) {
-    newRowDialog = document.getElementById('widgetNewRow');
-  }
-	// Context Menu : Init
-	if (!contextMenu) {
-		contextMenu = document.getElementById('contextMenu');
-	}
-  
-  // When the map does not exists : need to create it
-  if (!map ) {
-
-    //
-    // Création de la carte
-    map = new maplibregl.Map({
-      container: 'map', // id du conteneur de la carte
-      style: CarteFacile.mapStyles.simple, // style de carte
-      maxZoom: highestZoomLevel
-    });
-    // Ajout d'un contrôle de navigation
-    map.addControl(new maplibregl.NavigationControl);
-    // Ajout d'une échelle
-    map.addControl(new maplibregl.ScaleControl);
-    // Pas de bouton de Geolocalisation car l'objectif est de visualiser les données de la table
-    // Ajout d'un sélecteur de carte
-    map.addControl(new CarteFacile.MapSelectorControl({
-  		styles: ['simple', 'aerial'],
-  		overlays: ['administrativeBoundaries', 'cadastre', 'levelCurves']
-	}));
-	// TBD: the styles and the overlays listed in MapSelectorControl parameter are made available
-	// but are not displayed except 'simple' style. I understand that the function CarteFacile.hideLayer
-	// and Cartefacile.showLayer can be used to hide and show layers considering that an overlay and style
-	// involve each many layers displays at different scales... At this stage :
-	CarteFacile.showLayer(map, [
-		'boundaries_commune',
-		'boundaries_epcis',
-		'boundaries_departments',
- 		'boundaries_regions',
-		'boundaries',
-		'buildings',
-		'streets',
-		'street_labels'
-	]);
-	// CarteFacile.LayerGroup is used below in debug mode to display the layer groups available.
-	// This will help to ajuts the list of layers to show
+	// 3. Set the map if if does not existe yet (@MapLibre)
+	if ( !mapLibre ) {
+		// Create Map Libre map
+		mapLibre = new maplibregl.Map({
+			container: 'map', // id du conteneur de la carte
+			style: CarteFacile.mapStyles.simple, // style de carte
+			maxZoom: highestZoomLevel
+		});
+		// @NavigationControl: Add control
+		// TBD: It is 'top-right' placed by default. Should the placement be made explicit ?
+    	mapLibre.addControl(new maplibregl.NavigationControl);
+		// @ScaleControl: Ajout d'une échelle
+		// TBD: It is 'bottom-left' placed by default. Should the placement be made explicit ?
+		mapLibre.addControl(new maplibregl.ScaleControl);
+		// Pas de bouton de Geolocalisation car l'objectif est de visualiser les données de la table
+		// @MapSelectorControl: Ajout d'un sélecteur de carte
+		// TBD: It is 'top-right' placed by default. Should the placement be made explicit ?
+		mapLibre.addControl(new CarteFacile.MapSelectorControl({
+  			styles: ['simple', 'aerial'],
+  			overlays: ['administrativeBoundaries', 'cadastre', 'levelCurves']
+		}));
+		// The styles and the overlays listed in MapSelectorControl parameter are made available
+		// but are not displayed except 'simple' style. I understand that the function CarteFacile.hideLayer
+		// and Cartefacile.showLayer can be used to hide and show layers considering that an overlay and style
+		// involve each many layers displays at different scales... At this stage :
+		//CarteFacile.showLayer(mapLibre, [
+		//	'boundaries_commune',
+		//	'boundaries_epcis',
+		//	'boundaries_departments',
+ 		//	'boundaries_regions',
+		//	'boundaries',
+		//	'buildings',
+		//	'streets',
+		//	'street_labels'
+		//]);
+		// TBD: test whether the addOverlay function of Carte Facile is public
+		// There is also a removeOverlay function
+		CarteFacile.addOverlay(mapLibre, 'administrativeBoundaries');
+		// CarteFacile.LayerGroup is used below in debug mode to display the layer groups available.
+		// This will help to ajuts the list of layers to show
 if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.LayerGroup, null, 2));
-	// Ajout de la fonction de recherche Carte Facile
-    map.addControl(new CarteFacile.SearchControl({
-  		placeholder: 'Rechercher une adresse…',
-  		debounceMs: 300,    // Délai avant déclenchement (ms)
-  		minChars: 3,        // Nombre minimum de caractères
-  		maxResults: 6      // Nombre maximum de résultats affichés
-	}));
-	// SearchControl recommended parameters : to be confirmed
-	//the ability to defined them with CDN
-	// ({
-  	//	placeholder: 'Rechercher une adresse…',
-  	//	debounceMs: 300,    // Délai avant déclenchement (ms)
-  	//	minChars: 3,        // Nombre minimum de caractères
-  	//	maxResults: 5,      // Nombre maximum de résultats affichés
-	//	})
-	  
-
-	      // Création d'un contrôle personnalisé pour les fonctionnalités du widget GRIST
-    class WidgetControl {
-      //private _container: HTMLElement;
-      onAdd(map) {
-        this._map = map;
-        this._container = document.createElement('div');
-        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-        // fit-bounds-btn => Driver mode
-        let button = document.createElement('button');
-        button.className = 'maplibregl-ctrl-icon fit-bounds-btn';
-        button.type = 'button';
-        button.title = 'Toutes les lignes';
-        button.onclick = () => {
-          FitBounds();
-        };
-        this._container.appendChild(button);
-        // Bouton Mode Driven : Zoom sur le marker sélectionné
-        button = document.createElement('button');
-        button.className = 'maplibregl-ctrl-icon one-row-btn'; 
-        button.type = 'button';
-        button.title = 'Ligne sélectionnée';
-        button.onclick = () => {
-          ChangeMapFocus(geojsonFeatures.find(
-            item => item.properties.id === currentRowId
-          ));
-        };
-        this._container.appendChild(button);
-        // Bouton ajout d'une ligne
-        button = document.createElement('button');
-        button.className = 'maplibregl-ctrl-icon add-row-btn';
-        button.type = 'button';
-        button.title = "Ajout d'une ligne";
-				button.id = 'AddRowBtn';
-		    button.onclick = () => {
-					disableBtn('AddRowBtn');
-          // Add the control to the top-left corner
-          instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
-          map.addControl(instructionControl,'top-left');
-          // Use a dedicated cursor shape
-          map.getCanvas().style.cursor = svgCursorUri;
-		  // Ensure controls keep their normal pointer
-		  document.querySelectorAll('.maplibregl-ctrl button').forEach(btn => {
-  			btn.style.cursor = 'pointer';
-		  });
-          // Listen for click events or ESC key
-          map.on('click', handleNewRowClick);
-          document.addEventListener('keydown', handleNewRowEscKey);
-          // ... and ensure the mouse cursor remains
-          document.addEventListener('mousemove', handleNewRowMouseMove, true);
-        };
-        this._container.appendChild(button);
-        // Bouton paramètres
-        button = document.createElement('button');
-        button.className = 'maplibregl-ctrl-icon parameters-btn';
-        button.type = 'button';
-        button.title = 'Paramètres';
-        //button.textContent = '⚙️'; // 
-        button.onclick = () => {
-          document.getElementById('clusterRadius').value = clusterRadius;
-          modal.style.display = 'block';
-        };
-        this._container.appendChild(button);
-        return this._container;
-      }
-      onRemove() {
-        this._container?.remove();
-        this._container = null;
-        this._map = undefined;
-      }
-    }
-    map.addControl(new WidgetControl(), 'top-right');
-
-    // Custom control class
-    class InstructionControl {
-      constructor(message) {
-        this.message = message;
-      }
-      onAdd(map) {
-        this.map = map;
-        this.container = document.createElement('div');
-        this.container.className = 'maplibregl-ctrl instruction-control';
-        this.container.textContent = this.message;
-        return this.container;
-      }
-      onRemove() {
-        // Remove only this control's container
-        this.container?.remove();
-        this.map = undefined;
-      }
-    }
-
-    document.getElementById('cancelNewRow').addEventListener('click', () => {
+		// @SearchControl : new carte facile built-in control for Mal Libre
+		// TBD: It is 'top-left' placed by default. Should the placement be made explicit ?
+		mapLibre.addControl(new CarteFacile.SearchControl({
+			placeholder: 'Rechercher une adresse…',
+			debounceMs: 300,    // Délai avant déclenchement (ms)
+			minChars: 3,        // Nombre minimum de caractères
+			maxResults: 6      // Nombre maximum de résultats affichés
+		}));
+		// @WidgetControl : add internal WidgetControl class instance to map
+		mapLibre.addControl(new WidgetControl(), 'top-right');
+	    document.getElementById('cancelNewRow').addEventListener('click', () => {
 			// Stop listener
 			document.removeEventListener("change", handleRecordSelectChange);
-			newRowDialog.style.display = 'none';
-    	document.getElementById('newRowRecord').value = '';
-      document.getElementById('newRowTitle').value = '';
-      document.getElementById('newRowLat').value = '';
-      document.getElementById('newRowLon').value = '';
-    });
-    document.getElementById('saveNewRow').addEventListener('click', async () => {
+			recordBox.style.display = 'none';
+			document.getElementById('newRowRecord').value = '';
+			document.getElementById('newRowTitle').value = '';
+			document.getElementById('newRowLat').value = '';
+			document.getElementById('newRowLon').value = '';
+		});
+		document.getElementById('saveNewRow').addEventListener('click', async () => {
 			// Stop listener
 			document.removeEventListener("change", handleRecordSelectChange);
-      newRowDialog.style.display = 'none';
+			recordBox.style.display = 'none';
 			if ( Object.hasOwn(recordLookup, document.getElementById('newRowRecord').value) ) {
-      	await addOrUpdateRow(recordLookup[document.getElementById('newRowRecord').value].id,
+				await addOrUpdateRow(recordLookup[document.getElementById('newRowRecord').value].id,
 					document.getElementById('newRowTitle').value,
-          Number(document.getElementById('newRowLat').value),
-          Number(document.getElementById('newRowLon').value)
-      	);
+					Number(document.getElementById('newRowLat').value),
+					Number(document.getElementById('newRowLon').value)
+				);
 			}
 			else {
-      	await addOrUpdateRow(0,
+				await addOrUpdateRow(0,
 					document.getElementById('newRowTitle').value,
-          Number(document.getElementById('newRowLat').value),
-          Number(document.getElementById('newRowLon').value)
-      	);
+					Number(document.getElementById('newRowLat').value),
+					Number(document.getElementById('newRowLon').value)
+				);
 			}
-      document.getElementById('newRowRecord').value = '';
-      document.getElementById('newRowTitle').value = '';
-      document.getElementById('newRowLat').value = '';
-      document.getElementById('newRowLon').value = '';
-    });
-    document.getElementById('cancelSettings').addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-    document.getElementById('saveSettings').addEventListener('click', () => {
-      modal.style.display = 'none';
-      if ( Number(document.getElementById('clusterRadius').value) < 0 ) return;
-      if ( clusterRadius !== Number(document.getElementById('clusterRadius').value) ) {
-        clusterRadius = Number(document.getElementById('clusterRadius').value) ;
-        if (map.getSource('markers')) {
-          // Remove layers first (in reverse order of how they were added)
-          if (map.getLayer('unclustered-point')) map.removeLayer('unclustered-point');
-          if (map.getLayer('cluster-count')) map.removeLayer('cluster-count');
-          if (map.getLayer('clusters')) map.removeLayer('clusters');
-          map.removeSource('markers');
-        }
-        AddGristTable2Map ();
-      }
-      
-    });
-    // Close modal diag when clicking outside content
-    window.addEventListener('click', (event) => {
-      if (event.target === modal) {
-        modal.style.display = 'none';
-      }
-      if (event.target === newRowDialog) {
+			document.getElementById('newRowRecord').value = '';
+			document.getElementById('newRowTitle').value = '';
+			document.getElementById('newRowLat').value = '';
+			document.getElementById('newRowLon').value = '';
+		});
+		document.getElementById('cancelSettings').addEventListener('click', () => {
+			parameterBox.style.display = 'none';
+		});
+		document.getElementById('saveSettings').addEventListener('click', () => {
+			parameterBox.style.display = 'none';
+			if ( Number(document.getElementById('clusterRadius').value) < 0 ) return;
+			if ( clusterRadius !== Number(document.getElementById('clusterRadius').value) ) {
+				clusterRadius = Number(document.getElementById('clusterRadius').value) ;
+				if (mapLibre.getSource('markers')) {
+					// Remove layers first (in reverse order of how they were added)
+					if (mapLibre.getLayer('unclustered-point')) mapLibre.removeLayer('unclustered-point');
+					if (mapLibre.getLayer('cluster-count')) mapLibre.removeLayer('cluster-count');
+					if (mapLibre.getLayer('clusters')) mapLibre.removeLayer('clusters');
+					mapLibre.removeSource('markers');
+				}
+				AddGristTable2Map ();
+			}
+		}); // End click listener saveSettings
+		// Close parameterBox when clicking outside content
+    	window.addEventListener('click', (event) => {
+      		if (event.target === parameterBox) {
+        		parameterBox.style.display = 'none';
+			}
+			if (event.target === recordBox) {
 				// Stop listener
 				document.removeEventListener("change", handleRecordSelectChange);
-        newRowDialog.style.display = 'none';
-    		document.getElementById('newRowRecord').value = '';
-      	document.getElementById('newRowTitle').value = '';
-      	document.getElementById('newRowLat').value = '';
-      	document.getElementById('newRowLon').value = '';
-      }
-    });
-    //
-    //
-    // Chargement de la carte
-    map.on('load', () => {
-
-      // Focus on the BBox of table rows
-      FitBounds();
-
-      AddGristTable2Map ();
-
-      // inspect a cluster on click
-      map.on('click', 'clusters', async (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ['clusters']
-        });
-        if ( !features.length ) return;
-
-        const zoom = await map.getSource('markers').getClusterExpansionZoom(features[0].properties.cluster_id);
-        // Click event is sometimes intercepted for the clusters layer when clicking a
-        // feature of the unclustered-point layer. zoom may be Nan in this case...
-        if ( isNaN(zoom) ) return;
-        map.easeTo({
-          center: features[0].geometry.coordinates,
-          zoom: zoom
-        });
-      
-      });
-
-      // When a click event occurs on a feature in the unclustered-point layer
-      map.on('click', 'unclustered-point', (e) => {       
-        if ( !e || e.features[0].properties.id == currentRowId ) return;
-        // Change current row
-        ChangeCurrentRow(e.features[0].properties.id);
-        ChangeMapSelection(e.features[0]);
-      });
-
-      // Check popup visibility on every render
-      map.on('render', () => {
-        if (!currentRowId || !map.getLayer('unclustered-point') ) return;
-
-        // Query features with currentRow
-        // This query returns features with approximayte coordinates, but
-        // the goal is to check whether the feature is rendered or not
-        const features = map.queryRenderedFeatures(undefined, {
-         layers: ['unclustered-point'],
-         filter: ['==', ['get', 'id'], currentRowId]
-        });
-        
-        // Sync visibility of Popup and the unclustered point of the feature   
-        if ( features && features[0] ) {
-          // if activePopup is null, the unclustered point is visible again 
-          // => the pop up needs to be created
-          // create the popup with the coordinates from geojsonFeatures which as better the one retrieved by the queryRenderFeatures
-          if ( !activePopup ) activePopup = NewActiveFeaturePopup(geojsonFeatures.find(item => item.properties.id === currentRowId));
-        }
-        else {
-          // if the unclustered point is not visible, the active pop up
-          // has to be removed
-          if ( activePopup ) {
-            activePopup.remove();
-            activePopup = null;
-          }
-          
-        }
-      });
-
-      map.on('mouseenter', 'unclustered-point', (e) => {
-        if ( e.features[0].properties.id != currentRowId ) {
-          map.getCanvas().style.cursor = 'pointer';
-          hoverPopup
-            .setLngLat(e.features[0].geometry.coordinates.slice())
-            .setHTML(e.features[0].properties.title)
-            .addTo(map);
-        } 
-      });
-
-      map.on('mouseleave', 'unclustered-point', () => {
-        map.getCanvas().style.cursor = '';
-        hoverPopup.remove();
-      });
-
-      map.on('mouseenter', 'clusters', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      map.on('mouseleave', 'clusters', () => {
-        map.getCanvas().style.cursor = '';
-      });  
-
+				recordBox.style.display = 'none';
+				document.getElementById('newRowRecord').value = '';
+    			document.getElementById('newRowTitle').value = '';
+      			document.getElementById('newRowLat').value = '';
+      			document.getElementById('newRowLon').value = '';
+      		}
+		}); // end click listener on window
+		//
+		//
+		// Chargement de la carte
+		mapLibre.on('load', () => {
 			//
-			// ContextMenu
+			// Focus on the BBox
+			FitBounds();
+			AddGristTable2Map ();
 			//
-			// Intercept right-click
-  		map.on('contextmenu', (e) => {
-    		e.preventDefault(); // Prevent default browser menu
-    		clickedLngLat = e.lngLat;
-    		// Position the menu at mouse location
-    		contextMenu.style.left = e.point.x + 'px';
-    		contextMenu.style.top = e.point.y + 'px';
-    		contextMenu.style.display = 'block';
-				// TBD : Grey Update record contexte menu item if there isn't 
+			// Inspect a cluster on click (@ClusterZoomIn)
+			mapLibre.on('click', 'clusters', async (e) => {
+				const features = mapLibre.queryRenderedFeatures(e.point, {
+					layers: ['clusters']
+				});
+				if ( !features.length ) return;
+				const zoom = await mapLibre.getSource('markers').getClusterExpansionZoom(features[0].properties.cluster_id);
+				// Click event is sometimes intercepted for the clusters layer when clicking a
+        		// feature of the unclustered-point layer. zoom may be Nan in this case...
+        		if ( isNaN(zoom) ) return;
+				mapLibre.easeTo({
+					center: features[0].geometry.coordinates,
+					zoom: zoom
+				});
+			}); // End on clusters click
+			//
+			// Inspect a uncluster-point click
+			mapLibre.on('click', 'unclustered-point', (e) => {       
+				if ( !e || e.features[0].properties.id == currentRowId ) return;
+				// Change current row
+				ChangeCurrentRow(e.features[0].properties.id);
+				ChangeMapSelection(e.features[0]);
+			});
+			//
+			// Check popup visibility on every render
+			mapLibre.on('render', () => {
+				if (!currentRowId || !mapLibre.getLayer('unclustered-point') ) return;
+				// Query features with currentRow
+				// This query returns features with approximayte coordinates, but
+				// the goal is to check whether the feature is rendered or not
+				const features = mapLibre.queryRenderedFeatures(undefined, {
+					layers: ['unclustered-point'],
+					filter: ['==', ['get', 'id'], currentRowId]
+				});
+				// Sync visibility of Popup and the unclustered point of the feature   
+				if ( features && features[0] ) {
+					// if activePopup is null, the unclustered point is visible again 
+					// => the pop up needs to be created
+					// create the popup with the coordinates from geojsonFeatures which 
+					// are better that the one retrieved by the queryRenderFeatures
+          			if ( !activePopup ) activePopup = NewActiveFeaturePopup(geojsonFeatures.find(item => item.properties.id === currentRowId));
+				} else {
+					// if the unclustered point is not visible, the active pop up
+					// has to be removed
+					if ( activePopup ) {
+						activePopup.remove();
+						activePopup = null;
+					}
+				}
+			}); // End of on render
+			//
+			// Inspect mouseenter unclustered point to change cursor 
+			// and display popup (@HoverPopup)
+			mapLibre.on('mouseenter', 'unclustered-point', (e) => {
+				if ( e.features[0].properties.id != currentRowId ) {
+					mapLibre.getCanvas().style.cursor = 'pointer';
+					hoverPopup
+						.setLngLat(e.features[0].geometry.coordinates.slice())
+						.setHTML(e.features[0].properties.title)
+						.addTo(mapLibre);
+				} 
+			});
+			//
+			// Inspect mouseleave unclustered point to restore default cursor 
+			// and remove popup (@HoverPopup)
+			mapLibre.on('mouseleave', 'unclustered-point', () => {
+				mapLibre.getCanvas().style.cursor = '';
+				hoverPopup.remove();
+			});
+			//
+			// Inspect mouse enter on a cluster (@Cluster) to change cursor (@CursorShape)
+			mapLibre.on('mouseenter', 'clusters', () => {
+				mapLibre.getCanvas().style.cursor = 'pointer';
+      		});
+			//
+			// Inspect mouse leave on a cluster (@Cluster) to restore cursor (@CursorShape)
+			mapLibre.on('mouseleave', 'clusters', () => {
+				mapLibre.getCanvas().style.cursor = '';
+			});  
+			//
+			// @ContextMenu listeners
+			//
+			// Intercept right-click to show context menu (@ContextMenu)
+			mapLibre.on('contextmenu', (e) => {
+				e.preventDefault(); // Prevent default browser menu
+    			clickedLngLat = e.lngLat;
+    			// Position the menu at mouse location
+    			contextMenu.style.left = e.point.x + 'px';
+    			contextMenu.style.top = e.point.y + 'px';
+    			contextMenu.style.display = 'block';
+				// TBD : Grey Update record context menu item if there isn't 
 				// any record marker at this location
-  		});
-  		// Hide menu on map click or move
-  		map.on('click', () => contextMenu.style.display = 'none');
- 		 	map.on('movestart', () => contextMenu.style.display = 'none');
-  		// Action 1: Add record to table
+  			});
+			//
+			// Hide menu on map click or move (@ContextMenu)
+			mapLibre.on('click', () => contextMenu.style.display = 'none');
+ 		 	mapLibre.on('movestart', () => contextMenu.style.display = 'none');
+			//
+  			// On click on action 1 (@AddRecord) : Add record to table (@ContextMenu)
 			// TBD : Use NewRecord Dialog Box throug a generic function managing
 			// this action, action 2 and the action related to add row from the widget control
-  		document.getElementById('contextMenuAdd').addEventListener('click', () => {
-				alert("Mise en oeuvre en cours de l'ajout d'une ligne au point ("+clickedLngLat.lat.toFixed(5)+","+clickedLngLat.lng.toFixed(5)+")");
-    		contextMenu.style.display = 'none';
-  		});
-			// Action 2: Update Record (TBD: See action 1)
-  		document.getElementById('contextMenuUpdate').addEventListener('click', () => {
+			document.getElementById('contextMenuAdd').addEventListener('click', () => {
+				alert("Mise en oeuvre en cours de l'ajout d'une ligne au point ("+
+					  clickedLngLat.lat.toFixed(5)+
+					  ","+
+					  clickedLngLat.lng.toFixed(5)+")");
+				contextMenu.style.display = 'none';
+			});
+			// 
+			// On click on Action 2 (@UpdateRecord): Update Record (@ContextMenu)
+			// TBD: See action 1
+			document.getElementById('contextMenuUpdate').addEventListener('click', () => {
 				alert("Mise en oeuvre en cours de la mise à jour d'une ligne au point ("
 							+clickedLngLat.lat.toFixed(5)
 							+","
 							+clickedLngLat.lng.toFixed(5)
 							+")"
 				);
-    		contextMenu.style.display = 'none';
-  		});
-  		// Action 3: Show coordinates
+				contextMenu.style.display = 'none';
+			});
+			//
+			// On click on Action 3 (@ShowCoordinated): Show coordinates (@ContextMenu)
 			// TBD : Enhance presentation possibly using a Dialog Box
-  		document.getElementById('contextMenuShow').addEventListener('click', () => {
-    		alert(`Latitude: ${clickedLngLat.lat.toFixed(5)}\nLongitude: ${clickedLngLat.lng.toFixed(5)}`);
-    		contextMenu.style.display = 'none';
-  		});
-  		// Hide menu if clicking outside
+			document.getElementById('contextMenuShow').addEventListener('click', () => {
+				alert(`Latitude: ${clickedLngLat.lat.toFixed(5)}\nLongitude: ${clickedLngLat.lng.toFixed(5)}`);
+				contextMenu.style.display = 'none';
+			});
+			//
+			// Hide menu if clicking outside (@OutsideClick)
 			// TBD : check whether this event does not already exist
-  		document.addEventListener('click', (e) => {
-    		if (!contextMenu.contains(e.target)) {
-      		contextMenu.style.display = 'none';
-    		}
-  		});
-   
-    }); // end map.on load
-		
-  } // if (!map)
-
-  // when there is already a map :
-  else { 
-
-      // 1) Need to recompute BBox in case of further click to fit-bounds-btn
-      BoundingBox(geojsonFeatures);
-
-      // ... but no call to FitBounds (user would not undertand  
-      // a focus change due to changes in the source data)
-
-      // 2) Need to update the data
-      const src = map.getSource('markers');
-      if (src) src.setData({
-        type: 'FeatureCollection',
-        features: [...geojsonFeatures] // Again, need to clone the data
-      });
-
-			// In case of record removal, it seems more appropriate
-			// to relocate the map to an overview of the table records
-			// and to select the first valid record
-		  if ( recordRemoval ) {
-		  	FitBounds();
-      	ChangeCurrentRow(geojsonFeatures[0].properties.id);
-      	ChangeMapSelection(geojsonFeatures[0]);
-			}
-
-  }    
-
-});
+			document.addEventListener('click', (e) => {
+				// @ContextMenu cancel
+				if (!contextMenu.contains(e.target)) {
+					contextMenu.style.display = 'none';
+				}
+			});
+		}); // end mapLibre.on load	
+	} // if (!mapLibre)
+	else { // when there is already a mapLibre :
+		//
+		// 1) Need to recompute BBox in case of further click to fit-bounds-btn
+		BoundingBox(geojsonFeatures);
+		// ... but no call to FitBounds (user would not undertand  
+		// a focus change due to changes in the source data)
+		//
+		// 2) Need to update the data
+		const src = mapLibre.getSource('markers');
+		if (src) src.setData({
+			type: 'FeatureCollection',
+			features: [...geojsonFeatures] // Again, need to clone the data
+		});
+		//
+		// In case of record removal, it seems more appropriate
+		// to relocate the map to an overview of the table records
+		// and to select the first valid record
+		if ( recordRemoval ) {
+			FitBounds();
+			ChangeCurrentRow(geojsonFeatures[0].properties.id);
+			ChangeMapSelection(geojsonFeatures[0]);
+		}
+	}  // end else if (!mapLibre)  
+});  // End of onRecord
+// Temporary end of clean-up
 //
 // API GRIST : onRecord
 // Few cases :
@@ -1148,20 +1200,20 @@ if (debug) console.log(widgetRootMsg+"onRecord : id="+record.id+", internalCurso
     internalCursorPos = false;
     // check matching id in case external change arises before internal Curpos
     if ( record.id != currentRowId ) {
-      // Expecting the map is ready
+      // Expecting the mapLibre is ready
       ChangeMapSelection(geojsonFeatures.find(item => item.properties.id === record.id));
     }
     return;
   } // On ne va pas plus loin si l'appel onrecord est consicutif à SetCurPos du widget.
   
-  // Ensure map is ready
+  // Ensure mapLibre is ready
   // Just change the currentRowId if not ready
   // This a a way to get the current row from a source widget before 
-  // the map loading and the intialization of the Geojson features
+  // the mapLibre loading and the intialization of the Geojson features
   if ( !mapReady ) {
 if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+record.id)
     SetCurrentRow(record.id);
-    // map is not ready yet: no need to ChangeMapFocus
+    // mapLibre is not ready yet: no need to ChangeMapFocus
     lateMapFocus = true;
     return;
   }
@@ -1217,8 +1269,8 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
   // When there has been changes...
   if (  geometryChange || propertyChange || newRecord || skippedRecord ) {
 
-    // ... Update of Map Source
-    const src = map.getSource('markers');
+    // ... Update of Map Libre Source
+    const src = mapLibre.getSource('markers');
     if (src) src.setData({
       type: 'FeatureCollection',
       features: [...geojsonFeatures] // Again, need to clone the data
@@ -1268,13 +1320,13 @@ function handleRecordSelectChange() {
   }
 }
 //
-// Apply to both modals
+// Apply to all modal Dialog Boxes
 document.addEventListener("DOMContentLoaded", function() {
 	makeDraggable("widgetParameters");
 	makeDraggable("widgetNewRow");		
 });
 //
-// Reusable function to make any modal draggable
+// Reusable function to make any modal Dialog Boxes draggable
 function makeDraggable(modalId) {
   const content = document.getElementById(`${modalId}Content`);
   const header = document.getElementById(`${modalId}Header`);
@@ -1308,6 +1360,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
