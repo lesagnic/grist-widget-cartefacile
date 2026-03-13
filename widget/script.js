@@ -654,7 +654,19 @@ function handleEditRecordClick(e) {
 	const f = ClosestNearByFeature(e);
 if (debug) console.log(widgetRootMsg+"handleEditRecordClick: f="+JSON.stringify(f, null, 2));	
 	if (f && f.properties.id > 0) {
+if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordKey(
+			f.properties.id,
+			f.properties.titre,
+			f.geometry.coordinates[1],
+			f.geometry.coordinates[0]
+		));	
 		editRecordSelect.value = recordKey(
+			f.properties.id,
+			f.properties.titre,
+			f.geometry.coordinates[1],
+			f.geometry.coordinates[0]
+		);
+		document.getElementById('editRecordTitle').value <= recordKey(
 			f.properties.id,
 			f.properties.titre,
 			f.geometry.coordinates[1],
@@ -701,7 +713,7 @@ function handleEditRecordEscKey(e) {
 		UnsetInstruction(); // Remove instruction control
 		enableBtn('AddRowBtn'); // Enable the button again
 		// No recordBox display => need to reset the form fields before leaving
-		document.getElementById('editRecordSelect').value = '';
+		editRecordSelect.value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
@@ -865,7 +877,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				// Stop listener
 				//document.removeEventListener("change", handleRecordSelectChange);
 		recordBox.style.display = 'none';
-		document.getElementById('editRecordSelect').value = '';
+		editRecordSelect.value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
@@ -877,29 +889,29 @@ document.addEventListener("DOMContentLoaded", function() {
 			document.getElementById('editRecordLat').value,
 			document.getElementById('editRecordLon').value
 		);
-		document.getElementById('editRecordSelect').value = '';
+		editRecordSelect.value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
 	});
 	updateRecordBtn.addEventListener('click', async () => {
 		recordBox.style.display = 'none';
-		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordSelect').value) ) {
-			await addOrUpdateRow(recordLookup[document.getElementById('editRecordSelect').value].id,
+		if ( Object.hasOwn(recordLookup, editRecordSelect.value) ) {
+			await addOrUpdateRow(recordLookup[editRecordSelect.value].id,
 				document.getElementById('editRecordTitle').value,
 				document.getElementById('editRecordLat').value,
 				document.getElementById('editRecordLon').value
 			);
 		}
-		else console.log(widgetRootMsg+"Can't update record: "+document.getElementById('editRecordSelect').value);
-		document.getElementById('editRecordSelect').value = '';
+		else console.log(widgetRootMsg+"Can't update record: "+editRecordSelect.value);
+		editRecordSelect.value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
 	});
 	deleteRecordBtn.addEventListener('click', async () => {
 		recordBox.style.display = 'none';
-		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordSelect').value) ) {
+		if ( Object.hasOwn(recordLookup, editRecordSelect.value) ) {
 			//await addOrUpdateRow(recordLookup[document.getElementById('editRecordSelect').value].id,
 			//	document.getElementById('editRecordTitle').value,
 			//	Number(document.getElementById('editRecordLat').value),
@@ -907,8 +919,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			//);
 			alert("La fonctionnalité de suppression est en cours de mise en oeuvre");
 		}
-		else console.error(widgetRootMsg+"Can't delete record: "+document.getElementById('editRecordSelect').value);
-		document.getElementById('editRecordSelect').value = '';
+		else console.error(widgetRootMsg+"Can't delete record: "+editRecordSelect.value);
+		editRecordSelect.value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
@@ -1058,7 +1070,7 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 					// Stop listener
 					document.removeEventListener("change", handleRecordSelectChange);
 					recordBox.style.display = 'none';
-					document.getElementById('editRecordSelect').value = '';
+					editRecordSelect.value = '';
 					document.getElementById('editRecordTitle').value = '';
 					document.getElementById('editRecordLat').value = '';
 				document.getElementById('editRecordLon').value = '';
