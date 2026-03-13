@@ -649,7 +649,7 @@ function handleEditRecordEscKey(e) {
 		UnsetInstruction(); // Remove instruction control
 		enableBtn('AddRowBtn'); // Enable the button again
 		// No recordBox display => need to reset the form fields before leaving
-		document.getElementById('editRecordRecord').value = '';
+		document.getElementById('editRecordSelect').value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
@@ -807,7 +807,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				// Stop listener
 				//document.removeEventListener("change", handleRecordSelectChange);
 		recordBox.style.display = 'none';
-		document.getElementById('editRecordRecord').value = '';
+		document.getElementById('editRecordSelect').value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
@@ -819,38 +819,38 @@ document.addEventListener("DOMContentLoaded", function() {
 			Number(document.getElementById('editRecordLat').value),
 			Number(document.getElementById('editRecordLon').value)
 		);
-		document.getElementById('editRecordRecord').value = '';
+		document.getElementById('editRecordSelect').value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
 	});
 	updateRecordBtn.addEventListener('click', async () => {
 		recordBox.style.display = 'none';
-		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordRecord').value) ) {
-			await addOrUpdateRow(recordLookup[document.getElementById('editRecordRecord').value].id,
+		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordSelect').value) ) {
+			await addOrUpdateRow(recordLookup[document.getElementById('editRecordSelect').value].id,
 				document.getElementById('editRecordTitle').value,
 				Number(document.getElementById('editRecordLat').value),
 				Number(document.getElementById('editRecordLon').value)
 			);
 		}
-		else console.log(widgetRootMsg+"Can't update record: "+document.getElementById('editRecordRecord').value);
-		document.getElementById('editRecordRecord').value = '';
+		else console.log(widgetRootMsg+"Can't update record: "+document.getElementById('editRecordSelect').value);
+		document.getElementById('editRecordSelect').value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
 	});
 	deleteRecordBtn.addEventListener('click', async () => {
 		recordBox.style.display = 'none';
-		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordRecord').value) ) {
-			//await addOrUpdateRow(recordLookup[document.getElementById('editRecordRecord').value].id,
+		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordSelect').value) ) {
+			//await addOrUpdateRow(recordLookup[document.getElementById('editRecordSelect').value].id,
 			//	document.getElementById('editRecordTitle').value,
 			//	Number(document.getElementById('editRecordLat').value),
 			//	Number(document.getElementById('editRecordLon').value)
 			//);
 			alert("La fonctionnalité de suppression est en cours de mise en oeuvre");
 		}
-		else console.error(widgetRootMsg+"Can't delete record: "+document.getElementById('editRecordRecord').value);
-		document.getElementById('editRecordRecord').value = '';
+		else console.error(widgetRootMsg+"Can't delete record: "+document.getElementById('editRecordSelect').value);
+		document.getElementById('editRecordSelect').value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
@@ -1000,7 +1000,7 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 					// Stop listener
 					document.removeEventListener("change", handleRecordSelectChange);
 					recordBox.style.display = 'none';
-					document.getElementById('editRecordRecord').value = '';
+					document.getElementById('editRecordSelect').value = '';
 					document.getElementById('editRecordTitle').value = '';
 					document.getElementById('editRecordLat').value = '';
 				document.getElementById('editRecordLon').value = '';
@@ -1389,6 +1389,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
