@@ -652,7 +652,8 @@ function handleEditRecordClick(e) {
 	if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 	if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 	const f = ClosestNearByFeature(e);
-	const gf = if (f && f.properties.id ) geojsonFeatures.find(item => item.properties.id === f.properties.id) else null;
+	let gf = null;
+	if (f && f.properties.id ) gf = geojsonFeatures.find(item => item.properties.id === f.properties.id);
 if (debug) console.log(widgetRootMsg+"handleEditRecordClick: id="+f.properties.id+", f="+JSON.stringify(f, null, 2));	
 	if (gf) {
 if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordKey(
