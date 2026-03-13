@@ -615,9 +615,9 @@ function handleEditRecordClick(e) {
 	if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 	if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 	// 2.2 Hide update and delete button, show add button
-	addRecordBtn.style.display = "inline-block";
-	updateRecordBtn.style.display = "none";
-	deleteRecordBtn.style.display = "none";
+	addRecordBtn.disabled = false;
+	updateRecordBtn.disabled = true;
+	deleteRecordBtn.disabled = true;
 	//
 	// 3. Restore the context before Add row Button click @AddRowBtn
 	//
@@ -1341,12 +1341,12 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 		const editRecordTitle = document.getElementById('editRecordTitle');
 		if (editRecordSelect.value === "") {
 			editRecordSelect.style.color = "#888"; // grey
-			addRecordBtn.style.display = "inline-block";
-			updateRecordBtn.style.display = "none";	
+			addRecordBtn.disabled = false;
+			updateRecordBtn.disable = true;	
 		} else {
 			editRecordSelect.style.color = "#000"; // normal
-			addRecordBtn.style.display = "none";
-			updateRecordBtn.style.display = "inline-block";	
+			addRecordBtn.disabled = true;
+			updateRecordBtn.disabled = false;	
 			// Set editRecordTitle with the title of the selected Record
 			editRecordTitle.value = recordLookup[editRecordSelect.value].title;
 	  	}
@@ -1389,6 +1389,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
