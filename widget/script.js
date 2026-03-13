@@ -315,7 +315,7 @@ if(debug) console.log(widgetRootMsg+"ClosestNearByFeature: x="+e.point.x
 		layers: ['unclustered-point']
 	});
 	// No Nearby feature
-if (debug) console.log(widgetRootMsg+"ClosestNearByFeature: nbfeatures"+features.length);
+if (debug) console.log(widgetRootMsg+"ClosestNearByFeature: nbfeatures="+features.length);
 	if (!features.length) null;
 	// Sort by distance from click
   	const sorted = features
@@ -652,10 +652,11 @@ function handleEditRecordClick(e) {
 	if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 	if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 	const f = ClosestNearByFeature(e);
-	if (f && f.properties.id>0) {
+if (debug) console.log(widgetRootMsg+"handleEditRecordClick: f="+JSON.stringify(f, null, 2));	
+	if (f && f.properties.id > 0) {
 		editRecordSelect.value = recordKey(
 			f.properties.id,
-			f.properties.titre,
+			f.properties.titre,properties
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		);
