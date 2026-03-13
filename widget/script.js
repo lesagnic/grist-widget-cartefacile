@@ -11,7 +11,13 @@ const widgetVersion = "1.0.16" // Increment at least last figure for new release
 //		@GristOnRecords: set recordLookup (@Recordlookup), BBox (@BoundingBox)
 //		@GristOnRecord
 //	@RecordBox: Record Dialog Box to edit the records of the GRIST Table)
+//	TBD : make these variable local to the DOMContentLoaded event listener whiche means
+//	to move all functions refering to DOM element inside the listener
 let recordBox = null;
+let addRecordBtn = null;
+let updateRecordBtn = null;
+let deleteRecordBtn = null;
+let editRecordSelect = null;
 //		@RecordBoxSelector : select input for records
 //	@ParameterBox: Dialog Box to edit widget parameters
 let parameterBox = null;
@@ -27,11 +33,11 @@ let instructionControl = null;
 //		UnsetInstruction: Remove the (last) instruction
 //	@WidgetControl : Management of GRIST Widget main Control
 //		@WcBtnMngt: Disable/Enable a Button
-//		@HandleNewRowClick 
-//		@HandleNewRowEscKey
+//		@HandleEditRecordClick 
+//		@HandleEditRecordEscKey
 //		@FitBoundsBtn => @FitBounds
 //		@MapFocusBtn => @MapFocus
-//		@AddRowBtn => @HandleNewRowClick, @HandleNewRowEscKey
+//		@AddRowBtn => @HandleEditRecordClick, @HandleEditRecordEscKey
 //		@ParameterBtn => ... TBD
 //	@Recordlookup : Easy access to record data from record key
 let recordLookup = {};
@@ -138,7 +144,6 @@ let clusterRadius = 30;
 // Flag set to true when mapLibre has been loaded. 
 let mapReady = false;
 //
-let newRecordSelect = null;
 //
 // SetCursorPos expect a position in the table not the record.id : keep track of the records to determine the position from the id.
 let currentRecords = [];
@@ -554,10 +559,10 @@ class WidgetControl {
   				btn.style.cursor = 'pointer';
 			});
 			// Listen for click events or ESC key
-			mapLibre.on('click', handleNewRowClick);
-			document.addEventListener('keydown', handleNewRowEscKey);
+			mapLibre.on('click', handleEditRecordClick);
+			document.addEventListener('keydown', handleEditRecordEscKey);
 			// ... and ensure the mouse cursor remains
-			document.addEventListener('mousemove', handleNewRowMouseMove, true);
+			document.addEventListener('mousemove', handleEditRecordMouseMove, true);
 		};
 		this._container.appendChild(button);
         // @ParameterBtn
@@ -597,56 +602,29 @@ function enableBtn ( btnId ) {
 	}
 }
 // 
-// @WidgetControl, @HandleNewRowClick
+// @WidgetControl, @HandleEditRecordClick
 // After a click event related to this function, it :
-function handleNewRowClick(e) {
+function handleEditRecordClick(e) {
 	//
 	// 1. Gets the geograpohic coordinates of the click
 	const lng = e.lngLat.lng.toFixed(6);
 	const lat = e.lngLat.lat.toFixed(6);
 	//
 	// 2. Prepares the Add/Update Dialog Box
-	//
-	// 2.1 Setup the select input (@RecordBoxSelector)
-	newRecordSelect = document.getElementById('newRowRecord');
-	if ( newRecordSelect ) {
-		newRecordSelect.innerHTML = "";
-		// 2.2.1 Create the placeholder option
-		const placeholder = document.createElement("option");
-		placeholder.textContent = "Choisissez une ligne à mettre à jour..."; // visible text
-		placeholder.value = "";                          // empty value
-		placeholder.disabled = true;                     // can't be selected after change
-		placeholder.selected = true;                     // selected by default
-		placeholder.hidden = true;                       // hides from dropdown list
-		newRecordSelect.appendChild(placeholder);
-		// 2.2.2. Add new option for each identified record in recordLookup key alphabetic order
-		// (more or less in record.id order)
-		// TBD : Ensure a formatting of recordLookup Keys ensuring id numeric order 
-		Object.keys(recordLookup)
-  			.sort((a, b) => a.localeCompare(b)) // localeCompare handles case & accents
-  			.forEach(key => {
-				const option = document.createElement("option");
-  				option.value = key;
-  				option.textContent = key;
-				newRecordSelect.appendChild(option);
-			});
-	} // END if (recorrdSelect)
-	//
-	// 2.2 : Replace Dialog Box labels with mapped column names @UserContext
-	document.getElementById('newRowLabelTitle').textContent = mapping.Titre;
-	document.getElementById('newRowLabelLatitude').textContent = mapping.Latitude;
-	document.getElementById('newRowLabelLongitude').textContent = mapping.Longitude;
-	//
-	// 2.3 : Set Dialog box Lon/Lat inputs using the coordinates of the click
-	if (document.getElementById('newRowLat')) document.getElementById('newRowLat').value = lat;
-	if (document.getElementById('newRowLon')) document.getElementById('newRowLon').value = lng;
+	// 2.1 : Set Dialog box Lon/Lat inputs using the coordinates of the click
+	if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
+	if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
+	// 2.2 Hide update and delete button, show add button
+	addRecordBtn.style.display = "inline-block";
+	updateRecordBtn.style.display = "none";
+	deleteRecordBtn.style.display = "none";
 	//
 	// 3. Restore the context before Add row Button click @AddRowBtn
 	//
 	// 3.1. Remove listeners
-	mapLibre.off('click', handleNewRowClick);
-	document.removeEventListener('keydown', handleNewRowEscKey);
-	document.removeEventListener('mousemove', handleNewRowMouseMove, true);
+	mapLibre.off('click', handleEditRecordClick);
+	document.removeEventListener('keydown', handleEditRecordEscKey);
+	document.removeEventListener('mousemove', handleEditRecordMouseMove, true);
 	// 3.2 Restore default cursor
 	mapLibre.getCanvas().style.cursor = '';
 	// 3.4 Remove instruction control
@@ -658,41 +636,28 @@ function handleNewRowClick(e) {
 	//
 	// Only need change the display styling of the Dialog Box div
 	recordBox.style.display = 'block';
-	//
-	// 5. Activate Dialog Box Listeners
-	//
-	// 5.1 For simplicity, there are permanent listeners on click on 
-	// the Dialog Box Button an on click outside the Dialog Box
-	// since they an work only when the Dialog Box is visible
-	//
-	// 5.2 Listen to the change event of the record select input
-	// TBD : See whether it should not be permanente as well
-	// Run on load ...
-	handleRecordSelectChange();
-	// ...and whenever selection changes
-	newRecordSelect.addEventListener("change", handleRecordSelectChange);
 }
 //
-// @WidgetControl, @HandleNewRowEscKey : ESC key handler
-// Run in parallel to handleNewRowClick to stop listening to a click on te map
-function handleNewRowEscKey(e) {
+// @WidgetControl, @HandleEditRecordEscKey : ESC key handler
+// Run in parallel to handleEditRecordClick to stop listening to a click on te map
+function handleEditRecordEscKey(e) {
 	if (e.key === 'Escape') {
-		mapLibre.off('click', handleNewRowClick);
-		document.removeEventListener('keydown', handleNewRowEscKey);
-		document.removeEventListener('mousemove', handleNewRowMouseMove, true);
+		mapLibre.off('click', handleEditRecordClick);
+		document.removeEventListener('keydown', handleEditRecordEscKey);
+		document.removeEventListener('mousemove', handleEditRecordMouseMove, true);
 		mapLibre.getCanvas().style.cursor = '';
 		UnsetInstruction(); // Remove instruction control
 		enableBtn('AddRowBtn'); // Enable the button again
 		// No recordBox display => need to reset the form fields before leaving
-		document.getElementById('newRowRecord').value = '';
-		document.getElementById('newRowTitle').value = '';
-		document.getElementById('newRowLat').value = '';
-		document.getElementById('newRowLon').value = '';
+		document.getElementById('editRecordRecord').value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
 	}
 }
 //
 // To avoid external cursor changes while chosing the new row location
-function handleNewRowMouseMove(e) {
+function handleEditRecordMouseMove(e) {
 	e.target.style.cursor = svgCursorUri;
 }
 //
@@ -822,12 +787,77 @@ document.addEventListener("DOMContentLoaded", function() {
 	// @ParameterBox : init
 	parameterBox = document.getElementById('widgetParameters');
 	// @RecordBox : init
-	recordBox = document.getElementById('widgetNewRow');
+	recordBox = document.getElementById('widgetEditRecord');
+	cancelRecordBtn = document.getElementById('cancelEditRecord');
+	addRecordBtn = document.getElementById('addRecord');
+	updateRecordBtn = document.getElementById('updateRecord');
+	deleteRecordBtn = document.getElementById('deleteRecord');
+	editRecordSelect = document.getElementById('editRecordSelect');
+	handleRecordSelectChange();
+	// ...and whenever selection changes
+
+
 	// @ContextMenu : init
 	contextMenu = document.getElementById('contextMenu');
 	//
+	// RecordBox elements listeners
+	//
+	editRecordSelect.addEventListener("change", handleRecordSelectChange);
+	cancelRecordBtn.addEventListener('click', () => {
+				// Stop listener
+				//document.removeEventListener("change", handleRecordSelectChange);
+		recordBox.style.display = 'none';
+		document.getElementById('editRecordRecord').value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
+	});
+	addRecordBtn.addEventListener('click', async () => {
+		recordBox.style.display = 'none';
+		await addOrUpdateRow(0,
+			document.getElementById('editRecordTitle').value,	
+			Number(document.getElementById('editRecordLat').value),
+			Number(document.getElementById('editRecordLon').value)
+		);
+		document.getElementById('editRecordRecord').value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
+	}
+	updateRecordBtn.addEventListener('click', async () => {
+		recordBox.style.display = 'none';
+		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordRecord').value) ) {
+			await addOrUpdateRow(recordLookup[document.getElementById('editRecordRecord').value].id,
+				document.getElementById('editRecordTitle').value,
+				Number(document.getElementById('editRecordLat').value),
+				Number(document.getElementById('editRecordLon').value)
+			);
+		}
+		else console.log(widgetRootMsg+"Can't update record: "+document.getElementById('editRecordRecord').value);
+		document.getElementById('editRecordRecord').value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
+	}
+	deleteRecordBtn.addEventListener('click', async () => {
+		recordBox.style.display = 'none';
+		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordRecord').value) ) {
+			//await addOrUpdateRow(recordLookup[document.getElementById('editRecordRecord').value].id,
+			//	document.getElementById('editRecordTitle').value,
+			//	Number(document.getElementById('editRecordLat').value),
+			//	Number(document.getElementById('editRecordLon').value)
+			//);
+			alert("La fonctionnalité de suppression est en cours de mise en oeuvre");
+		}
+		else console.error(widgetRootMsg+"Can't delete record: "+document.getElementById('editRecordRecord').value);
+		document.getElementById('editRecordRecord').value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
+	}								 
+	//
 	makeDraggable("widgetParameters");
-	makeDraggable("widgetNewRow");		
+	makeDraggable("widgetEditRecord");		
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// API GRIST : onOptions
@@ -856,6 +886,10 @@ if (debug) console.log(widgetRootMsg+"onRecords : "+table.length);
 		//reset mapping
 		mapping = colMapping;
 if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
+		// ... and replace Dialog Box labels with mapped column names @UserContext
+		document.getElementById('editRecordLabelTitle').textContent = mapping.Titre;
+		document.getElementById('editRecordLabelLatitude').textContent = mapping.Latitude;
+		document.getElementById('editRecordLabelLongitude').textContent = mapping.Longitude;
 		//
 		// 1. Definition de la Bouding Box des données et de la liste de features
 		table.forEach ( record => {
@@ -877,6 +911,9 @@ if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
 			// Add the record to the recordLookup (@Recordlookup)
 			if ( mapped ) addRecord2Lookup(record.id, mapped.Titre, mapped.Latitude, mapped.Longitude);
 		}); // End table.forEach
+		//
+		// Update editRecordSelect input of recordBox with new recordLookup
+		SetEditRecordSelect();
 		//
 		// 2. Compute BBox (@BoundingBox)
 		BoundingBox(geojsonFeatures);
@@ -936,38 +973,6 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 			}));
 			// @WidgetControl : add internal WidgetControl class instance to map
 			mapLibre.addControl(new WidgetControl(), 'top-right');
-		    document.getElementById('cancelNewRow').addEventListener('click', () => {
-				// Stop listener
-				document.removeEventListener("change", handleRecordSelectChange);
-				recordBox.style.display = 'none';
-				document.getElementById('newRowRecord').value = '';
-				document.getElementById('newRowTitle').value = '';
-				document.getElementById('newRowLat').value = '';
-				document.getElementById('newRowLon').value = '';
-			});
-			document.getElementById('saveNewRow').addEventListener('click', async () => {
-				// Stop listener
-				document.removeEventListener("change", handleRecordSelectChange);
-				recordBox.style.display = 'none';
-				if ( Object.hasOwn(recordLookup, document.getElementById('newRowRecord').value) ) {
-					await addOrUpdateRow(recordLookup[document.getElementById('newRowRecord').value].id,
-						document.getElementById('newRowTitle').value,
-						Number(document.getElementById('newRowLat').value),
-						Number(document.getElementById('newRowLon').value)
-					);
-				}
-				else {
-					await addOrUpdateRow(0,
-						document.getElementById('newRowTitle').value,	
-						Number(document.getElementById('newRowLat').value),
-						Number(document.getElementById('newRowLon').value)
-					);
-				}
-				document.getElementById('newRowRecord').value = '';
-				document.getElementById('newRowTitle').value = '';
-				document.getElementById('newRowLat').value = '';
-				document.getElementById('newRowLon').value = '';
-			});
 			document.getElementById('cancelSettings').addEventListener('click', () => {
 				parameterBox.style.display = 'none';
 			});
@@ -995,10 +1000,10 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 					// Stop listener
 					document.removeEventListener("change", handleRecordSelectChange);
 					recordBox.style.display = 'none';
-					document.getElementById('newRowRecord').value = '';
-					document.getElementById('newRowTitle').value = '';
-					document.getElementById('newRowLat').value = '';
-				document.getElementById('newRowLon').value = '';
+					document.getElementById('editRecordRecord').value = '';
+					document.getElementById('editRecordTitle').value = '';
+					document.getElementById('editRecordLat').value = '';
+				document.getElementById('editRecordLon').value = '';
 	   	   		}
 			}); // end click listener on window
 			//
@@ -1113,9 +1118,9 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 				// this action, action 2 and the action related to add row from the widget control
 				document.getElementById('contextMenuAdd').addEventListener('click', () => {
 					alert("Mise en oeuvre en cours de l'ajout d'une ligne au point ("+
-						  clickedLngLat.lat.toFixed(5)+
+						  clickedLngLat.lat.toFixed(6)+
 						  ","+
-						  clickedLngLat.lng.toFixed(5)+")");
+						  clickedLngLat.lng.toFixed(6)+")");
 					contextMenu.style.display = 'none';
 				});
 				// 
@@ -1123,9 +1128,9 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 				// TBD: See action 1
 				document.getElementById('contextMenuUpdate').addEventListener('click', () => {
 					alert("Mise en oeuvre en cours de la mise à jour d'une ligne au point ("
-								+clickedLngLat.lat.toFixed(5)
+								+clickedLngLat.lat.toFixed(6)
 								+","
-								+clickedLngLat.lng.toFixed(5)
+								+clickedLngLat.lng.toFixed(6)
 								+")"
 					);
 					contextMenu.style.display = 'none';
@@ -1134,7 +1139,7 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 				// On click on Action 3 (@ShowCoordinated): Show coordinates (@ContextMenu)
 				// TBD : Enhance presentation possibly using a Dialog Box
 				document.getElementById('contextMenuShow').addEventListener('click', () => {
-					alert(`Latitude: ${clickedLngLat.lat.toFixed(5)}\nLongitude: ${clickedLngLat.lng.toFixed(5)}`);
+					alert(`Latitude: ${clickedLngLat.lat.toFixed(6)}\nLongitude: ${clickedLngLat.lng.toFixed(6)}`);
 					contextMenu.style.display = 'none';
 				});
 				//
@@ -1302,27 +1307,50 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
   }
   
 });
-//
-//  Management of NewRecord Dialog Box
-//
-// To manage styling of record select input (greyed when empty)
-// Browsers don’t automatically update the value attribute when
-// the user changes selection — they update the property, not the
-// HTML attribute. So pure CSS trick doesn't work without this
-// JavaScript sync .
-function handleRecordSelectChange() {
-	const saveNewRowBtn = document.getElementById('saveNewRow');
-	const newRowTitle = document.getElementById('newRowTitle');
-  if (newRecordSelect.value === "") {
-    newRecordSelect.style.color = "#888"; // grey
-		saveNewRowBtn.textContent = "Ajouter";
-  } else {
-    newRecordSelect.style.color = "#000"; // normal
-		saveNewRowBtn.textContent = "Actualiser";
-		// Set newRowTitle with the title of the selected Record
-		newRowTitle.value = recordLookup[newRecordSelect.value].title;
-  }
-}
+	//
+	//  Management of NewRecord Dialog Box
+	//
+	function SetEditRecordSelect () {
+		if ( !editRecordSelect ) return;
+		editRecordSelect.innerHTML = "";
+		// Create the placeholder option
+		const placeholder = document.createElement("option");
+		placeholder.textContent = "Choisissez une ligne à mettre à jour..."; // visible text
+		placeholder.value = "";                          // empty value
+		placeholder.selected = true;                     // selected by default
+		editRecordSelect.appendChild(placeholder);
+		// Add new option for each identified record in recordLookup key alphabetic order
+		// (more or less in record.id order)
+		// TBD : Ensure a formatting of recordLookup Keys ensuring id numeric order 
+		Object.keys(recordLookup)
+  			.sort((a, b) => a.localeCompare(b)) // localeCompare handles case & accents
+  			.forEach(key => {
+				const option = document.createElement("option");
+  				option.value = key;
+  				option.textContent = key;
+				editRecordSelect.appendChild(option);
+			});
+	}
+	//
+	// To manage styling of record select input (greyed when empty)
+	// Browsers don’t automatically update the value attribute when
+	// the user changes selection — they update the property, not the
+	// HTML attribute. So pure CSS trick doesn't work without this
+	// JavaScript sync .
+	function handleRecordSelectChange() {
+		const editRecordTitle = document.getElementById('editRecordTitle');
+		if (editRecordSelect.value === "") {
+			editRecordSelect.style.color = "#888"; // grey
+			addRecordBtn.style.display = "inline-block";
+			updateRecordBtn.style.display = "none";	
+		} else {
+			editRecordSelect.style.color = "#000"; // normal
+			addRecordBtn.style.display = "none";
+			updateRecordBtn.style.display = "inline-block";	
+			// Set editRecordTitle with the title of the selected Record
+			editRecordTitle.value = recordLookup[editRecordSelect.value].title;
+	  	}
+	}
 //
 // Reusable function to make any modal Dialog Boxes draggable
 function makeDraggable(modalId) {
@@ -1361,6 +1389,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
