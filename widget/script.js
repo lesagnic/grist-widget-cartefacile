@@ -667,9 +667,7 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 			gf.geometry.coordinates[1],
 			gf.geometry.coordinates[0]
 		);
-		document.getElementById('editRecordTitle').value = gf.properties.title;
-		addRecordBtn.disabled = true;
-		updateRecordBtn.disabled = false;
+		handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
 		deleteRecordBtn.disabled = true;
 	}
 	else {
