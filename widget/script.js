@@ -1342,7 +1342,7 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 		if (editRecordSelect.value === "") {
 			editRecordSelect.style.color = "#888"; // grey
 			addRecordBtn.disabled = false;
-			updateRecordBtn.disable = true;	
+			updateRecordBtn.disabled = true;	
 		} else {
 			editRecordSelect.style.color = "#000"; // normal
 			addRecordBtn.disabled = true;
@@ -1389,6 +1389,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
