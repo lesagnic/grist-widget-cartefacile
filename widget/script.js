@@ -652,25 +652,26 @@ function handleEditRecordClick(e) {
 	if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 	if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 	const f = ClosestNearByFeature(e);
+	const gf = if (f && f.properties.id ) geojsonFeatures.find(item => item.properties.id === f.properties.id) else null;
 if (debug) console.log(widgetRootMsg+"handleEditRecordClick: id="+f.properties.id+", f="+JSON.stringify(f, null, 2));	
-	if (f && f.properties.id ) {
+	if (gf) {
 if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordKey(
-			f.properties.id,
-			f.properties.title,
-			f.geometry.coordinates[1],
-			f.geometry.coordinates[0]
+			gf.properties.id,
+			gf.properties.title,
+			gf.geometry.coordinates[1],
+			gf.geometry.coordinates[0]
 		));	
 		editRecordSelect.value = recordKey(
-			f.properties.id,
-			f.properties.title,
-			f.geometry.coordinates[1],
-			f.geometry.coordinates[0]
+			gf.properties.id,
+			gf.properties.title,
+			gf.geometry.coordinates[1],
+			gf.geometry.coordinates[0]
 		);
 		document.getElementById('editRecordTitle').value <= recordKey(
-			f.properties.id,
-			f.properties.title,
-			f.geometry.coordinates[1],
-			f.geometry.coordinates[0]
+			gf.properties.id,
+			gf.properties.title,
+			gf.geometry.coordinates[1],
+			gf.geometry.coordinates[0]
 		);
 		addRecordBtn.disabled = true;
 		updateRecordBtn.disabled = false;
