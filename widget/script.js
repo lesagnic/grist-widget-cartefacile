@@ -296,6 +296,11 @@ function FitBounds() {
 }
 //
 function ClosestNearByFeature(e) {
+if(debug) console.log(widgetRootMsg+"ClosestNearByFeature: x="+e.point.x
+					  +", y="+e.point.y
+					  +", lat="+e.latlng.lat
+					  +", lon="+e.latlng.lng
+);
 	const point = e.point; // pixel coordinates
 	const lngLat = e.lngLat; // geographic coordinates
 	//
@@ -310,7 +315,8 @@ function ClosestNearByFeature(e) {
 		layers: ['unclustered-point']
 	});
 	// No Nearby feature
-  	if (!features.length) null;
+if (debug) console.log(widgetRootMsg+"ClosestNearByFeature: nbfeatures"+features.length);
+	if (!features.length) null;
 	// Sort by distance from click
   	const sorted = features
 		.map(f => {
