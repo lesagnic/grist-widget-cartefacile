@@ -323,7 +323,7 @@ function ClosestNearByFeature(e) {
       		return { feature: f, distance: dist };
 		})
     	.sort((a, b) => a.distance - b.distance);
-	return sorted[0].feature);
+	return sorted[0].feature;
 }
 //
 // Mapping of the map data is by default clustered
