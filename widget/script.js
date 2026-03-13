@@ -678,9 +678,9 @@ if (debug) console.log(widgetRootMsg+"addOrUpdateRow: id"+id+
 	// At this stage, titre can't be reset which may be a useless constraint
 	// for the user 
 	let fields = {};
-	if ( titre ) fields[mapping.Titre] = titre;
-	if ( lat && lat!=="" ) fields[mapping.Latitude] = Number(lat);
-	if ( lon && lon!=="" ) fields[mapping.Longiture] = Number(lon);
+	fields[mapping.Titre] = titre;
+	if ( lat!=="" ) fields[mapping.Latitude] = Number(lat);
+	if ( lon!=="" ) fields[mapping.Longitude] = Number(lon);
 	//
 	// Proceed to Table update with error catching
 	//
@@ -1393,6 +1393,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
