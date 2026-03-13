@@ -679,8 +679,10 @@ if (debug) console.log(widgetRootMsg+"addOrUpdateRow: id"+id+
 	// for the user 
 	let fields = {};
 	fields[mapping.Titre] = titre;
-	if ( lat!=="" ) fields[mapping.Latitude] = Number(lat);
-	if ( lon!=="" ) fields[mapping.Longitude] = Number(lon);
+	if ( lat==="" ) fields[mapping.Latitude]="";
+	else fields[mapping.Latitude] = Number(lat);
+	if ( lon==="" ) fields[mapping.Longitude] = "";
+	else fields[mapping.Longitude] = Number(lon);
 	//
 	// Proceed to Table update with error catching
 	//
@@ -1393,6 +1395,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
