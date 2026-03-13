@@ -171,14 +171,14 @@ select {
     -moz-appearance: none;
     background-image: none;
 }
-/* Grey text when value is exactly "" */
-select[value=""] {
-  color: #888; /* placeholder grey */
-}
 /* Style the dropdown options */
 select option {
 	font-size: 12px;
 	color: black;
+}
+/* Grey text when value is exactly "" */
+select[value=""] option {
+  color: #888; /* placeholder grey */
 }
 input:focus, select:focus {
     outline: none;
