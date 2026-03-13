@@ -656,19 +656,19 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: id="+f.properties.i
 	if (f && f.properties.id ) {
 if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordKey(
 			f.properties.id,
-			f.properties.titre,
+			f.properties.title,
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		));	
 		editRecordSelect.value = recordKey(
 			f.properties.id,
-			f.properties.titre,
+			f.properties.title,
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		);
 		document.getElementById('editRecordTitle').value <= recordKey(
 			f.properties.id,
-			f.properties.titre,
+			f.properties.title,
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		);
