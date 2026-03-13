@@ -306,7 +306,7 @@ function ClosestNearByFeature(e) {
 		[point.x + radiusPx, point.y + radiusPx]
   	];
   	// Query only your point layer
-  	const features = map.queryRenderedFeatures(bbox, {
+  	const features = mapLibre.queryRenderedFeatures(bbox, {
 		layers: ['unclustered-point']
 	});
 	// No Nearby feature
