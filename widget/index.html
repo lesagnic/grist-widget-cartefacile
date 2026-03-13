@@ -32,22 +32,24 @@
 	</div>
 
 	<!-- Fenêtre modal d'ajout d'une ligne -->
-	<div id="widgetNewRow" class="widget-dialog-modal">
-		<div id="widgetNewRowContent" class="widget-dialog-content">
-			<div id="widgetNewRowHeader" class="widget-dialog-header">Ajout/Mise à jour d'une ligne</div>
-			<label id="newRowLabelRecord" for="newRowRecord">Ligne à modifier (le cas échéant)</label>
-			<select id="newRowRecord">
+	<div id="widgetEditRecord" class="widget-dialog-modal">
+		<div id="widgetEditRecordContent" class="widget-dialog-content">
+			<div id="widgetEditRecordHeader" class="widget-dialog-header">Ajout/Mise à jour d'une ligne</div>
+			<label id="editRecordLabelRecord" for="editRecordRecord">Ligne à modifier (le cas échéant)</label>
+			<select id="editRecordRecord">
 				<!-- options To be managed in the widget -->
 			</select>
-			<label id="newRowLabelTitle" for="newRowTitle">Libellé</label>
-			<input id="newRowTitle" name="Titre" type="text" placeholder="A renseigner">
-			<label id="newRowLabelLatitude" for="newRowlat">Latitude</label>
-			<input id="newRowLat" name="Latitude" type="number" placeholder="">
-			<label id="newRowLabelLongitude" for="newRowLon">Longitude</label>
-			<input id="newRowLon" name="Longitude" type="number" placeholder="">
+			<label id="editRecordLabelTitle" for="editRecordTitle">Libellé</label>
+			<input id="editRecordTitle" name="Titre" type="text" placeholder="A renseigner">
+			<label id="editRecordLabelLatitude" for="editRecordlat">Latitude</label>
+			<input id="editRecordLat" name="Latitude" type="number" placeholder="">
+			<label id="editRecordLabelLongitude" for="editRecordLon">Longitude</label>
+			<input id="editRecordLon" name="Longitude" type="number" placeholder="">
 			<div class="widget-dialog-footer">
-				<button id="cancelNewRow" class="btn btn-secondary">Annuler</button>
-				<button id="saveNewRow" class="btn btn-primary">Ajouter</button>
+				<button id="cancelEditRecord" class="btn btn-secondary">Annuler</button>
+				<button id="addRecord" class="btn btn-primary">Ajouter</button>
+				<button id="updateRecord" class="btn btn-primary" disabled>Actualiser</button>
+				<button id="deleteRecord" class="btn btn-primary" disabled>Supprimer</button>
 			</div>
 		</div>
 	</div>
@@ -62,6 +64,7 @@
 	</div>
 </body>
 </html>
+
 
 
 
