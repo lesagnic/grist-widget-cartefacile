@@ -663,6 +663,11 @@ function handleEditRecordMouseMove(e) {
 //
 // @EditTable : Add a new row using mapped names
 async function addOrUpdateRow(id,titre,lat,lon) {
+if (debug) console.log(widgetRootMsg+"addOrUpdateRow: id"+id+
+					  ", titre="+titre+
+					  ", lat="+lat+
+					  ", lon="+lon
+);	
 	// Check mappings
 	if (!mapping.Longitude || !mapping.Latitude || !mapping.Titre) {
 		console.error(widgetRootMsg+"Column Mapping not ready");
@@ -672,11 +677,10 @@ async function addOrUpdateRow(id,titre,lat,lon) {
 	// TBD : clarifiy whether titre, lon, lat have to checked
 	// At this stage, titre can't be reset which may be a useless constraint
 	// for the user 
-	let fields = {
-		[mapping.Longitude]: lon,
-		[mapping.Latitude]: lat
-	};
+	let fields = {};
 	if ( titre ) fields[mapping.Titre] = titre;
+	if ( lat && lat!=="" ) fields[mapping.Latitude] = Number(lat);
+	if ( lon && lon!=="" ) fields[mapping.Longiture] = Number(lon);
 	//
 	// Proceed to Table update with error catching
 	//
@@ -816,8 +820,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		recordBox.style.display = 'none';
 		await addOrUpdateRow(0,
 			document.getElementById('editRecordTitle').value,	
-			Number(document.getElementById('editRecordLat').value),
-			Number(document.getElementById('editRecordLon').value)
+			document.getElementById('editRecordLat').value,
+			document.getElementById('editRecordLon').value
 		);
 		document.getElementById('editRecordSelect').value = '';
 		document.getElementById('editRecordTitle').value = '';
@@ -829,8 +833,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		if ( Object.hasOwn(recordLookup, document.getElementById('editRecordSelect').value) ) {
 			await addOrUpdateRow(recordLookup[document.getElementById('editRecordSelect').value].id,
 				document.getElementById('editRecordTitle').value,
-				Number(document.getElementById('editRecordLat').value),
-				Number(document.getElementById('editRecordLon').value)
+				document.getElementById('editRecordLat').value,
+				document.getElementById('editRecordLon').value
 			);
 		}
 		else console.log(widgetRootMsg+"Can't update record: "+document.getElementById('editRecordSelect').value);
@@ -1389,6 +1393,7 @@ function makeDraggable(modalId) {
 //
 // @EditDialogBox : Functions for the management of the Dialog Box used to Add new
 //  Table Rows and Update the mapped columns
+
 
 
 
