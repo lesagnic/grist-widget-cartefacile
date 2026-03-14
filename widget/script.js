@@ -548,6 +548,134 @@ function UnsetInstruction() {
 }
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// API GRIST : ready
+// @GristAPI, @GristReady
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+grist.ready({   
+	requiredAccess: 'full',
+	columns: [
+		{
+			name: "Titre",
+			title: "Libellé",
+			optional: false,
+			description: "Valeur ou libellé de l'objet géoréférencé", // Ne s'affiche pas si multiple
+			allowMultiple: false // Permet l'attribution de plusieurs colonnes.
+		},
+		{
+			name: "Latitude",
+			title: "Latitude",
+			optional: false,
+			type: "Numeric", // Quel type de colonne nous attendons.
+			description: "Latitude", // Description du champ.
+			allowMultiple: false // Permet l'attribution de plusieurs colonnes.
+		},
+		{
+			name: "Longitude",
+			title: "Longitude",
+			optional: false,
+			type: "Numeric", // Quel type de colonne nous attendons.
+			description: "Longitude", // Description du champ.
+			allowMultiple: false // Permet l'attribution de plusieurs colonnes
+		}
+	],
+	allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
+});
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GRIST Contexte when it is ready
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Log version once on load
+if (debug) console.log(widgetRootMsg+"Widget is ready");
+// Send widget location info to the console...
+if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
+if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
+if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// AT THIS STAGE, NEED TO WAIT FOR DOM CONTENT TO BE LOADED
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Apply to all modal Dialog Boxes
+document.addEventListener("DOMContentLoaded", function() {
+	//
+	// Init dialog Box and context Menu
+	// @ParameterBox : init
+	parameterBox = document.getElementById('widgetParameters');
+	// @RecordBox : init
+	recordBox = document.getElementById('widgetEditRecord');
+	cancelRecordBtn = document.getElementById('cancelEditRecord');
+	addRecordBtn = document.getElementById('addRecord');
+	updateRecordBtn = document.getElementById('updateRecord');
+	deleteRecordBtn = document.getElementById('deleteRecord');
+	editRecordSelect = document.getElementById('editRecordSelect');
+	handleRecordSelectChange();
+	// ...and whenever selection changes
+
+
+	// @ContextMenu : init
+	contextMenu = document.getElementById('contextMenu');
+	//
+	// RecordBox elements listeners
+	//
+	editRecordSelect.addEventListener("change", handleRecordSelectChange);
+	cancelRecordBtn.addEventListener('click', () => {
+				// Stop listener
+				//document.removeEventListener("change", handleRecordSelectChange);
+		recordBox.style.display = 'none';
+		editRecordSelect.value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
+	});
+	addRecordBtn.addEventListener('click', async () => {
+		recordBox.style.display = 'none';
+		await addOrUpdateRow(0,
+			document.getElementById('editRecordTitle').value,	
+			document.getElementById('editRecordLat').value,
+			document.getElementById('editRecordLon').value
+		);
+		editRecordSelect.value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
+	});
+	updateRecordBtn.addEventListener('click', async () => {
+		recordBox.style.display = 'none';
+		if ( Object.hasOwn(recordLookup, editRecordSelect.value) ) {
+			await addOrUpdateRow(recordLookup[editRecordSelect.value].id,
+				document.getElementById('editRecordTitle').value,
+				document.getElementById('editRecordLat').value,
+				document.getElementById('editRecordLon').value
+			);
+		}
+		else console.log(widgetRootMsg+"Can't update record: "+editRecordSelect.value);
+		editRecordSelect.value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
+	});
+	deleteRecordBtn.addEventListener('click', async () => {
+		recordBox.style.display = 'none';
+		if ( Object.hasOwn(recordLookup, editRecordSelect.value) ) {
+			//await addOrUpdateRow(recordLookup[document.getElementById('editRecordSelect').value].id,
+			//	document.getElementById('editRecordTitle').value,
+			//	Number(document.getElementById('editRecordLat').value),
+			//	Number(document.getElementById('editRecordLon').value)
+			//);
+			alert("La fonctionnalité de suppression est en cours de mise en oeuvre");
+		}
+		else console.error(widgetRootMsg+"Can't delete record: "+editRecordSelect.value);
+		editRecordSelect.value = '';
+		document.getElementById('editRecordTitle').value = '';
+		document.getElementById('editRecordLat').value = '';
+		document.getElementById('editRecordLon').value = '';
+	});						 
+	//
+	makeDraggable("widgetParameters");
+	makeDraggable("widgetEditRecord");		
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // @WidgetControl: Management of GRIST Widget main Control
 // This control exposes a set of buttons, each of them supporting a basic feature of the widget
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -794,134 +922,6 @@ if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, 
     	console.error(widgetRootMsg+"Error adding row:", err);
 	}
 } // end of function addOrUpdateRow
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// API GRIST : ready
-// @GristAPI, @GristReady
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-grist.ready({   
-	requiredAccess: 'full',
-	columns: [
-		{
-			name: "Titre",
-			title: "Libellé",
-			optional: false,
-			description: "Valeur ou libellé de l'objet géoréférencé", // Ne s'affiche pas si multiple
-			allowMultiple: false // Permet l'attribution de plusieurs colonnes.
-		},
-		{
-			name: "Latitude",
-			title: "Latitude",
-			optional: false,
-			type: "Numeric", // Quel type de colonne nous attendons.
-			description: "Latitude", // Description du champ.
-			allowMultiple: false // Permet l'attribution de plusieurs colonnes.
-		},
-		{
-			name: "Longitude",
-			title: "Longitude",
-			optional: false,
-			type: "Numeric", // Quel type de colonne nous attendons.
-			description: "Longitude", // Description du champ.
-			allowMultiple: false // Permet l'attribution de plusieurs colonnes
-		}
-	],
-	allowSelectBy: true // Permet de choisir ce widget comme input d'un autre widget
-});
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GRIST Contexte when it is ready
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Log version once on load
-if (debug) console.log(widgetRootMsg+"Widget is ready");
-// Send widget location info to the console...
-if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
-if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
-if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
-//
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// AT THIS STAGE, NEED TO WAIT FOR DOM CONTENT TO BE LOADED
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Apply to all modal Dialog Boxes
-document.addEventListener("DOMContentLoaded", function() {
-	//
-	// Init dialog Box and context Menu
-	// @ParameterBox : init
-	parameterBox = document.getElementById('widgetParameters');
-	// @RecordBox : init
-	recordBox = document.getElementById('widgetEditRecord');
-	cancelRecordBtn = document.getElementById('cancelEditRecord');
-	addRecordBtn = document.getElementById('addRecord');
-	updateRecordBtn = document.getElementById('updateRecord');
-	deleteRecordBtn = document.getElementById('deleteRecord');
-	editRecordSelect = document.getElementById('editRecordSelect');
-	handleRecordSelectChange();
-	// ...and whenever selection changes
-
-
-	// @ContextMenu : init
-	contextMenu = document.getElementById('contextMenu');
-	//
-	// RecordBox elements listeners
-	//
-	editRecordSelect.addEventListener("change", handleRecordSelectChange);
-	cancelRecordBtn.addEventListener('click', () => {
-				// Stop listener
-				//document.removeEventListener("change", handleRecordSelectChange);
-		recordBox.style.display = 'none';
-		editRecordSelect.value = '';
-		document.getElementById('editRecordTitle').value = '';
-		document.getElementById('editRecordLat').value = '';
-		document.getElementById('editRecordLon').value = '';
-	});
-	addRecordBtn.addEventListener('click', async () => {
-		recordBox.style.display = 'none';
-		await addOrUpdateRow(0,
-			document.getElementById('editRecordTitle').value,	
-			document.getElementById('editRecordLat').value,
-			document.getElementById('editRecordLon').value
-		);
-		editRecordSelect.value = '';
-		document.getElementById('editRecordTitle').value = '';
-		document.getElementById('editRecordLat').value = '';
-		document.getElementById('editRecordLon').value = '';
-	});
-	updateRecordBtn.addEventListener('click', async () => {
-		recordBox.style.display = 'none';
-		if ( Object.hasOwn(recordLookup, editRecordSelect.value) ) {
-			await addOrUpdateRow(recordLookup[editRecordSelect.value].id,
-				document.getElementById('editRecordTitle').value,
-				document.getElementById('editRecordLat').value,
-				document.getElementById('editRecordLon').value
-			);
-		}
-		else console.log(widgetRootMsg+"Can't update record: "+editRecordSelect.value);
-		editRecordSelect.value = '';
-		document.getElementById('editRecordTitle').value = '';
-		document.getElementById('editRecordLat').value = '';
-		document.getElementById('editRecordLon').value = '';
-	});
-	deleteRecordBtn.addEventListener('click', async () => {
-		recordBox.style.display = 'none';
-		if ( Object.hasOwn(recordLookup, editRecordSelect.value) ) {
-			//await addOrUpdateRow(recordLookup[document.getElementById('editRecordSelect').value].id,
-			//	document.getElementById('editRecordTitle').value,
-			//	Number(document.getElementById('editRecordLat').value),
-			//	Number(document.getElementById('editRecordLon').value)
-			//);
-			alert("La fonctionnalité de suppression est en cours de mise en oeuvre");
-		}
-		else console.error(widgetRootMsg+"Can't delete record: "+editRecordSelect.value);
-		editRecordSelect.value = '';
-		document.getElementById('editRecordTitle').value = '';
-		document.getElementById('editRecordLat').value = '';
-		document.getElementById('editRecordLon').value = '';
-	});						 
-	//
-	makeDraggable("widgetParameters");
-	makeDraggable("widgetEditRecord");		
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// API GRIST : onOptions
