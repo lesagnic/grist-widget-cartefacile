@@ -1221,12 +1221,12 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 						layers: ['unclustered-point']
 					});
 if (debug) console.log(widgetRootMsg+
-	"On Context Menu : feature=\n"+JSON.stringify(features[0], null, 2)+
+	"On Context Menu : record id="+features[0]?.properties.id+
 	", lat="+clickedLngLat.lat+
 	", lng="+clickedLngLat.lng
 );
 					// Adjust visibility of contextMenuItems
-					if ( features && features[0] && features[0].properties.id > 0 ) {
+					if ( features.length && features[0].properties.id > 0 ) {
 						clickedRecordId = features[0].properties.id;
 						document.getElementById('contextMenuDelete').disabled = false;
 						document.getElementById('contextMenuUpdate').disabled = false;
