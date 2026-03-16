@@ -43,7 +43,7 @@ html,body, #map {
     background-repeat: no-repeat;    
 }
 /* Grey styling to disable a control button */
-.maplibregl-ctrl button.disabled {
+.maplibregl-ctrl button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -238,7 +238,7 @@ input:focus, select:focus {
 #contextMenu li:hover {
     background: #f0f0f0;
 }
-#contextMenu li.disabled {
+#contextMenu li:disabled {
   color: #888;
   cursor: not-allowed;
   background: red; /*#f9f9f9;*/
