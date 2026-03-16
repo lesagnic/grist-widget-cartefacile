@@ -692,10 +692,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 		if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 		if (document.getElementById('editRecordTitle')) document.getElementById('editRecordTitle').value = '';
-		disableElt('editRecordLabelRecord');
-		disableElt(editRecordSelect.id);
-		disableElt('editRecordLabelId');
-		disableElt('editRecordId');
+		disableElt('editRecordAreaRecord');
+		disableElt('editRecordAreaId');
 		removeReadonly('editRecordTitle');
 		removeReadonly('editRecordLat');
 		removeReadonly('editRecordLon');
@@ -731,10 +729,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		);
-		disableElt('editRecordLabelRecord');
-		disableElt(editRecordSelect.id);
-		enableElt('editRecordLabelId');
-		enableElt('editRecordId');
+		disableElt('editRecordAreaRecord');
+		enableElt('editRecordAreaId');
 		setReadonly('editRecordId');
 		removeReadonly('editRecordTitle');
 		removeReadonly('editRecordLat');
@@ -770,10 +766,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		);
-		disableElt('editRecordLabelRecord');
-		disableElt(editRecordSelect.id);
-		enableElt('editRecordLabelId');
-		enableElt('editRecordId');
+		disableElt('editRecordAreaRecord');
+		enableElt('editRecordAreaId');
 		setReadonly('editRecordId');
 		setReadonly('editRecordTitle');
 		setReadonly('editRecordLat');
@@ -971,10 +965,8 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 		editRecordSelect.value = "";
 		disableElt(deleteRecordBtn.id);
 	}
-	enableElt('editRecordLabelRecord');
-	enableElt(editRecordSelect.id);
-	disableElt('editRecordLabelId');
-	disableElt('editRecordId');
+	enableElt('editRecordAreaRecord');
+	disableElt('editRecordAreaId');
 	removeReadonly('editRecordTitle');
 	removeReadonly('editRecordLat');
 	removeReadonly('editRecordLon');
