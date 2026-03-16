@@ -24,9 +24,12 @@ let parameterBox = null;
 //	@ContextMenu: Context menu (on right click)
 let contextMenu = null; // context Menu HTML element
 let clickedLngLat = null; // geographic location of the right click event
+let clickedRecordId = null; // Id of the record having a marker at the geographic location of the click
+//		@ShowCoordinates: display the coordinates of the previoulsy clicked location
 //		@AddRecord
 //		@UpdateRecord
-//		@ShowCoordinates
+//		@DeleteRecord: Display the mapped columns of a prevously clicked record
+//                     in a dialog box with cancel and delete buttons
 //	@InstructionControl: Display user instructions in a 'top'left Map Libre Control
 let instructionControl = null;
 //		SetInstruction: Display a (new) instruction
@@ -611,8 +614,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	editRecordSelect = document.getElementById('editRecordSelect');
 	handleRecordSelectChange();
 	// ...and whenever selection changes
-
-
+	//
 	// @ContextMenu : init
 	contextMenu = document.getElementById('contextMenu');
 	//
@@ -636,6 +638,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			document.getElementById('editRecordLon').value
 		);
 		editRecordSelect.value = '';
+		editRecordSelect.style.display = 'block';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
@@ -670,7 +673,98 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
-	});						 
+	});		
+	//
+	// @ContextMenu listeners
+	//
+	// Intercept right-click to show context menu (@ContextMenu)
+	mapLibre.on('contextmenu', (e) => {
+		e.preventDefault(); // Prevent default browser menu
+		clickedLngLat = e.lngLat;
+		// Position the menu at mouse location
+		contextMenu.style.left = e.point.x + 'px';
+		contextMenu.style.top = e.point.y + 'px';
+		contextMenu.style.display = 'block';
+		// Is there any feature at the location of the click
+		const features = mapLibre.queryRenderedFeatures(e.point, {
+			layers: ['unclustered-point']
+		});
+		// Adjust visibility of contextMenuItems
+		if ( features && features[0] && features[0].properties.id > 0 ) {
+			clickedRecordId = features[0].properties.id;
+			document.getElementById('contextMenuDelete').disabled = false;
+			document.getElementById('contextMenuUpdate').disabled = false;
+		}
+		else {
+			clickedRecordId = null;
+			document.getElementById('contextMenuDelete').disabled = true;
+			document.getElementById('contextMenuUpdate').disabled = true;
+		}
+	});
+	//
+	// Hide menu on map click or move (@ContextMenu)
+	mapLibre.on('click', () => contextMenu.style.display = 'none');
+ 	mapLibre.on('movestart', () => contextMenu.style.display = 'none');
+	//
+  	// (@ContextMenu) On click on action #contextMenuAdd (@AddRecord) :  
+	document.getElementById('contextMenuAdd').addEventListener('click', () => {
+		contextMenu.style.display = 'none';
+		if ( clickedRecordId === null) return;
+		const lng = clickedLngLat.lng.toFixed(6);
+		const lat = clickedLngLat.lat.toFixed(6);
+		// @RecordBox init
+		if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
+		if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
+		if (document.getElementById('editRecordTitle')) document.getElementById('editRecordTitle').value = '';
+		editRecordSelect.style.display = 'none'; // Hide editRecordSelect
+		addRecordBtn.disabled = false;	
+		updateRecordBtn.disabled = true;	
+		deleteRecordBtn.disabled = true;	
+		mapLibre.getCanvas().style.cursor = '';
+		// @RecordBox show
+		recordBox.style.display = 'block';
+	});
+	// 
+	// (@ContextMenu) On click on action #contextMenuUpdate (@UpdateRecord)
+	// TBD: See action #contextMenuAdd
+	document.getElementById('contextMenuUpdate').addEventListener('click', () => {
+		alert("Mise en oeuvre en cours de la mise à jour d'une ligne au point ("
+				+clickedLngLat.lat.toFixed(6)
+				+","
+				+clickedLngLat.lng.toFixed(6)
+				+")"
+		);
+		contextMenu.style.display = 'none';
+	});
+	//
+	// (@ContextMenu) On click on Action #contextMenuShow (@ShowCoordinates)
+	// TBD : Enhance presentation possibly using a Dialog Box
+	document.getElementById('contextMenuShow').addEventListener('click', () => {
+		alert(`Latitude: ${clickedLngLat.lat.toFixed(6)}\nLongitude: ${clickedLngLat.lng.toFixed(6)}`);
+		contextMenu.style.display = 'none';
+	});
+	//
+	// Hide contextMenu or Dialog Box if clicking outside (@OutsideClick)
+	document.addEventListener('click', (e) => {
+		// @ParameterBox click outside cancel
+		if (event.target === parameterBox) {
+			parameterBox.style.display = 'none';
+		}
+		// @RecordBox click outside cancel
+		if (event.target === recordBox) {
+			// Stop listener
+			document.removeEventListener("change", handleRecordSelectChange);
+			recordBox.style.display = 'none';
+			editRecordSelect.value = '';
+			document.getElementById('editRecordTitle').value = '';
+			document.getElementById('editRecordLat').value = '';
+			document.getElementById('editRecordLon').value = '';
+		}
+		// @ContextMenu cancel
+		if (contextMenu && !contextMenu.contains(e.target)) {
+			contextMenu.style.display = 'none';
+		}
+	});
 	//
 	makeDraggable("widgetParameters");
 	makeDraggable("widgetEditRecord");		
@@ -1055,22 +1149,6 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 					AddGristTable2Map ();
 				}
 			}); // End click listener saveSettings
-			// Close parameterBox when clicking outside content
-			window.addEventListener('click', (event) => {
-	      		if (event.target === parameterBox) {
-					parameterBox.style.display = 'none';
-				}
-				if (event.target === recordBox) {
-					// Stop listener
-					document.removeEventListener("change", handleRecordSelectChange);
-					recordBox.style.display = 'none';
-					editRecordSelect.value = '';
-					document.getElementById('editRecordTitle').value = '';
-					document.getElementById('editRecordLat').value = '';
-				document.getElementById('editRecordLon').value = '';
-	   	   		}
-			}); // end click listener on window
-			//
 			//
 			// Chargement de la carte
 			mapLibre.on('load', () => {
@@ -1158,63 +1236,6 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 				mapLibre.on('mouseleave', 'clusters', () => {
 					mapLibre.getCanvas().style.cursor = '';
 				});  
-				//
-				// @ContextMenu listeners
-				//
-				// Intercept right-click to show context menu (@ContextMenu)
-				mapLibre.on('contextmenu', (e) => {
-					e.preventDefault(); // Prevent default browser menu
-					clickedLngLat = e.lngLat;
-					// Position the menu at mouse location
-					contextMenu.style.left = e.point.x + 'px';
-					contextMenu.style.top = e.point.y + 'px';
-					contextMenu.style.display = 'block';
-					// TBD : Grey Update record context menu item if there isn't 
-					// any record marker at this location
-	  			});
-				//
-				// Hide menu on map click or move (@ContextMenu)
-				mapLibre.on('click', () => contextMenu.style.display = 'none');
- 			 	mapLibre.on('movestart', () => contextMenu.style.display = 'none');
-				//
-  				// On click on action 1 (@AddRecord) : Add record to table (@ContextMenu)
-				// TBD : Use NewRecord Dialog Box throug a generic function managing
-				// this action, action 2 and the action related to add row from the widget control
-				document.getElementById('contextMenuAdd').addEventListener('click', () => {
-					alert("Mise en oeuvre en cours de l'ajout d'une ligne au point ("+
-						  clickedLngLat.lat.toFixed(6)+
-						  ","+
-						  clickedLngLat.lng.toFixed(6)+")");
-					contextMenu.style.display = 'none';
-				});
-				// 
-				// On click on Action 2 (@UpdateRecord): Update Record (@ContextMenu)
-				// TBD: See action 1
-				document.getElementById('contextMenuUpdate').addEventListener('click', () => {
-					alert("Mise en oeuvre en cours de la mise à jour d'une ligne au point ("
-								+clickedLngLat.lat.toFixed(6)
-								+","
-								+clickedLngLat.lng.toFixed(6)
-								+")"
-					);
-					contextMenu.style.display = 'none';
-				});
-				//
-				// On click on Action 3 (@ShowCoordinated): Show coordinates (@ContextMenu)
-				// TBD : Enhance presentation possibly using a Dialog Box
-				document.getElementById('contextMenuShow').addEventListener('click', () => {
-					alert(`Latitude: ${clickedLngLat.lat.toFixed(6)}\nLongitude: ${clickedLngLat.lng.toFixed(6)}`);
-					contextMenu.style.display = 'none';
-				});
-				//
-				// Hide menu if clicking outside (@OutsideClick)
-				// TBD : check whether this event does not already exist
-				document.addEventListener('click', (e) => {
-					// @ContextMenu cancel
-					if (contextMenu && !contextMenu.contains(e.target)) {
-						contextMenu.style.display = 'none';
-					}
-				});
 			}); // end mapLibre.on load	
 		} // if (!mapLibre)
 		else { // when there is already a mapLibre :
