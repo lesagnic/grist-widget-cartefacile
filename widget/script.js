@@ -675,36 +675,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById('editRecordLon').value = '';
 	});		
 	//
-	// @ContextMenu listeners
-	//
-	// Intercept right-click to show context menu (@ContextMenu)
-	mapLibre.on('contextmenu', (e) => {
-		e.preventDefault(); // Prevent default browser menu
-		clickedLngLat = e.lngLat;
-		// Position the menu at mouse location
-		contextMenu.style.left = e.point.x + 'px';
-		contextMenu.style.top = e.point.y + 'px';
-		contextMenu.style.display = 'block';
-		// Is there any feature at the location of the click
-		const features = mapLibre.queryRenderedFeatures(e.point, {
-			layers: ['unclustered-point']
-		});
-		// Adjust visibility of contextMenuItems
-		if ( features && features[0] && features[0].properties.id > 0 ) {
-			clickedRecordId = features[0].properties.id;
-			document.getElementById('contextMenuDelete').disabled = false;
-			document.getElementById('contextMenuUpdate').disabled = false;
-		}
-		else {
-			clickedRecordId = null;
-			document.getElementById('contextMenuDelete').disabled = true;
-			document.getElementById('contextMenuUpdate').disabled = true;
-		}
-	});
-	//
-	// Hide menu on map click or move (@ContextMenu)
-	mapLibre.on('click', () => contextMenu.style.display = 'none');
- 	mapLibre.on('movestart', () => contextMenu.style.display = 'none');
+	// @ContextMenu element listeners
 	//
   	// (@ContextMenu) On click on action #contextMenuAdd (@AddRecord) :  
 	document.getElementById('contextMenuAdd').addEventListener('click', () => {
@@ -1235,7 +1206,37 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 				// Inspect mouse leave on a cluster (@Cluster) to restore cursor (@CursorShape)
 				mapLibre.on('mouseleave', 'clusters', () => {
 					mapLibre.getCanvas().style.cursor = '';
-				});  
+				});
+				//
+				// Intercept right-click to show context menu (@ContextMenu)
+				mapLibre.on('contextmenu', (e) => {
+					e.preventDefault(); // Prevent default browser menu
+					clickedLngLat = e.lngLat;
+					// Position the menu at mouse location
+					contextMenu.style.left = e.point.x + 'px';
+					contextMenu.style.top = e.point.y + 'px';
+					contextMenu.style.display = 'block';
+					// Is there any feature at the location of the click
+					const features = mapLibre.queryRenderedFeatures(e.point, {
+						layers: ['unclustered-point']
+					});
+					// Adjust visibility of contextMenuItems
+					if ( features && features[0] && features[0].properties.id > 0 ) {
+						clickedRecordId = features[0].properties.id;
+						document.getElementById('contextMenuDelete').disabled = false;
+						document.getElementById('contextMenuUpdate').disabled = false;
+					}
+					else {
+						clickedRecordId = null;
+						document.getElementById('contextMenuDelete').disabled = true;
+						document.getElementById('contextMenuUpdate').disabled = true;
+					}
+				});
+				//
+				// Hide menu on map click or move (@ContextMenu)
+				mapLibre.on('click', () => contextMenu.style.display = 'none');
+ 				mapLibre.on('movestart', () => contextMenu.style.display = 'none');
+				//
 			}); // end mapLibre.on load	
 		} // if (!mapLibre)
 		else { // when there is already a mapLibre :
