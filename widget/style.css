@@ -238,7 +238,7 @@ input:focus, select:focus {
 #contextMenu li:hover {
     background: #f0f0f0;
 }
-#contextMenu li:disabled {
+#contextMenu li[disabled] {
   color: #888 !important;
   cursor: not-allowed;
   background: red !important; /*#f9f9f9;*/
