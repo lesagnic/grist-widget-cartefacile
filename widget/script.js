@@ -1182,8 +1182,10 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 				// Inspect mouseenter unclustered point to change cursor 
 				// and display popup (@HoverPopup)
 				mapLibre.on('mouseenter', 'unclustered-point', (e) => {
+					// Change the pointer whatever is the hovered feature...
+					mapLibre.getCanvas().style.cursor = 'pointer';
+					// but no hoverPopup on the current record
 					if ( e.features[0].properties.id != currentRowId ) {
-						mapLibre.getCanvas().style.cursor = 'pointer';
 						hoverPopup
 							.setLngLat(e.features[0].geometry.coordinates.slice())
 							.setHTML(e.features[0].properties.title)
