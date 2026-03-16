@@ -638,7 +638,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			document.getElementById('editRecordLon').value
 		);
 		editRecordSelect.value = '';
-		editRecordSelect.style.display = 'block';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
 		document.getElementById('editRecordLon').value = '';
@@ -967,6 +966,7 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 	}
 	enableElt('editRecordAreaRecord');
 	disableElt('editRecordAreaId');
+	removeReadonly('editRecordSelect');
 	removeReadonly('editRecordTitle');
 	removeReadonly('editRecordLat');
 	removeReadonly('editRecordLon');
