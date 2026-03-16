@@ -241,7 +241,7 @@ input:focus, select:focus {
 #contextMenu li.disabled {
   color: #888;
   cursor: not-allowed;
-  background: red; //#f9f9f9;
+  background: red; /*#f9f9f9;*/
   pointer-events: none; /* Prevents mouse interaction */
 }
 
