@@ -1104,10 +1104,27 @@ if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, 
 	grist.onOptions((options,settings) => {
 if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
 if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
+const table = grist.selectedTable;
+
+  console.log("=== grist.selectedTable type ===");
+  console.log(Object.prototype.toString.call(table));
+
+  console.log("\n=== Own properties ===");
+  console.log(Object.getOwnPropertyNames(table));
+
+  console.log("\n=== Own methods (functions) ===");
+  console.log(Object.getOwnPropertyNames(table)
+    .filter(k => typeof table[k] === 'function'));
+
+  console.log("\n=== Prototype chain methods ===");
+  let proto = Object.getPrototypeOf(table);
+  while (proto && proto !== Object.prototype) {
+    console.log(`\nFrom prototype: ${proto.constructor.name}`);
+    console.log(Object.getOwnPropertyNames(proto)
+      .filter(k => typeof table[k] === 'function'));
+    proto = Object.getPrototypeOf(proto);
+  }
 	});
-if (debug) console.log("Proof: "+typeof grist.selectedTable); // "string"
-if (debug) console.log("Proof: "+grist.selectedTable);        // e.g. "Customers"
-if (debug) console.log("Proof: "+Object.keys(grist.selectedTable)); // []
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// API GRIST : onRecords
