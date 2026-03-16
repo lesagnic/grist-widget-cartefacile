@@ -239,9 +239,9 @@ input:focus, select:focus {
     background: #f0f0f0;
 }
 #contextMenu li.disabled {
-  color: #999;
+  color: #888;
   cursor: not-allowed;
-  background: #f9f9f9;
+  background: red; //#f9f9f9;
   pointer-events: none; /* Prevents mouse interaction */
 }
 
