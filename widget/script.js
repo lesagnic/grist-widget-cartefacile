@@ -60,7 +60,10 @@ let mapLibre = null; // reference to the map
 //		@HoverPopup: Display the record title on a Popup when the cursor is hover a record marker
 //	@CursorShape
 //	@OutsideClick
-//		
+//	*
+// TBD : To be done
+//	- Check TBD in the file
+//  - Update script to work when change is disabled in GRIST (for exemaple, in the widget template)
 //
 //
 // Debug management
@@ -709,9 +712,22 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 	//
 	// (@ContextMenu) On click on Action #contextMenuShow (@ShowCoordinates)
-	// TBD : Enhance presentation possibly using a Dialog Box
+	// Enable copy to clipboard while providing the coordinates in the context menu
 	document.getElementById('contextMenuShow').addEventListener('click', () => {
-		alert(`Latitude: ${clickedLngLat.lat.toFixed(6)}\nLongitude: ${clickedLngLat.lng.toFixed(6)}`);
+		const messageDuration = 3000; // adjust delay if needed
+		document.getElementById('contextMenuShow').textContent = `Copier <b>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</b>`
+		try {
+			await navigator.clipboard.writeText(`${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}`);
+			setTimeout(() => {
+				SetInstruction(`<b>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</b> copié dans le presse-papier`);
+			}, messageDuration); // adjust delay if needed
+		} catch (err) {
+			console.error(widgetRootMsg+'Impossible de copier dans le presse-paier ', err);
+			setTimeout(() => {
+				SetInstruction('Erreur de copie dans le presse-papier');
+  			}, messageDuration); 
+		}	
+		UnsetInstruction();
 		contextMenu.style.display = 'none';
 	});
 	//
@@ -1235,6 +1251,7 @@ if (debug) console.log(widgetRootMsg+
 					}
 					else {
 						clickedRecordId = null;
+if (debug) console.log(widgetRootMsg+'Disable delete and update context menu items');
 						document.getElementById('contextMenuDelete').disabled = true;
 						document.getElementById('contextMenuUpdate').disabled = true;
 					}
