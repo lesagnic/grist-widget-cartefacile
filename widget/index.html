@@ -36,18 +36,28 @@
 	<div id="widgetEditRecord" class="widget-dialog-modal">
 		<div id="widgetEditRecordContent" class="widget-dialog-content">
 			<div id="widgetEditRecordHeader" class="widget-dialog-header">Edition d'une ligne</div>
-			<label id="editRecordLabelRecord" for="editRecordSelect">Ligne à modifier (le cas échéant)</label>
-			<select id="editRecordSelect">
-				<!-- options To be managed in the widget -->
-			</select>
-			<label id="editRecordLabelId" for="editRecordId">Id</label>
-			<input id="editRecordId" name="Id type="number" placeholder="">
-			<label id="editRecordLabelTitle" for="editRecordTitle">Libellé</label>
-			<input id="editRecordTitle" name="Titre" type="text" placeholder="A renseigner">
-			<label id="editRecordLabelLatitude" for="editRecordlat">Latitude</label>
-			<input id="editRecordLat" name="Latitude" type="number" placeholder="">
-			<label id="editRecordLabelLongitude" for="editRecordLon">Longitude</label>
-			<input id="editRecordLon" name="Longitude" type="number" placeholder="">
+			<div id="editRecordAreaId disabled>
+				<label id="editRecordLabelRecord" for="editRecordSelect">Ligne à modifier (le cas échéant)</label>
+				<select id="editRecordSelect">
+					<!-- options To be managed in the widget -->
+				</select>
+			</div>
+			<div id="editRecordAreaId disabled>
+				<label id="editRecordLabelId" for="editRecordId">Id</label>
+				<input id="editRecordId" name="Id type="number" placeholder="">
+			</div>
+			<div id="editRecordAreaTitle">
+				<label id="editRecordLabelTitle" for="editRecordTitle">Libellé</label>
+				<input id="editRecordTitle" name="Titre" type="text" placeholder="A renseigner">
+			</div>
+			<div id="editRecordAreaLatitude">
+				<label id="editRecordLabelLatitude" for="editRecordlat">Latitude</label>
+				<input id="editRecordLat" name="Latitude" type="number" placeholder="">
+			</div>
+			<div id="editRecordAreaLongitude">
+				<label id="editRecordLabelLongitude" for="editRecordLon">Longitude</label>
+				<input id="editRecordLon" name="Longitude" type="number" placeholder="">
+			</div>
 			<div class="widget-dialog-footer">
 				<button id="cancelEditRecord" class="btn btn-secondary">Annuler</button>
 				<button id="addRecord" class="btn btn-primary">Ajouter</button>
