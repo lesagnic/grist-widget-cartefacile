@@ -180,8 +180,8 @@ select option {
 select[value=""] option {
   color: #888; /* placeholder grey */
 }
-select:read-only,
-select[readonly] {
+input:read-only, input[readonly],
+select:read-only, select[readonly] {
   background-color: #f0f0f0;
   cursor: not-allowed;
 }
