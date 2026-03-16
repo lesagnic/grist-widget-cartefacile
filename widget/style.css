@@ -236,7 +236,13 @@ input:focus, select:focus {
     cursor: pointer;
 }
 #contextMenu li:hover {
-    background: #eee;
+    background: #f0f0f0;
+}
+#contextMenu li.disabled {
+  color: #999;
+  cursor: not-allowed;
+  background: #f9f9f9;
+  pointer-events: none; /* Prevents mouse interaction */
 }
 
 
