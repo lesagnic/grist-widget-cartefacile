@@ -60,6 +60,7 @@ let mapLibre = null; // reference to the map
 //	@CursorShape
 //	@OutsideClick
 //	@EnableDisable: Disable/Enable Html element
+//	@Readonly : Set/Unset readonly attrobut of Htmlelement
 //	*
 // TBD : To be done
 //	- Check TBD in the file
@@ -702,7 +703,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 	// 
 	// (@ContextMenu) On click on action #contextMenuUpdate (@UpdateRecord)
-	// TBD: See action #contextMenuAdd
 	document.getElementById('contextMenuUpdate').addEventListener('click', () => {
 		contextMenu.style.display = 'none';
 		if ( clickedRecordId === null) return;
@@ -727,8 +727,45 @@ document.addEventListener("DOMContentLoaded", function() {
 			f.geometry.coordinates[0]
 		);
 		enableElt(editRecordSelect.id);
+		setReadonly(editRecordSelect.id);
 		handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
 		disableElt(deleteRecordBtn.id);
+		mapLibre.getCanvas().style.cursor = '';
+		// @RecordBox show
+		recordBox.style.display = 'block';
+	});
+	// 
+	// (@ContextMenu) On click on action #contextMenuDelete (@DeleteRecord)
+	document.getElementById('contextMenuDelete').addEventListener('click', () => {
+		contextMenu.style.display = 'none';
+		if ( clickedRecordId === null) return;
+		const f = geojsonFeatures.find(item => item.properties.id === clickedRecordId);
+		if  ( !f ) return;
+		// @RecordBox init
+		if (document.getElementById('widgetEditRecordHeader'))
+			document.getElementById('widgetEditRecordHeader').textContent = "Supression d'une ligne";
+		// Provide feature lat/lon rather that right-click lat/lon so the user see clearly what is going
+		// to be deleted
+		if (document.getElementById('editRecordLat'))
+			document.getElementById('editRecordLat').value = f.geometry.coordinates[1];
+		if (document.getElementById('editRecordLon'))
+			document.getElementById('editRecordLon').value = f.geometry.coordinates[0];
+		if (document.getElementById('editRecordTitle'))
+			document.getElementById('editRecordTitle').value = f.properties.id;
+		editRecordSelect.value = recordKey(
+			f.properties.id,
+			f.properties.title,
+			f.geometry.coordinates[1],
+			f.geometry.coordinates[0]
+		);
+		enableElt(editRecordSelect.id);
+		setReadonly(editRecordSelect.id);
+		setReadonly('editRecordTitle');
+		setReadonly('editRecordLat');
+		setReadonly('editRecordLon');
+		enableElt(deleteRecordBtn.id);
+		disableElt(updateRecordBtn.id);
+		disableElt(addRecordBtn.id);
 		mapLibre.getCanvas().style.cursor = '';
 		// @RecordBox show
 		recordBox.style.display = 'block';
@@ -851,20 +888,36 @@ class WidgetControl {
 }
 //
 // @EnableDisable: Disable a Button
-// TBD : Determine whether disableElt/enableElt should not be WidgetControl class methods
-function disableElt ( btnId ) {
-	const btn = document.getElementById(btnId);
-	if ( btn ) {
-		btn.setAttribute('disabled', '');
-		btn.classList.add('disabled');
+function disableElt ( eltId ) {
+	const btn = document.getElementById(eltId);
+	if ( elt ) {
+		elt.setAttribute('disabled', '');
+		elt.classList.add('disabled');
 	}
 }
-// @EnableDisable: Enable a Button
-function enableElt ( btnId ) {
-	const btn = document.getElementById(btnId);
-	if ( btn ) {
-		btn.removeAttribute('disabled');
-		btn.classList.remove('disabled');
+// @EnableDisable: Enable an Html element
+function enableElt ( eltId ) {
+	const elt = document.getElementById(eltId);
+	if ( elt ) {
+		elt.removeAttribute('disabled');
+		elt.classList.remove('disabled');
+	}
+}
+//
+// @Readonly: Set readonly attribute
+function setReadonly ( eltId ) {
+	const elt = document.getElementById(eltId);
+	if ( elt ) {
+		elt.setAttribute('readonly', '');
+		elt.classList.add('readonly');
+	}
+}
+// @Readonly: Remove readonly attribute 
+function removeReadonly ( eltId ) {
+	const elt = document.getElementById(eltId);
+	if ( elt ) {
+		elt.removeAttribute('readonly');
+		elt.classList.remove('readonly');
 	}
 }
 // 
@@ -904,6 +957,7 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 		disableElt(deleteRecordBtn.id);
 	}
 	enableElt(editRecordSelect.id);
+	removeReadonly(editRecordSelect.id);
 	disableElt(deleteRecordBtn.id);
 	handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
 	//
