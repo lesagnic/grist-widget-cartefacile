@@ -1231,7 +1231,7 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 					contextMenu.style.left = e.point.x + 'px';
 					contextMenu.style.top = e.point.y + 'px';
 					document.getElementById('contextMenuShow').innerHTML  = 
-						`Copier <strong>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</strong>`
+						`💾${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}`
 					// Is there any feature at the location of the click
 					const features = mapLibre.queryRenderedFeatures(e.point, {
 						layers: ['unclustered-point']
