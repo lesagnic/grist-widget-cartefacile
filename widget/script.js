@@ -715,7 +715,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	// Enable copy to clipboard while providing the coordinates in the context menu
 	document.getElementById('contextMenuShow').addEventListener('click', async () => {
 		const messageDuration = 3000; // adjust delay if needed
-		document.getElementById('contextMenuShow').textContent = `Copier <b>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</b>`
 		try {
 			await navigator.clipboard.writeText(`${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}`);
 			setTimeout(() => {
@@ -1233,7 +1232,7 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 					// Position the menu at mouse location
 					contextMenu.style.left = e.point.x + 'px';
 					contextMenu.style.top = e.point.y + 'px';
-					contextMenu.style.display = 'block';
+					document.getElementById('contextMenuShow').textContent = `Copier <b>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</b>`
 					// Is there any feature at the location of the click
 					const features = mapLibre.queryRenderedFeatures(e.point, {
 						layers: ['unclustered-point']
@@ -1255,6 +1254,7 @@ if (debug) console.log(widgetRootMsg+'Disable delete and update context menu ite
 						document.getElementById('contextMenuDelete').disabled = true;
 						document.getElementById('contextMenuUpdate').disabled = true;
 					}
+					contextMenu.style.display = 'block';
 				});
 				//
 				// Hide menu on map click or move (@ContextMenu)
