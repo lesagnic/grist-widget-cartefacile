@@ -667,7 +667,7 @@ document.addEventListener("DOMContentLoaded", function() {
     			await grist.docApi.getTable(tableId)
 					.destroy([recordLookup[editRecordSelect.value].id]);
   			} catch (err) {
-    			cconsole.error(widgetRootMsg+"Grist Error deleting record:", err);
+    			console.error(widgetRootMsg+"Grist Error deleting record:", err);
   			}
 		}
 		else console.error(widgetRootMsg+"Error deleting. This is not a record: "+editRecordSelect.value);
