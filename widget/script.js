@@ -889,7 +889,7 @@ class WidgetControl {
 //
 // @EnableDisable: Disable a Button
 function disableElt ( eltId ) {
-	const btn = document.getElementById(eltId);
+	const elt = document.getElementById(eltId);
 	if ( elt ) {
 		elt.setAttribute('disabled', '');
 		elt.classList.add('disabled');
