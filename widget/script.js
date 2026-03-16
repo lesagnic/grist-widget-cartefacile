@@ -544,7 +544,7 @@ class InstructionControl {
 function SetInstruction(message) {
 	if ( instructionControl ) UnsetInstruction();
 	// Add the control to the top-left corner
-	instructionControl = new InstructionControl('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
+	instructionControl = new InstructionControl(message);
 	if (mapLibre && instructionControl) mapLibre.addControl(instructionControl,'top-left');
 }
 // @UnsetInstruction
@@ -718,7 +718,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		try {
 			await navigator.clipboard.writeText(`${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}`);
 			setTimeout(() => {
-				SetInstruction(`<b>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</b> copié dans le presse-papier`);
+				SetInstruction(`<strong>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</strong> copié dans le presse-papier`);
 			}, messageDuration); // adjust delay if needed
 		} catch (err) {
 			console.error(widgetRootMsg+'Impossible de copier dans le presse-paier ', err);
@@ -1232,7 +1232,8 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 					// Position the menu at mouse location
 					contextMenu.style.left = e.point.x + 'px';
 					contextMenu.style.top = e.point.y + 'px';
-					document.getElementById('contextMenuShow').textContent = `Copier <b>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</b>`
+					document.getElementById('contextMenuShow').textContent = 
+						`Copier <strong>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</strong>`
 					// Is there any feature at the location of the click
 					const features = mapLibre.queryRenderedFeatures(e.point, {
 						layers: ['unclustered-point']
@@ -1495,10 +1496,6 @@ function makeDraggable(modalId) {
 //
 /// END  OF FILE
 /// For future use :
-
-//
-// @EditDialogBox : Functions for the management of the Dialog Box used to Add new
-//  Table Rows and Update the mapped columns
 
 
 
