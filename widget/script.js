@@ -35,7 +35,6 @@ let instructionControl = null;
 //		SetInstruction: Display a (new) instruction
 //		UnsetInstruction: Remove the (last) instruction
 //	@WidgetControl : Management of GRIST Widget main Control
-//		@WcBtnMngt: Disable/Enable a Button
 //		@HandleEditRecordClick 
 //		@HandleEditRecordEscKey
 //		@FitBoundsBtn => @FitBounds
@@ -60,6 +59,7 @@ let mapLibre = null; // reference to the map
 //		@HoverPopup: Display the record title on a Popup when the cursor is hover a record marker
 //	@CursorShape
 //	@OutsideClick
+//	@EnableDisable: Disable/Enable Html element
 //	*
 // TBD : To be done
 //	- Check TBD in the file
@@ -690,9 +690,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 		if (document.getElementById('editRecordTitle')) document.getElementById('editRecordTitle').value = '';
 		editRecordSelect.style.display = 'none'; // Hide editRecordSelect
-		addRecordBtn.removeAttribute('disabled');	
-		updateRecordBtn.setAttribute('disabled', '');	
-		deleteRecordBtn.setAttribute('disabled', '');	
+		enableElt(addRecordBtn.id);
+		disableElt(updateRecordBtn.id);
+		disableElt(deleteRecordBtn.id);
 		mapLibre.getCanvas().style.cursor = '';
 		// @RecordBox show
 		recordBox.style.display = 'block';
@@ -792,7 +792,7 @@ class WidgetControl {
 		button.title = "Ajout d'une ligne";
 		button.id = 'AddRowBtn';
 		button.onclick = () => {
-			disableBtn('AddRowBtn');
+			disableElt('AddRowBtn');
 			// Help the user
 			SetInstruction('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
 			// Use a dedicated cursor shape
@@ -827,17 +827,17 @@ class WidgetControl {
 	} // End onRemove()
 }
 //
-// @WcBtnMngt: Disable a Button
-// TBD : Determine whether disableBtn/enableBtn should not be WidgetControl class methods
-function disableBtn ( btnId ) {
+// @EnableDisable: Disable a Button
+// TBD : Determine whether disableElt/enableElt should not be WidgetControl class methods
+function disableElt ( btnId ) {
 	const btn = document.getElementById(btnId);
 	if ( btn ) {
 		btn.setAttribute('disabled', '');
 		btn.classList.add('disabled');
 	}
 }
-// @WcBtnMngt: Enable a Button
-function enableBtn ( btnId ) {
+// @EnableDisable: Enable a Button
+function enableElt ( btnId ) {
 	const btn = document.getElementById(btnId);
 	if ( btn ) {
 		btn.removeAttribute('disabled');
@@ -874,13 +874,13 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 			gf.geometry.coordinates[0]
 		);
 		handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
-		deleteRecordBtn.setAttribute('disabled', '');
+		disableElt(deleteRecordBtn.id);
 	}
 	else {
 		editRecordSelect.value = "";
-		addRecordBtn.removeAttribute('disabled');
-		updateRecordBtn.setAttribute('disabled', '');
-		deleteRecordBtn.setAttribute('disabled', '');
+		enableElt(addRecordBtn.id);
+		disableElt(updateRecordBtn.id);
+		disableElt(deleteRecordBtn.id);
 	}
 	//
 	// 3. Restore the context before Add row Button click @AddRowBtn
@@ -894,7 +894,7 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 	// 3.4 Remove instruction control
 	UnsetInstruction();
 	// 3.5 Enable AddRowBtn button again
-	enableBtn('AddRowBtn'); // 
+	enableElt('AddRowBtn'); // 
 	//
 	// 4. Display the Add/Update Dialog Box
 	//
@@ -911,7 +911,7 @@ function handleEditRecordEscKey(e) {
 		document.removeEventListener('mousemove', handleEditRecordMouseMove, true);
 		mapLibre.getCanvas().style.cursor = '';
 		UnsetInstruction(); // Remove instruction control
-		enableBtn('AddRowBtn'); // Enable the button again
+		enableElt('AddRowBtn'); // Enable the button again
 		// No recordBox display => need to reset the form fields before leaving
 		editRecordSelect.value = '';
 		document.getElementById('editRecordTitle').value = '';
@@ -1244,14 +1244,14 @@ if (debug) console.log(widgetRootMsg+
 					// Adjust visibility of contextMenuItems
 					if ( features.length && features[0].properties.id > 0 ) {
 						clickedRecordId = features[0].properties.id;
-						document.getElementById('contextMenuDelete').removeAttribute('disabled');
-						document.getElementById('contextMenuUpdate').removeAttribute('disabled');
+						enableElt('contextMenuDelete');
+						enableElt('contextMenuUpdate');
 					}
 					else {
 						clickedRecordId = null;
 if (debug) console.log(widgetRootMsg+'Disable delete and update context menu items');
-						document.getElementById('contextMenuDelete').setAttribute('disabled', '');
-						document.getElementById('contextMenuUpdate').setAttribute('disabled', '');
+						disableElt('contextMenuDelete');
+						disableElt('contextMenuUpdate');
 					}
 					contextMenu.style.display = 'block';
 				});
@@ -1450,12 +1450,12 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 		const editRecordTitle = document.getElementById('editRecordTitle');
 		if (editRecordSelect.value === "") {
 			editRecordSelect.style.color = "#888"; // grey
-			addRecordBtn.removeAttribute('disabled');
-			updateRecordBtn.setAttribute('disabled', '');	
+			enableElt(addRecordBtn.id);
+			disableElt(updateRecordBtn.id);
 		} else {
 			editRecordSelect.style.color = "#000"; // normal
-			addRecordBtn.setAttribute('disabled', '');
-			updateRecordBtn.removeAttribute('disabled');	
+			disableElt(addRecordBtn.id);
+			enableElt(updateRecordBtn.id);
 			// Set editRecordTitle with the title of the selected Record
 			editRecordTitle.value = recordLookup[editRecordSelect.value].title;
 	  	}
