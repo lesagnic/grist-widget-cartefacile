@@ -1543,6 +1543,8 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 			editRecordSelect.style.color = "#888"; // grey
 			enableElt(addRecordBtn.id);
 			disableElt(updateRecordBtn.id);
+			// Reset editRecordTitle to nothin
+			editRecordTitle.value = '';
 		} else {
 			editRecordSelect.style.color = "#000"; // normal
 			disableElt(addRecordBtn.id);
