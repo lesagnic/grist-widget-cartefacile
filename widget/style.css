@@ -190,7 +190,7 @@ input:focus, select:focus {
     border-color: #4a90e2;
     box-shadow: 0 0 0 2px rgba(74,144,226,0.2);
 }
-label[disabled], input[disabled], select[disabled] {
+div:disabled, div[disabled] {
 	display: 'none';
 }
 /* GRIST-like buttons */
