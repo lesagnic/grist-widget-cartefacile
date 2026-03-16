@@ -532,7 +532,7 @@ class InstructionControl {
 		this._map = mapLibre;
 		this._container = document.createElement('div');
 		this._container.className = 'maplibregl-ctrl instruction-control';
-		this._container.textContent = this._message;
+		this._container.innerHTML = this._message;
 		return this._container;
 	}
 	onRemove() {
@@ -717,16 +717,14 @@ document.addEventListener("DOMContentLoaded", function() {
 		const messageDuration = 3000; // adjust delay if needed
 		try {
 			await navigator.clipboard.writeText(`${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}`);
-			setTimeout(() => {
-				SetInstruction(`<strong>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</strong> copié dans le presse-papier`);
-			}, messageDuration); // adjust delay if needed
+			SetInstruction(`<strong>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</strong> copié dans le presse-papier`);
 		} catch (err) {
-			console.error(widgetRootMsg+'Impossible de copier dans le presse-paier ', err);
-			setTimeout(() => {
-				SetInstruction('Erreur de copie dans le presse-papier');
-  			}, messageDuration); 
+			console.error(widgetRootMsg+'Copy clipboard error: ', err);
+			SetInstruction('Erreur de copie dans le presse-papier');
 		}	
-		UnsetInstruction();
+		setTimeout(() => {
+			UnsetInstruction();
+		}, messageDuration); // adjust delay if needed
 		contextMenu.style.display = 'none';
 	});
 	//
@@ -985,7 +983,7 @@ if (debug) console.log(widgetRootMsg+"Update Row result: ", JSON.stringify(resul
     		const result = await grist.selectedTable.create({ fields: fields  });
 if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, null, 2));
 			if (result && result.id > 0) {
-				// Need to wait for a backgrounf call to onRecords (table has changed !!!) and potential
+				// Need to wait for a background call to onRecords (table has changed !!!) and potential
 				// unwanted call to onRecord by a connected source widget
 				setTimeout(() => {
 					f = geojsonFeatures.find(item => item.properties.id === result.id );
@@ -1232,7 +1230,7 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 					// Position the menu at mouse location
 					contextMenu.style.left = e.point.x + 'px';
 					contextMenu.style.top = e.point.y + 'px';
-					document.getElementById('contextMenuShow').textContent = 
+					document.getElementById('contextMenuShow').innerHTML  = 
 						`Copier <strong>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</strong>`
 					// Is there any feature at the location of the click
 					const features = mapLibre.queryRenderedFeatures(e.point, {
