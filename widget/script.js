@@ -1,7 +1,7 @@
 // Widget identification
 //
 const widgetName = "Grist Widget Carte Facile";
-const widgetVersion = "1.0.16" // Increment at least last figure for new release
+const widgetVersion = "0.1.17" // Increment at least last figure for new release
 //
 // Features
 //
@@ -69,7 +69,7 @@ let mapLibre = null; // reference to the map
 // Debug management
 //
 // Set debug to true to send log to the console
-const debug = true;
+const debug = false;
 // Debug message root
 const widgetRootMsg = `${widgetName} v${widgetVersion} `;
 // Debug message template to be used (Replace "Debug on" with your message)
