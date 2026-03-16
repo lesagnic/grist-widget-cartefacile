@@ -721,7 +721,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		if (document.getElementById('editRecordLon'))
 			document.getElementById('editRecordLon').value = f.geometry.coordinates[0];
 		if (document.getElementById('editRecordTitle'))
-			document.getElementById('editRecordTitle').value = f.properties.id;
+			document.getElementById('editRecordTitle').value = f.properties.title;
+		if (document.getElementById('editRecordId'))
+			document.getElementById('editRecordId').value = f.properties.id;
 		editRecordSelect.value = recordKey(
 			f.properties.id,
 			f.properties.title,
@@ -758,7 +760,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		if (document.getElementById('editRecordLon'))
 			document.getElementById('editRecordLon').value = f.geometry.coordinates[0];
 		if (document.getElementById('editRecordTitle'))
-			document.getElementById('editRecordTitle').value = f.properties.id;
+			document.getElementById('editRecordTitle').value = f.properties.title;
+		if (document.getElementById('editRecordId'))
+			document.getElementById('editRecordId').value = f.properties.id;
 		editRecordSelect.value = recordKey(
 			f.properties.id,
 			f.properties.title,
