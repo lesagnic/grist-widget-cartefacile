@@ -680,7 +680,6 @@ document.addEventListener("DOMContentLoaded", function() {
   	// (@ContextMenu) On click on action #contextMenuAdd (@AddRecord) :  
 	document.getElementById('contextMenuAdd').addEventListener('click', () => {
 		contextMenu.style.display = 'none';
-		if ( clickedRecordId === null) return;
 		const lng = clickedLngLat.lng.toFixed(6);
 		const lat = clickedLngLat.lat.toFixed(6);
 		// @RecordBox init
@@ -699,6 +698,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	// (@ContextMenu) On click on action #contextMenuUpdate (@UpdateRecord)
 	// TBD: See action #contextMenuAdd
 	document.getElementById('contextMenuUpdate').addEventListener('click', () => {
+		if ( clickedRecordId === null) return;
 		alert("Mise en oeuvre en cours de la mise à jour d'une ligne au point ("
 				+clickedLngLat.lat.toFixed(6)
 				+","
@@ -1091,7 +1091,7 @@ if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
 			CarteFacile.addOverlay(mapLibre, 'administrativeBoundaries');
 			// CarteFacile.LayerGroup is used below in debug mode to display the layer groups available.
 			// This will help to ajuts the list of layers to show
-if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.LayerGroup, null, 2));
+if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.LayerGroup, null, 2));
 			// @SearchControl : new carte facile built-in control for Mal Libre
 			// TBD: It is 'top-left' placed by default. Should the placement be made explicit ?
 			mapLibre.addControl(new CarteFacile.SearchControl({
@@ -1220,6 +1220,11 @@ if (debug) console.log("CarteFacile LayerGroup:\n"+JSON.stringify(CarteFacile.La
 					const features = mapLibre.queryRenderedFeatures(e.point, {
 						layers: ['unclustered-point']
 					});
+if (debug) console.log(widgetRootMsg+
+	"On Context Menu : feature=\n"+JSON.stringify(features[0], null, 2)+
+	", lat="+clickedLngLat.lat+
+	", lng="+clickedLngLat.lng
+);
 					// Adjust visibility of contextMenuItems
 					if ( features && features[0] && features[0].properties.id > 0 ) {
 						clickedRecordId = features[0].properties.id;
