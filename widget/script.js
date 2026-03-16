@@ -690,9 +690,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 		if (document.getElementById('editRecordTitle')) document.getElementById('editRecordTitle').value = '';
 		editRecordSelect.style.display = 'none'; // Hide editRecordSelect
-		addRecordBtn.disabled = false;	
-		updateRecordBtn.disabled = true;	
-		deleteRecordBtn.disabled = true;	
+		addRecordBtn.removeAttribute('disabled');	
+		updateRecordBtn.setAttribute('disabled', '');	
+		deleteRecordBtn.setAttribute('disabled', '');	
 		mapLibre.getCanvas().style.cursor = '';
 		// @RecordBox show
 		recordBox.style.display = 'block';
@@ -832,7 +832,7 @@ class WidgetControl {
 function disableBtn ( btnId ) {
 	const btn = document.getElementById(btnId);
 	if ( btn ) {
-		btn.disabled = true;
+		btn.setAttribute('disabled', '');
 		btn.classList.add('disabled');
 	}
 }
@@ -840,7 +840,7 @@ function disableBtn ( btnId ) {
 function enableBtn ( btnId ) {
 	const btn = document.getElementById(btnId);
 	if ( btn ) {
-		btn.disabled = false;
+		btn.removeAttribute('disabled');
 		btn.classList.remove('disabled');
 	}
 }
@@ -874,13 +874,13 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 			gf.geometry.coordinates[0]
 		);
 		handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
-		deleteRecordBtn.disabled = true;
+		deleteRecordBtn.setAttribute('disabled', '');
 	}
 	else {
 		editRecordSelect.value = "";
-		addRecordBtn.disabled = false;
-		updateRecordBtn.disabled = true;
-		deleteRecordBtn.disabled = true;
+		addRecordBtn.removeAttribute('disabled');
+		updateRecordBtn.setAttribute('disabled', '');
+		deleteRecordBtn.setAttribute('disabled', '');
 	}
 	//
 	// 3. Restore the context before Add row Button click @AddRowBtn
@@ -1244,14 +1244,14 @@ if (debug) console.log(widgetRootMsg+
 					// Adjust visibility of contextMenuItems
 					if ( features.length && features[0].properties.id > 0 ) {
 						clickedRecordId = features[0].properties.id;
-						document.getElementById('contextMenuDelete').disabled = false;
-						document.getElementById('contextMenuUpdate').disabled = false;
+						document.getElementById('contextMenuDelete').removeAttribute('disabled');
+						document.getElementById('contextMenuUpdate').removeAttribute('disabled');
 					}
 					else {
 						clickedRecordId = null;
 if (debug) console.log(widgetRootMsg+'Disable delete and update context menu items');
-						document.getElementById('contextMenuDelete').disabled = true;
-						document.getElementById('contextMenuUpdate').disabled = true;
+						document.getElementById('contextMenuDelete').setAttribute('disabled', '');
+						document.getElementById('contextMenuUpdate').setAttribute('disabled', '');
 					}
 					contextMenu.style.display = 'block';
 				});
@@ -1450,12 +1450,12 @@ if(debug) console.log(widgetRootMsg+"onRecord map is not ready - record.id: "+re
 		const editRecordTitle = document.getElementById('editRecordTitle');
 		if (editRecordSelect.value === "") {
 			editRecordSelect.style.color = "#888"; // grey
-			addRecordBtn.disabled = false;
-			updateRecordBtn.disabled = true;	
+			addRecordBtn.removeAttribute('disabled');
+			updateRecordBtn.setAttribute('disabled', '');	
 		} else {
 			editRecordSelect.style.color = "#000"; // normal
-			addRecordBtn.disabled = true;
-			updateRecordBtn.disabled = false;	
+			addRecordBtn.setAttribute('disabled', '');
+			updateRecordBtn.removeAttribute('disabled');	
 			// Set editRecordTitle with the title of the selected Record
 			editRecordTitle.value = recordLookup[editRecordSelect.value].title;
 	  	}
