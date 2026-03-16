@@ -725,7 +725,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			f.properties.title,
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
-		));
+		);
 		enableElt(editRecordSelect.id);
 		handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
 		disableElt(deleteRecordBtn.id);
