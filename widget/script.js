@@ -713,7 +713,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	//
 	// (@ContextMenu) On click on Action #contextMenuShow (@ShowCoordinates)
 	// Enable copy to clipboard while providing the coordinates in the context menu
-	document.getElementById('contextMenuShow').addEventListener('click', () => {
+	document.getElementById('contextMenuShow').addEventListener('click', async () => {
 		const messageDuration = 3000; // adjust delay if needed
 		document.getElementById('contextMenuShow').textContent = `Copier <b>${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}</b>`
 		try {
