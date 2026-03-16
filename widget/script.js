@@ -608,6 +608,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	// Init dialog Box and context Menu
 	// @ParameterBox : init
 	parameterBox = document.getElementById('widgetParameters');
+	// @ContextMenu : init
+	contextMenu = document.getElementById('contextMenu');
 	// @RecordBox : init
 	recordBox = document.getElementById('widgetEditRecord');
 	cancelRecordBtn = document.getElementById('cancelEditRecord');
@@ -615,11 +617,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	updateRecordBtn = document.getElementById('updateRecord');
 	deleteRecordBtn = document.getElementById('deleteRecord');
 	editRecordSelect = document.getElementById('editRecordSelect');
-	handleRecordSelectChange();
-	// ...and whenever selection changes
-	//
-	// @ContextMenu : init
-	contextMenu = document.getElementById('contextMenu');
 	//
 	// RecordBox elements listeners
 	//
@@ -664,14 +661,17 @@ document.addEventListener("DOMContentLoaded", function() {
 	deleteRecordBtn.addEventListener('click', async () => {
 		recordBox.style.display = 'none';
 		if ( Object.hasOwn(recordLookup, editRecordSelect.value) ) {
-			//await addOrUpdateRow(recordLookup[document.getElementById('editRecordSelect').value].id,
-			//	document.getElementById('editRecordTitle').value,
-			//	Number(document.getElementById('editRecordLat').value),
-			//	Number(document.getElementById('editRecordLon').value)
-			//);
-			alert("La fonctionnalité de suppression est en cours de mise en oeuvre");
+  			try {
+    			// Get the table ID of the currently selected table
+    			const tableId = await grist.selectedTable.getTableId();
+    			// Use the TableOperations API to delete the record
+    			await grist.docApi.getTable(tableId)
+					.destroy([recordLookup[editRecordSelect.value].id]);
+  			} catch (err) {
+    			cconsole.error(widgetRootMsg+"Grist Error deleting record:", err);
+  			}
 		}
-		else console.error(widgetRootMsg+"Can't delete record: "+editRecordSelect.value);
+		else console.error(widgetRootMsg+"Error deleting. This is not a record: "+editRecordSelect.value);
 		editRecordSelect.value = '';
 		document.getElementById('editRecordTitle').value = '';
 		document.getElementById('editRecordLat').value = '';
@@ -686,10 +686,13 @@ document.addEventListener("DOMContentLoaded", function() {
 		const lng = clickedLngLat.lng.toFixed(6);
 		const lat = clickedLngLat.lat.toFixed(6);
 		// @RecordBox init
+		
+		if (document.getElementById('widgetEditRecordHeader'))
+			document.getElementById('widgetEditRecordHeader').textContent = "Ajout d'une ligne";
 		if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 		if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 		if (document.getElementById('editRecordTitle')) document.getElementById('editRecordTitle').value = '';
-		editRecordSelect.style.display = 'none'; // Hide editRecordSelect
+		disableElt(editRecordSelect.id);
 		enableElt(addRecordBtn.id);
 		disableElt(updateRecordBtn.id);
 		disableElt(deleteRecordBtn.id);
@@ -701,14 +704,34 @@ document.addEventListener("DOMContentLoaded", function() {
 	// (@ContextMenu) On click on action #contextMenuUpdate (@UpdateRecord)
 	// TBD: See action #contextMenuAdd
 	document.getElementById('contextMenuUpdate').addEventListener('click', () => {
-		if ( clickedRecordId === null) return;
-		alert("Mise en oeuvre en cours de la mise à jour d'une ligne au point ("
-				+clickedLngLat.lat.toFixed(6)
-				+","
-				+clickedLngLat.lng.toFixed(6)
-				+")"
-		);
 		contextMenu.style.display = 'none';
+		if ( clickedRecordId === null) return;
+		const f = geojsonFeatures.find(item => item.properties.id === clickedRecordId);
+		if  ( !f ) return;
+		// @RecordBox init
+		if (document.getElementById('widgetEditRecordHeader'))
+			document.getElementById('widgetEditRecordHeader').textContent = "Mise à jour d'une ligne";
+		// Use feature lat/lon rather that right-click lat/lon to populute the dialog box
+		// The intent of the user was to select the record to update not to propose a more
+		// accurate position
+		if (document.getElementById('editRecordLat'))
+			document.getElementById('editRecordLat').value = f.geometry.coordinates[1];
+		if (document.getElementById('editRecordLon'))
+			document.getElementById('editRecordLon').value = f.geometry.coordinates[0];
+		if (document.getElementById('editRecordTitle'))
+			document.getElementById('editRecordTitle').value = f.properties.id;
+		editRecordSelect.value = recordKey(
+			f.properties.id,
+			f.properties.title,
+			f.geometry.coordinates[1],
+			f.geometry.coordinates[0]
+		));
+		enableElt(editRecordSelect.id);
+		handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
+		disableElt(deleteRecordBtn.id);
+		mapLibre.getCanvas().style.cursor = '';
+		// @RecordBox show
+		recordBox.style.display = 'block';
 	});
 	//
 	// (@ContextMenu) On click on Action #contextMenuShow (@ShowCoordinates)
@@ -855,6 +878,8 @@ function handleEditRecordClick(e) {
 	//
 	// 2. Prepares the Add/Update Dialog Box
 	//
+	if (document.getElementById('widgetEditRecordHeader'))
+		document.getElementById('widgetEditRecordHeader').textContent = "Ajout/Mise à jour d'une ligne";
 	if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 	if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 	const f = ClosestNearByFeature(e);
@@ -873,15 +898,14 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 			gf.geometry.coordinates[1],
 			gf.geometry.coordinates[0]
 		);
-		handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
-		disableElt(deleteRecordBtn.id);
 	}
 	else {
 		editRecordSelect.value = "";
-		enableElt(addRecordBtn.id);
-		disableElt(updateRecordBtn.id);
 		disableElt(deleteRecordBtn.id);
 	}
+	enableElt(editRecordSelect.id);
+	disableElt(deleteRecordBtn.id);
+	handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
 	//
 	// 3. Restore the context before Add row Button click @AddRowBtn
 	//
