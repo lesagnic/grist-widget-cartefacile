@@ -180,6 +180,11 @@ select option {
 select[value=""] option {
   color: #888; /* placeholder grey */
 }
+select:read-only,
+select[readonly] {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
 input:focus, select:focus {
     outline: none;
     border-color: #4a90e2;
