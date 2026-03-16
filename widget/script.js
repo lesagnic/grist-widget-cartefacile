@@ -26,10 +26,9 @@ let contextMenu = null; // context Menu HTML element
 let clickedLngLat = null; // geographic location of the right click event
 let clickedRecordId = null; // Id of the record having a marker at the geographic location of the click
 //		@ShowCoordinates: display the coordinates of the previoulsy clicked location
-//		@AddRecord
-//		@UpdateRecord
-//		@DeleteRecord: Display the mapped columns of a prevously clicked record
-//                     in a dialog box with cancel and delete buttons
+//		@AddRecord : open edit record dialog box to add a record at the right-clicked location
+//		@UpdateRecord : open edit record dialog box to update the right-clicked record
+//		@DeleteRecord: open edit record dialog box to delete the right-clicked record
 //	@InstructionControl: Display user instructions in a 'top'left Map Libre Control
 let instructionControl = null;
 //		SetInstruction: Display a (new) instruction
@@ -693,7 +692,13 @@ document.addEventListener("DOMContentLoaded", function() {
 		if (document.getElementById('editRecordLat')) document.getElementById('editRecordLat').value = lat;
 		if (document.getElementById('editRecordLon')) document.getElementById('editRecordLon').value = lng;
 		if (document.getElementById('editRecordTitle')) document.getElementById('editRecordTitle').value = '';
+		disableElt('editRecordLabelRecord');
 		disableElt(editRecordSelect.id);
+		disableElt('editRecordLabelId');
+		disableElt('editRecordId');
+		removeReadonly('editRecordTitle');
+		removeReadonly('editRecordLat');
+		removeReadonly('editRecordLon');
 		enableElt(addRecordBtn.id);
 		disableElt(updateRecordBtn.id);
 		disableElt(deleteRecordBtn.id);
@@ -726,10 +731,17 @@ document.addEventListener("DOMContentLoaded", function() {
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		);
-		enableElt(editRecordSelect.id);
-		setReadonly(editRecordSelect.id);
-		handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
+		disableElt('editRecordLabelRecord');
+		disableElt(editRecordSelect.id);
+		enableElt('editRecordLabelId');
+		enableElt('editRecordId');
+		setReadonly('editRecordId');
+		removeReadonly('editRecordTitle');
+		removeReadonly('editRecordLat');
+		removeReadonly('editRecordLon');
 		disableElt(deleteRecordBtn.id);
+		enableElt(updateRecordBtn.id);
+		disableElt(addRecordBtn.id);
 		mapLibre.getCanvas().style.cursor = '';
 		// @RecordBox show
 		recordBox.style.display = 'block';
@@ -758,8 +770,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			f.geometry.coordinates[1],
 			f.geometry.coordinates[0]
 		);
-		enableElt(editRecordSelect.id);
-		setReadonly(editRecordSelect.id);
+		disableElt('editRecordLabelRecord');
+		disableElt(editRecordSelect.id);
+		enableElt('editRecordLabelId');
+		enableElt('editRecordId');
+		setReadonly('editRecordId');
 		setReadonly('editRecordTitle');
 		setReadonly('editRecordLat');
 		setReadonly('editRecordLon');
@@ -956,8 +971,13 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 		editRecordSelect.value = "";
 		disableElt(deleteRecordBtn.id);
 	}
+	enableElt('editRecordLabelRecord');
 	enableElt(editRecordSelect.id);
-	removeReadonly(editRecordSelect.id);
+	disableElt('editRecordLabelId');
+	disableElt('editRecordId');
+	removeReadonly('editRecordTitle');
+	removeReadonly('editRecordLat');
+	removeReadonly('editRecordLon');
 	disableElt(deleteRecordBtn.id);
 	handleRecordSelectChange(); // set title and visibility of addRecord and updateRecord buttons
 	//
@@ -972,7 +992,8 @@ if (debug) console.log(widgetRootMsg+"handleEditRecordClick: recordKey="+recordK
 	// 3.4 Remove instruction control
 	UnsetInstruction();
 	// 3.5 Enable AddRowBtn button again
-	enableElt('AddRowBtn'); // 
+	enableElt('AddRowBtn');
+	// 
 	//
 	// 4. Display the Add/Update Dialog Box
 	//
