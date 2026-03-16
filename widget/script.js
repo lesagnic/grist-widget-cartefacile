@@ -662,9 +662,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		if ( Object.hasOwn(recordLookup, editRecordSelect.value) ) {
   			try {
     			// Get the table ID of the currently selected table
-    			const tableId = await grist.selectedTable.getTableId();
+    			//const tableId = await grist.selectedTable.getTableId();
     			// Use the TableOperations API to delete the record
-    			await grist.docApi.getTable(tableId)
+    			//await grist.docApi.getTable(tableId)
+				await grist.selectedTable
 					.destroy([recordLookup[editRecordSelect.value].id]);
   			} catch (err) {
     			console.error(widgetRootMsg+"Grist Error deleting record:", err);
