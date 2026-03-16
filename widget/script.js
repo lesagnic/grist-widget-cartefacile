@@ -1105,6 +1105,9 @@ if (debug) console.log(widgetRootMsg+"Add Row result: ", JSON.stringify(result, 
 if (debug) console.log(widgetRootMsg+"settings:"+JSON.stringify(settings, null, 2));
 if (debug) console.log(widgetRootMsg+"options:"+JSON.stringify(options, null, 2));
 	});
+if (debug) console.log("Proof: "+typeof grist.selectedTable); // "string"
+if (debug) console.log("Proof: "+grist.selectedTable);        // e.g. "Customers"
+if (debug) console.log("Proof: "+Object.keys(grist.selectedTable)); // []
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// API GRIST : onRecords
