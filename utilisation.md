@@ -16,7 +16,7 @@ L'outil Map libre fournit les fonctions de navigation de base tels que :
 Le widget Carte facile propose en complément :
 * le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> pour une vue d'ensemble des marqueurs de toutes les lignes de la table,
 * le bouton <img height="12" src="assets/img/widget-control-one-row.svg" alt="focus"/> pour se déplacer sur le marqueur de la ligne sélectionnée,
-* un nouveau bouton permettant d'ajouter ou de mettre à jour une ligne en cliquant sur une position sur la carte (cf. [Edition](#edition)),
+* un nouveau bouton <img height="12" src="assets/img/widget-control-add-row.svg" alt="ajout/actualisation"/> permettant d'ajouter ou de mettre à jour une ligne en cliquant sur une position sur la carte (cf. [Edition](#edition)),
 * le bouton <img height="12" src="assets/img/widget-control-parameters.svg" alt="paramètres"/> pour modifier les paramètres du widget.
 
 
