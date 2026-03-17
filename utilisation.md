@@ -1,3 +1,15 @@
+<style>
+    img.no-change {
+        /* Ensure 1 image pixel = 1 screen pixel */
+        image-rendering: pixelated; /* For pixel art */
+        image-rendering: crisp-edges; /* Fallback */
+        width: auto;  /* Keep natural width */
+        height: auto; /* Keep natural height */
+        max-width: none; /* Prevent scaling down */
+        max-height: none;
+        display: block;
+    }
+</style>
 Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), [Exploration](#exploration), [Localisation](#localisation) et [Exploration et localisation](#exploration-et-localisation) combinées. Cette version du widget propose également de nouvelles fonctions d'[Edition](#edition) des données de la table GRIST associée.
 
 ### Cartographie
