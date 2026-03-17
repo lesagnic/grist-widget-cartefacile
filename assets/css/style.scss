@@ -95,3 +95,16 @@
     border: 1px solid black;
     border-radius: 5px;
 }
+/*
+ * Images centered without sizing
+*/
+img.no-change {
+    /* Ensure 1 image pixel = 1 screen pixel */
+    image-rendering: pixelated; /* For pixel art */
+    image-rendering: crisp-edges; /* Fallback */
+    width: auto;  /* Keep natural width */
+    height: auto; /* Keep natural height */
+    max-width: none; /* Prevent scaling down */
+    max-height: none;
+    display: block;
+}
