@@ -610,9 +610,11 @@ async function setWidgetDemo(id,titre) {
 	fields[mapping.Titre] = titre;
 	// Try a dummy update
 	try {
-		const result = await grist.selectedTable.update({ id: id, fields: fields});
+		await grist.selectedTable.update({ id: id, fields: fields});
 		widgetDemo=false;
-  	} catch (err) return;
+  	} catch (err) {
+		return;
+	}
 } // end setWidgetDemo
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
