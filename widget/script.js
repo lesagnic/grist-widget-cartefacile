@@ -1288,7 +1288,7 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 				AddGristTable2Map ();
 				//
 				// Reevaluate visibility of addRowBtn
-				const addRowbtn = document.getElementById('AddRowBtn');
+				const addRowBtn = document.getElementById('AddRowBtn');
 				if ( addRowBtn ) {
 					if (widgetReadonly === false ) addRowBtn.style.display = 'block';
 					else addRowBtn.style.display = 'none';
