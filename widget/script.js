@@ -12,7 +12,7 @@ const widgetVersion = "0.1.17" // Increment at least last figure for new release
 //		@GristOnRecord
 //  @DemoMode: widget detects read-only GRIST context (typically when it is used in a template).
 //  It works in demonstration mode in this case, informing change that should have been applied  
-let widgetDemo = null;
+let widgetReadonly = null;
 //	@RecordBox: Record Dialog Box to edit the records of the GRIST Table)
 //	TBD : make these variable local to the DOMContentLoaded event listener whiche means
 //	to move all functions refering to DOM element inside the listener
@@ -602,12 +602,11 @@ if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
 if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 //
 // 
-async function setWidgetDemo(id,titre) {
-	widgetDemo = false;
+async function setWidgetReadonly(id,titre) {
+	widgetReadonly = false;
 	// Check mappings
 	if (!mapping.Longitude || !mapping.Latitude || !mapping.Titre) {
-		console.log("missing widgetDemo mappings: ",+mapping.Longitude+","+mapping.Latitude+","+mapping.Titre);
-		widgetDemo=true;
+		widgetReadonly = true;
 		return;
 	}
 	let fields = {};
@@ -616,11 +615,10 @@ async function setWidgetDemo(id,titre) {
 	try {
 		await grist.selectedTable.update({ id: id, fields: fields});
   	} catch (err) {
-		console.error(widgetRootMsg+"widgetDemo error: ", err);
-		widgetDemo=true;
+		widgetReadonly = true;
 		return;
 	}
-} // end setWidgetDemo
+} // end setWidgetReadonly
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AT THIS STAGE, NEED TO WAIT FOR DOM CONTENT TO BE LOADED
@@ -882,28 +880,30 @@ class WidgetControl {
 			));
         };
 		this._container.appendChild(button);
-		// @AddRowBtn
-		button = document.createElement('button');
-		button.className = 'maplibregl-ctrl-icon add-row-btn';
-		button.type = 'button';
-		button.title = "Ajout d'une ligne";
-		button.id = 'AddRowBtn';
-		button.onclick = () => {
-			disableElt('AddRowBtn');
-			// Help the user
-			SetInstruction('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
-			// Use a dedicated cursor shape
-			mapLibre.getCanvas().style.cursor = svgCursorUri;
-			// Ensure controls keep their normal pointer
-			document.querySelectorAll('.maplibregl-ctrl button').forEach(btn => {
-  				btn.style.cursor = 'pointer';
-			});
-			// Listen for click events or ESC key
-			mapLibre.on('click', handleEditRecordClick);
-			document.addEventListener('keydown', handleEditRecordEscKey);
-			// ... and ensure the mouse cursor remains
-			document.addEventListener('mousemove', handleEditRecordMouseMove, true);
-		};
+		if ( widgetReadonly === false ) {
+			// @AddRowBtn
+			button = document.createElement('button');
+			button.className = 'maplibregl-ctrl-icon add-row-btn';
+			button.type = 'button';
+			button.title = "Ajout d'une ligne";
+			button.id = 'AddRowBtn';
+			button.onclick = () => {
+				disableElt('AddRowBtn');
+				// Help the user
+				SetInstruction('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
+				// Use a dedicated cursor shape
+				mapLibre.getCanvas().style.cursor = svgCursorUri;
+				// Ensure controls keep their normal pointer
+				document.querySelectorAll('.maplibregl-ctrl button').forEach(btn => {
+  					btn.style.cursor = 'pointer';
+				});
+				// Listen for click events or ESC key
+				mapLibre.on('click', handleEditRecordClick);
+				document.addEventListener('keydown', handleEditRecordEscKey);
+				// ... and ensure the mouse cursor remains
+				document.addEventListener('mousemove', handleEditRecordMouseMove, true);
+			};
+		} // End if (widgetReadonly === false)
 		this._container.appendChild(button);
         // @ParameterBtn
 		button = document.createElement('button');
@@ -1196,10 +1196,10 @@ if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
 		//
 		// @DemoMode : detection
 		// Try to update with itself the title of the first geojsonFeature row
-		if (widgetDemo === null && geojsonFeatures.length ) {
-			setWidgetDemo(geojsonFeatures[0].properties.id, geojsonFeatures[0].properties.title);
+		if (widgetReadonly === null && geojsonFeatures.length ) {
+			setWidgetReadonly(geojsonFeatures[0].properties.id, geojsonFeatures[0].properties.title);
 		}
-		console.log("widgetDemo:"+widgetDemo);
+		console.warn(widgetRootMsg+"Full access not granted: readonly mode !");
 		//
 		// Update editRecordSelect input of recordBox with new recordLookup
 		SetEditRecordSelect();
@@ -1370,42 +1370,44 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 					mapLibre.getCanvas().style.cursor = '';
 				});
 				//
-				// Intercept right-click to show context menu (@ContextMenu)
-				mapLibre.on('contextmenu', (e) => {
-					e.preventDefault(); // Prevent default browser menu
-					clickedLngLat = e.lngLat;
-					// Position the menu at mouse location
-					contextMenu.style.left = e.point.x + 'px';
-					contextMenu.style.top = e.point.y + 'px';
-					document.getElementById('contextMenuShow').innerHTML  = 
-						`💾${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}`
-					// Is there any feature at the location of the click
-					const features = mapLibre.queryRenderedFeatures(e.point, {
-						layers: ['unclustered-point']
-					});
+				if ( widgetReadonly === false ) {
+					// Intercept right-click to show context menu (@ContextMenu)
+					mapLibre.on('contextmenu', (e) => {
+						e.preventDefault(); // Prevent default browser menu
+						clickedLngLat = e.lngLat;
+						// Position the menu at mouse location
+						contextMenu.style.left = e.point.x + 'px';
+						contextMenu.style.top = e.point.y + 'px';
+						document.getElementById('contextMenuShow').innerHTML  = 
+							`💾${clickedLngLat.lat.toFixed(6)}, ${clickedLngLat.lng.toFixed(6)}`
+						// Is there any feature at the location of the click
+						const features = mapLibre.queryRenderedFeatures(e.point, {
+							layers: ['unclustered-point']
+						});
 if (debug) console.log(widgetRootMsg+
 	"On Context Menu : record id="+features[0]?.properties.id+
 	", lat="+clickedLngLat.lat+
 	", lng="+clickedLngLat.lng
 );
-					// Adjust visibility of contextMenuItems
-					if ( features.length && features[0].properties.id > 0 ) {
-						clickedRecordId = features[0].properties.id;
-						enableElt('contextMenuDelete');
-						enableElt('contextMenuUpdate');
-					}
-					else {
-						clickedRecordId = null;
+						// Adjust visibility of contextMenuItems
+						if ( features.length && features[0].properties.id > 0 ) {
+							clickedRecordId = features[0].properties.id;
+							enableElt('contextMenuDelete');
+							enableElt('contextMenuUpdate');
+						}
+						else {
+							clickedRecordId = null;
 if (debug) console.log(widgetRootMsg+'Disable delete and update context menu items');
-						disableElt('contextMenuDelete');
-						disableElt('contextMenuUpdate');
-					}
-					contextMenu.style.display = 'block';
-				});
-				//
-				// Hide menu on map click or move (@ContextMenu)
-				mapLibre.on('click', () => contextMenu.style.display = 'none');
- 				mapLibre.on('movestart', () => contextMenu.style.display = 'none');
+							disableElt('contextMenuDelete');
+							disableElt('contextMenuUpdate');
+						}
+						contextMenu.style.display = 'block';
+					});
+					//
+					// Hide menu on map click or move (@ContextMenu)
+					mapLibre.on('click', () => contextMenu.style.display = 'none');
+ 					mapLibre.on('movestart', () => contextMenu.style.display = 'none');
+				} // End if ( widgetReadonly === false )
 				//
 			}); // end mapLibre.on load	
 		} // if (!mapLibre)
