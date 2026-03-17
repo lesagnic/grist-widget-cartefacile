@@ -901,8 +901,8 @@ class WidgetControl {
 			// ... and ensure the mouse cursor remains
 			document.addEventListener('mousemove', handleEditRecordMouseMove, true);
 		};
-		if (widgetReadonly === false) button.style.display = 'none';
-		else button.style.display = 'block';
+		if (widgetReadonly === false) button.style.display = 'block';
+		else button.style.display = 'none';
 		this._container.appendChild(button);
         // @ParameterBtn
 		button = document.createElement('button');
@@ -1290,8 +1290,8 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 				// Reevaluate visibility of addRowBtn
 				const addRowbtn = document.getElementById('AddRowBtn');
 				if ( addRowBtn ) {
-					if (widgetReadonly === false ) addRowBtn.style.display = 'none';
-					else addRowBtn.style.display = 'block';
+					if (widgetReadonly === false ) addRowBtn.style.display = 'block';
+					else addRowBtn.style.display = 'none';
 				}
 				//
 				// Inspect a cluster on click (@ClusterZoomIn)
