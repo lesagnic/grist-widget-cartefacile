@@ -9,7 +9,7 @@ L'outil Map libre fournit les fonctions de navigation de base tels que :
 * le bouton <img height="12" src="assets/img/widget-control-zoom.png" alt="zoom"/> pour le zoom avant,
 * le bouton <img height="12" src="assets/img/widget-control-dezoom.png" alt="dezoom"/> pour le zoom arrière,
 * le bouton <img height="12" src="assets/img/widget-control-orientation.png" alt="orientation"/> pour l'orientation,
-* le bouton <img height="12" src="assets/img/widget-control-selection.png" alt="selection"/> pour sélectionner les données du fond Carte Facile.
+* le bouton <img height="12" src="assets/img/widget-control-selection.png" alt="selection"/> pour sélectionner les données du fond Carte Facile (les limites administratives sont affichées par défaut sur le fond de carte mais les données cadastrales et les courbes de niveaux sont également disponibles, ainsi qu'un fond d'orthophotos aériennes),
 * l'indicateur d'échelle : <img height="16" src="assets/img/widget-control-echelle.png" alt="échelle"/>,
 * un nouveau <a href="https://fab-geocommuns.github.io/carte-facile-site/fr/documentation/ajouter-des-fonctionnalites/recherche/">contrôle de recherche</a> d'une adresse ou d'un point d'intérêt mise à disposition par Carte facile.
 
@@ -98,6 +98,8 @@ Aucune modification ne peut être apportée aux informations affichées puisque 
 > Il est important de noter qu'il est possible de fermer chaque formulaire du widget en cliquant sur le bouton **Annuler** ou, comme pour le menu contextuel, en cliquant en dehors du formulaire.
 
 > Les labels du formulaire reprennent le nom original des colonnes de la table GRIST pour être adaptés au contexte de l'utilisateur ; ils seront donc différents de ceux présenter ici à titre d'illustration.
+
+> Afin de visualiser la zone initialement cliquée ou une autre partie de la carte, il est possible de déplacer chaque formulaire avec un clic appuyé sur son nom. Un icône de déplacement apparaît d'ailleurs lorsque la souris passe sur le nom du formulaire pour indiquer cette possibilité.
 
 
 
