@@ -47,5 +47,8 @@ Il est possible de combiner les cas d'usage **Exploration** et **Localisation**.
 
 ### Edition
 
+Après avoir cliqué sur le bouton <img height="12" src="assets/img/widget-control-add-row.svg" alt="ajout/actualisation"/>, le pointeur de la souris prend la forme d'une cible <img height="12" src="assets/img/widget-cursor-cible.svg" alt="cursor"/> pour pointer la position d'une nouvelle ligne ou les nouvelles coordonnées d'une ligne existante. Un formulaire **Ajout
+
+
 
 
