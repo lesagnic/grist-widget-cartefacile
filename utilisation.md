@@ -47,7 +47,9 @@ Il est possible de combiner les cas d'usage **Exploration** et **Localisation**.
 
 ### Edition
 
-> Les fonctions d'édition décrites ci-après ne sont disponibles que si le widget dispose d'un accès complet au document. A défaut, les cas d'usage Cartographie, Exploration et localisation seront à 100% fonctionnels. Dans le template, le cas d'usage Cartographie a volontairement été mise en peuvre avec un accès en lecture à la table.
+> Les fonctions d'édition décrites ci-après ne sont disponibles que si le widget dispose d'un accès complet au document et si vous disposez d'un accès en écriture aux données de la table associée.
+
+En pratique, ce n'est pas le cas dans le template tant que vous n'avez pas enregistré votre propre copie. A défaut, les cas d'usage Cartographie, Exploration et localisation seront à 100% fonctionnels mais le menu contextuel et le bouton d'ajout/mise à jour d'une ligne ne sont pas accessibles.. Le cas d'usage Cartographie a volontairement été mise en oeuvre avec un accès en lecture à la table pour préserver un  exemple de comportement en lecture seule.
 
 Après avoir cliqué sur le bouton <img height="12" src="assets/img/widget-control-add-row.svg" alt="ajout/actualisation"/>, le pointeur de la souris prend la forme d'une cible <img height="12" src="assets/img/widget-cursor-cible.svg" alt="cursor"/> pour pointer la position d'une nouvelle ligne ou les nouvelles coordonnées d'une ligne existante. Un message d'instruction apparaît sous le contrôle de Recherche carte Facile pour expliquer à l'utilisateur ce qu'il a à faire. Il disparaîtra à l'issue de l'action initiée.
 
