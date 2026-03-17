@@ -99,12 +99,13 @@
  * Images centered without sizing
 */
 img.no-change {
-    /* Ensure 1 image pixel = 1 screen pixel */
-    image-rendering: pixelated; /* For pixel art */
-    image-rendering: crisp-edges; /* Fallback */
-    width: auto;  /* Keep natural width */
-    height: auto; /* Keep natural height */
-    max-width: none; /* Prevent scaling down */
+    display: block;              /* Needed for margin auto to work */
+    margin-left: auto;           /* Center horizontally */
+    margin-right: auto;
+    image-rendering: pixelated;  /* Keep sharp pixels */
+    image-rendering: crisp-edges;
+    width: auto;                 /* Keep natural size */
+    height: auto;
+    max-width: none;              /* Prevent scaling */
     max-height: none;
-    display: block;
 }
