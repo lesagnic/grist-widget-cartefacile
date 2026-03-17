@@ -1,4 +1,4 @@
-Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), [Exploration](#exploration), [Localisation](#localisation) et [Exploration et localisation](#exploration-et-localisation) combinées.
+Un [template GRIST Carte Facile](https://grist.numerique.gouv.fr/o/sandbox-carte-facile/uD2ywACTtUMB/Template) est mis à votre disposition pour facilement mettre en oeuvre un document GRIST disposant de fonctionnalités cartographiques. Il propose un exemple minimal de table de données localisées et une page pour chacun des 4 cas d'usages du Widget Carte Facile décrit ci-dessous : [Cartographie](#cartographie), [Exploration](#exploration), [Localisation](#localisation) et [Exploration et localisation](#exploration-et-localisation) combinées. Cette version du widget propose également de nouvelles fonctions d'[Edition](#edition) des données de la table GRIST associée.
 
 ### Cartographie
 
@@ -16,6 +16,7 @@ Le widget Carte facile propose en complément :
 * le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> pour une vue d'ensemble des marqueurs de toutes les lignes de la table,
 * le bouton <img height="12" src="assets/img/widget-control-one-row.svg" alt="focus"/> pour se déplacer sur le marqueur de la ligne sélectionnée,
 * le bouton <img height="12" src="assets/img/widget-control-parameters.svg" alt="paramètres"/> pour modifier les paramètres du widget.
+* un nouveau <a href="https://fab-geocommuns.github.io/carte-facile-site/fr/documentation/ajouter-des-fonctionnalites/recherche/">contrôle de recherche</a> d'une adresse ou d'un point d'intérêt.
 
 Le widget Carte facile permet de modifier les paramètres suivants :
 * le **rayon d'agrégation** permet de gérer la représentation cartographique des lignes de la table dans les zones denses. Exprimé en pixels, il est utilisé par Map Libre pour aggréger, aux différentes échelles, les lignes se trouvant dans une même zone et les représenter par un cercle de taille et de couleur variable en fonction du nombre de lignes concernées ; le nombre de lignes agrégées est par ailleurs affiché au centre du cercle. Il suffit de cliquer sur le cercle pour zoomer sur les lignes agrégées. Il est possible de désactiver cette fonction d'agrégation en choisissant un rayon de 0 ou de faire varier le rayon pour trouver le niveau d'aggrégation optimal.
@@ -37,6 +38,10 @@ Ce cas d'usage revient à :
 La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans la cartographique permettant de sélectionner, localiser et zoomer sur le marqueur correspondant. Si la ligne sélectionnée n'est pas représentée cartographiquement, le widget carte Facile se contentera de déselectionner la ligne sélectionnées précédemment.
 
 Le widget Carte facile devient alors un outil de **localisation cartographique** des données de la table.
+
+### Edition
+
+
 
 ### Exploration et localisation
 
