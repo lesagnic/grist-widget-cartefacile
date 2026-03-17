@@ -49,21 +49,21 @@ Il est possible de combiner les cas d'usage **Exploration** et **Localisation**.
 
 Après avoir cliqué sur le bouton <img height="12" src="assets/img/widget-control-add-row.svg" alt="ajout/actualisation"/>, le pointeur de la souris prend la forme d'une cible <img height="12" src="assets/img/widget-cursor-cible.svg" alt="cursor"/> pour pointer la position d'une nouvelle ligne ou les nouvelles coordonnées d'une ligne existante. Un message d'instruction apparaît sous le contrôle de Recherche carte Facile pour expliquer à l'utilisateur ce qu'il a à faire. Il disparaîtra à l'issue de l'action initiée.
 
-<img class='no-change' width="205px" src="assets/img/widget-control-instruction.png" alt="mode ajout"/>
+<img class='no-change' max-width="100%" src="assets/img/widget-control-instruction.png" alt="mode ajout"/>
 
 Un formulaire **Ajout/mise à jour d'une ligne** s'affiche en mode ajout au centre de la fenêtre du widget après avoir cliqué sur une position :
 
-<img class="no-change" width="344px" src="assets/img/widget-form-addorupdate-add.png" alt="mode ajout"/>
+<img class="no-change" max-width="100%" src="assets/img/widget-form-addorupdate-add.png" alt="mode ajout"/>
 
 Il suffit de préciser le libellé associé à la position, éventuellement d'ajuster les coordonnées du clic, et de valider en cliquant sur **Ajouter**.
 
 Il est également possible de sélectionner une ligne de la table au travers du menu déroulant de la zone **Ligne à modifier** :
 
-<img class='no-change' width="188px" src="assets/img/widget-form-addorupdate-select.png" alt="sélection de la ligne"/>
+<img class='no-change' max-width="100%" src="assets/img/widget-form-addorupdate-select.png" alt="sélection de la ligne"/>
 
 Le formulaire passe alors en mode mise à jour en préservant les coordonnées cliquées ou modifiées par l'utilisateur à la place des coordonnées de la ligne sélectionnée.
 
-<img class='no-change' width="188px" src="assets/img/widget-form-addorupdate-update.png" alt="mode actualisation"/>
+<img class='no-change' max-width="100%" src="assets/img/widget-form-addorupdate-update.png" alt="mode actualisation"/>
 
 Il est toujours possible d'ajouter le libellé et les coordonnées avant de cliquer sur le bouton **Actualiser**.
 
@@ -71,31 +71,32 @@ Il est toujours possible d'ajouter le libellé et les coordonnées avant de cliq
 
 Le deuxième mécanisme d'édition proposé par le widget est basé sur un menu contextuel qui s'affiche lorsque l'on opère un clic droit sur la carte. Si le clic n'est pas opéré à proximité d'un marqueur représentant une ligne, seuls les deux premières actions sont disponibles :
 
-<img class='no-change' width="153px" src="assets/img/context-menu-not-hover.png" alt="menu contextuel hors marqueur"/>
+<img class='no-change' max-width="100%" src="assets/img/context-menu-not-hover.png" alt="menu contextuel hors marqueur"/>
 
 Le premier élément du menu contextuel affiche les coordonnées **latitude, longitude** du point cliqué. La sélection de cet élément va permettre de copier les coordonnées dans le presse-papier pour les coller par ailleurs. Une instruction apparaît à l'issue de l'action pour informer l'utilisateur de l'effective copie des coordonnées ou malheureusement de son échec si le système n'a pas pu donner suite à la demande.
 
 Le deuxième élément du menu contextuel permet d'ouvrir un formulaire d'**Ajout d'une ligne** pour lequel il suffit de préciser un libellé avant de cliquer sur le bouton **Ajouter**.
 
-<img class='no-change' width="366px" src="assets/img/widget-form-add.png" alt="formulaire d'ajout"/>
+<img class='no-change' max-width="100%" src="assets/img/widget-form-add.png" alt="formulaire d'ajout"/>
 
 Lorsque le clic droit est opéré à proximité d'un ou plusieurs marqueurs, le menu contextuel propose deux actions supplémentaires qui concerneront la ligne dont le marqueur est le plus proche du point cliqué :
 
-<img class='no-change' width="188px" src="assets/img/context-menu-hover.png" alt="menu contextuel sur marqueur"/>
+<img class='no-change' max-width="100%" src="assets/img/context-menu-hover.png" alt="menu contextuel sur marqueur"/>
 
 Le troisième élément du menu contextuel permet d'ouvrir un formulaire de **Mise à jour d'une ligne** affichant le numéro de ligne et le libellé de la ligne pointée associés à la position du pointé :
 
-<img class='no-change' width="353px" src="assets/img/widget-form-update.png" alt="formulaire de mise à jour"/>
+<img class='no-change' max-width="100%" src="assets/img/widget-form-update.png" alt="formulaire de mise à jour"/>
 
 Il n'est pas possible ici de sélectionner une autre ligne.
 
 Le quatrième élément du menu contextuel permet d'ouvrir un formulaire de **Suppresion d'une ligne** affichant également le numéro de ligne et le libellé de la ligne pointée associés à la position du pointé :
 
-<img class='no-change' width="306px" src="assets/img/widget-form-delete.png" alt="formulaire de suppression"/>
+<img class='no-change' max-width="100%" src="assets/img/widget-form-delete.png" alt="formulaire de suppression"/>
 
-Aucune modification ne peut être apportée aux informations affichées puisque l'objectif est de contrôler qu'il s'agit bien de la ligne à supprimer avant de cliquer sur le bouton **Suprimer**.
+Aucune modification ne peut être apportée aux informations affichées puisque l'objectif est de contrôler qu'il s'agit bien de la ligne à supprimer avant de cliquer sur le bouton **Supprimer**.
 
-> Il est important de noter qu'il est possible de fermer tous les formulaires du widget en cliquant sur le bouton **Annuler** ou, comme pour le menu contextuel, en cliquant en dehors du formulaire.
+> Il est important de noter qu'il est possible de fermer chaque formulaire du widget en cliquant sur le bouton **Annuler** ou, comme pour le menu contextuel, en cliquant en dehors du formulaire.
+
 > Les labels du formulaire reprennent le nom original des colonnes de la table GRIST pour être adaptés au contexte de l'utilisateur ; ils seront donc différents de ceux présenter ici à titre d'illustration.
 
 
