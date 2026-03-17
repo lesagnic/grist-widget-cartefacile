@@ -603,10 +603,11 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 //
 // 
 async function setWidgetDemo(id,titre) {
-	widgetDemo = true;
+	widgetDemo = false;
 	// Check mappings
 	if (!mapping.Longitude || !mapping.Latitude || !mapping.Titre) {
 		console.log("missing widgetDemo mappings: ",+mapping.Longitude+","+mapping.Latitude+","+mapping.Titre);
+		widgetDemo=true;
 		return;
 	}
 	let fields = {};
@@ -614,9 +615,9 @@ async function setWidgetDemo(id,titre) {
 	// Try a dummy update
 	try {
 		await grist.selectedTable.update({ id: id, fields: fields});
-		widgetDemo = false;
   	} catch (err) {
 		console.error(widgetRootMsg+"widgetDemo error: ", err);
+		widgetDemo=true;
 		return;
 	}
 } // end setWidgetDemo
