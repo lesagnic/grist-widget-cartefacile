@@ -10,6 +10,9 @@ const widgetVersion = "0.1.17" // Increment at least last figure for new release
 //		@GristOnOptions: debug trace
 //		@GristOnRecords: set recordLookup (@Recordlookup), BBox (@BoundingBox)
 //		@GristOnRecord
+//  @DemoMode: widget detects read-only GRIST context (typically when it is used in a template).
+//  It works in demonstration mode in this case, informing change that should have been applied  
+let widgetDemo = null;
 //	@RecordBox: Record Dialog Box to edit the records of the GRIST Table)
 //	TBD : make these variable local to the DOMContentLoaded event listener whiche means
 //	to move all functions refering to DOM element inside the listener
@@ -598,6 +601,20 @@ if (debug) console.log(widgetRootMsg+"href: "+window.location.href);
 if (debug) console.log(widgetRootMsg+"origin: "+window.location.origin);
 if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 //
+// 
+async function setWidgetDemo(id,titre) {
+	widgetDemo = true;
+	// Check mappings
+	if (!mapping.Longitude || !mapping.Latitude || !mapping.Titre) return;
+	let fields = {};
+	fields[mapping.Titre] = titre;
+	// Try a dummy update
+	try {
+		const result = await grist.selectedTable.update({ id: id, fields: fields});
+		widgetDemo=false;
+  	} catch (err) return;
+} // end setWidgetDemo
+//
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AT THIS STAGE, NEED TO WAIT FOR DOM CONTENT TO BE LOADED
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1169,6 +1186,13 @@ if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
 			// Add the record to the recordLookup (@Recordlookup)
 			if ( mapped ) addRecord2Lookup(record.id, mapped.Titre, mapped.Latitude, mapped.Longitude);
 		}); // End table.forEach
+		//
+		// @DemoMode : detection
+		// Try to update with itself the title of the first geojsonFeature row
+		if (widgetDemo === null && geojsonFeatures.length ) {
+			setWidgetDemo(geojsonFeatures[0].properties.id, geojsonFeatures[0].properties.title);
+		}
+		console.log("widgetDemo:"+widgetDemo);
 		//
 		// Update editRecordSelect input of recordBox with new recordLookup
 		SetEditRecordSelect();
