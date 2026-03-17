@@ -603,10 +603,9 @@ if (debug) console.log(widgetRootMsg+"pathname: "+window.location.pathname);
 //
 // 
 async function setWidgetReadonly(id,titre) {
-	widgetReadonly = false;
+	widgetReadonly = true;
 	// Check mappings
 	if (!mapping.Longitude || !mapping.Latitude || !mapping.Titre) {
-		widgetReadonly = true;
 		return;
 	}
 	let fields = {};
@@ -614,8 +613,8 @@ async function setWidgetReadonly(id,titre) {
 	// Try a dummy update
 	try {
 		await grist.selectedTable.update({ id: id, fields: fields});
+		widgetReadonly = false;
   	} catch (err) {
-		widgetReadonly = true;
 		return;
 	}
 } // end setWidgetReadonly
@@ -880,7 +879,7 @@ class WidgetControl {
 			));
         };
 		this._container.appendChild(button);
-		if ( widgetReadonly === false ) {
+		if (widgetReadonly === false) {
 			// @AddRowBtn
 			button = document.createElement('button');
 			button.className = 'maplibregl-ctrl-icon add-row-btn';
@@ -903,8 +902,8 @@ class WidgetControl {
 				// ... and ensure the mouse cursor remains
 				document.addEventListener('mousemove', handleEditRecordMouseMove, true);
 			};
+			this._container.appendChild(button);
 		} // End if (widgetReadonly === false)
-		this._container.appendChild(button);
         // @ParameterBtn
 		button = document.createElement('button');
 		button.className = 'maplibregl-ctrl-icon parameters-btn';
@@ -1196,10 +1195,10 @@ if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
 		//
 		// @DemoMode : detection
 		// Try to update with itself the title of the first geojsonFeature row
-		if (widgetReadonly === null && geojsonFeatures.length ) {
+		if (widgetReadonly === null && geojsonFeatures.length > 0) {
 			setWidgetReadonly(geojsonFeatures[0].properties.id, geojsonFeatures[0].properties.title);
 		}
-		console.warn(widgetRootMsg+"Full access not granted: readonly mode !");
+		if ( widgetReadonly === true) console.warn(widgetRootMsg+"Full access not granted: readonly mode !");
 		//
 		// Update editRecordSelect input of recordBox with new recordLookup
 		SetEditRecordSelect();
@@ -1370,7 +1369,7 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 					mapLibre.getCanvas().style.cursor = '';
 				});
 				//
-				if ( widgetReadonly === false ) {
+				if (widgetReadonly === false) {
 					// Intercept right-click to show context menu (@ContextMenu)
 					mapLibre.on('contextmenu', (e) => {
 						e.preventDefault(); // Prevent default browser menu
