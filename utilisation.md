@@ -10,13 +10,15 @@ L'outil Map libre fournit les fonctions de navigation de base tels que :
 * le bouton <img height="12" src="assets/img/widget-control-dezoom.png" alt="dezoom"/> pour le zoom arrière,
 * le bouton <img height="12" src="assets/img/widget-control-orientation.png" alt="orientation"/> pour l'orientation,
 * le bouton <img height="12" src="assets/img/widget-control-selection.png" alt="selection"/> pour sélectionner les données du fond Carte Facile.
-* l'indicateur d'échelle <img height="16" src="assets/img/widget-control-echelle.png" alt="échelle"/>.
+* l'indicateur d'échelle <img height="16" src="assets/img/widget-control-echelle.png" alt="échelle"/>,
+* un nouveau <a href="https://fab-geocommuns.github.io/carte-facile-site/fr/documentation/ajouter-des-fonctionnalites/recherche/">contrôle de recherche</a> d'une adresse ou d'un point d'intérêt mise à disposition par Carte facile.
 
 Le widget Carte facile propose en complément :
 * le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> pour une vue d'ensemble des marqueurs de toutes les lignes de la table,
 * le bouton <img height="12" src="assets/img/widget-control-one-row.svg" alt="focus"/> pour se déplacer sur le marqueur de la ligne sélectionnée,
+* un nouveau bouton permettant d'ajouter ou de mettre à jour une ligne en cliquant sur une position sur la carte (cf. [Edition](#edition)),
 * le bouton <img height="12" src="assets/img/widget-control-parameters.svg" alt="paramètres"/> pour modifier les paramètres du widget.
-* un nouveau <a href="https://fab-geocommuns.github.io/carte-facile-site/fr/documentation/ajouter-des-fonctionnalites/recherche/">contrôle de recherche</a> d'une adresse ou d'un point d'intérêt.
+
 
 Le widget Carte facile permet de modifier les paramètres suivants :
 * le **rayon d'agrégation** permet de gérer la représentation cartographique des lignes de la table dans les zones denses. Exprimé en pixels, il est utilisé par Map Libre pour aggréger, aux différentes échelles, les lignes se trouvant dans une même zone et les représenter par un cercle de taille et de couleur variable en fonction du nombre de lignes concernées ; le nombre de lignes agrégées est par ailleurs affiché au centre du cercle. Il suffit de cliquer sur le cercle pour zoomer sur les lignes agrégées. Il est possible de désactiver cette fonction d'agrégation en choisissant un rayon de 0 ou de faire varier le rayon pour trouver le niveau d'aggrégation optimal.
@@ -39,10 +41,11 @@ La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans l
 
 Le widget Carte facile devient alors un outil de **localisation cartographique** des données de la table.
 
+### Exploration et localisation
+
+Il est possible de combiner les cas d'usage **Exploration** et **Localisation**. Dans ce cas, le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> permet de revenir à une vue d'ensemble des marqueurs de la table après une séquence de localisation pilotée par la vue à laquelle le widget est connecté. Les informations fournies dans cette vue peuvent être limitées à ce qui est nécessaire pour que l'utilisateur identifie de quoi il s'agit puisque le détail des lignes sélectionnées est fourni par la vue connectée au widget Carte facile.
+
 ### Edition
 
 
 
-### Exploration et localisation
-
-Il est possible de combiner les cas d'usage **Exploration** et **Localisation**. Dans ce cas, le bouton <img height="12" src="assets/img/widget-control-all-rows.svg" alt="vue d'ensemble"/> permet de revenir à une vue d'ensemble des marqueurs de la table après une séquence de localisation pilotée par la vue à laquelle le widget est connecté. Les informations fournies dans cette vue peuvent être limitées à ce qui est nécessaire pour que l'utilisateur identifie de quoi il s'agit puisque le détail des lignes sélectionnées est fourni par la vue connectée au widget Carte facile. 
