@@ -29,15 +29,15 @@ Ce cas d'usage revient à :
 * ajouter à la cartographie déjà disponible dans la page, une vue (typiquement de type Fiche) associée à la même table,
 * connecter cette vue au widget Carte Facile (via l'onglet Source de la vue).
 
-Chaque ligne sélectionnée au travers du widget Carte facile sera alors visualisée dans la vue connectée qui pourra alors fournir tout ou partie des informations contenues dans les colonnes de la table. Le widget Carte facile permet ainsi l'exploration du contenu de la table.
+Chaque ligne sélectionnée au travers du widget Carte facile sera alors visualisée dans la vue connectée qui pourra alors fournir tout ou partie des informations contenues dans les colonnes de la table. Le widget Carte Facile permet ainsi l'exploration du contenu de la table tandis que la vue connectée, si elle est bien choisie, peut à la fois permettre de visualiser voire modifier des colonnes de la table dont le widget n'a même pas connaissance.
 
 ### Localisation
 
 Ce cas d'usage revient à :
-* ajouter à la cartographie déjà disponible dans la page, une vue (typiquement de type Table) associée à la même table,
+* ajouter à la cartographie déjà disponible dans la page, une vue (typiquement de type Table) associée à la même table que le widget,
 * connecter le widget Carte facile à cette nouvelle vue (via l'onglet Source du widget).
 
-La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans la cartographique permettant de sélectionner, localiser et zoomer sur le marqueur correspondant. Si la ligne sélectionnée n'est pas représentée cartographiquement, le widget carte Facile se contentera de déselectionner la ligne sélectionnées précédemment.
+La sélection d'une ligne dans la vue ajoutée va induire un déplacement dans la cartographique permettant de sélectionner, localiser et zoomer sur le marqueur correspondant. Si la ligne sélectionnée n'est pas représentée cartographiquement, le widget carte Facile se contentera de déselectionner la ligne sélectionnée précédemment.
 
 Le widget Carte facile devient alors un outil de **localisation cartographique** des données de la table.
 
