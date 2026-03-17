@@ -104,6 +104,6 @@ img.no-change {
     margin-right: auto;
     image-rendering: pixelated;  /* Keep sharp pixels */
     image-rendering: crisp-edges;
-    transform: scale(0.8);       /* 50% of original size */
+    transform: scale(1);       /* 50% of original size */
     transform-origin: top center;/* Scale from top center */
 }
