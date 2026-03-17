@@ -12,7 +12,7 @@ const widgetVersion = "0.1.17" // Increment at least last figure for new release
 //		@GristOnRecord
 //  @DemoMode: widget detects read-only GRIST context (typically when it is used in a template).
 //  It works in demonstration mode in this case, informing change that should have been applied  
-let widgetReadonly = null;
+let widgetReadonly = true;
 //	@RecordBox: Record Dialog Box to edit the records of the GRIST Table)
 //	TBD : make these variable local to the DOMContentLoaded event listener whiche means
 //	to move all functions refering to DOM element inside the listener
@@ -879,31 +879,31 @@ class WidgetControl {
 			));
         };
 		this._container.appendChild(button);
-		if (widgetReadonly === false) {
-			// @AddRowBtn
-			button = document.createElement('button');
-			button.className = 'maplibregl-ctrl-icon add-row-btn';
-			button.type = 'button';
-			button.title = "Ajout d'une ligne";
-			button.id = 'AddRowBtn';
-			button.onclick = () => {
-				disableElt('AddRowBtn');
-				// Help the user
-				SetInstruction('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
-				// Use a dedicated cursor shape
-				mapLibre.getCanvas().style.cursor = svgCursorUri;
-				// Ensure controls keep their normal pointer
-				document.querySelectorAll('.maplibregl-ctrl button').forEach(btn => {
-  					btn.style.cursor = 'pointer';
-				});
-				// Listen for click events or ESC key
-				mapLibre.on('click', handleEditRecordClick);
-				document.addEventListener('keydown', handleEditRecordEscKey);
-				// ... and ensure the mouse cursor remains
-				document.addEventListener('mousemove', handleEditRecordMouseMove, true);
-			};
-			this._container.appendChild(button);
-		} // End if (widgetReadonly === false)
+		// @AddRowBtn
+		button = document.createElement('button');
+		button.className = 'maplibregl-ctrl-icon add-row-btn';
+		button.type = 'button';
+		button.title = "Ajout d'une ligne";
+		button.id = 'AddRowBtn';
+		button.onclick = () => {
+			disableElt('AddRowBtn');
+			// Help the user
+			SetInstruction('Cliquez sur la position de la nouvelle ligne ou pressez ESC pour annuler');
+			// Use a dedicated cursor shape
+			mapLibre.getCanvas().style.cursor = svgCursorUri;
+			// Ensure controls keep their normal pointer
+			document.querySelectorAll('.maplibregl-ctrl button').forEach(btn => {
+  				btn.style.cursor = 'pointer';
+			});
+			// Listen for click events or ESC key
+			mapLibre.on('click', handleEditRecordClick);
+			document.addEventListener('keydown', handleEditRecordEscKey);
+			// ... and ensure the mouse cursor remains
+			document.addEventListener('mousemove', handleEditRecordMouseMove, true);
+		};
+		if (widgetReadonly === false) button.style.display = 'none';
+		else button.style.display = 'block';
+		this._container.appendChild(button);
         // @ParameterBtn
 		button = document.createElement('button');
 		button.className = 'maplibregl-ctrl-icon parameters-btn';
@@ -1195,7 +1195,7 @@ if (debug) console.log(widgetRootMsg+"onRecords column mapping: "+mapping);
 		//
 		// @DemoMode : detection
 		// Try to update with itself the title of the first geojsonFeature row
-		if (widgetReadonly === null && geojsonFeatures.length > 0) {
+		if (geojsonFeatures.length > 0) {
 			setWidgetReadonly(geojsonFeatures[0].properties.id, geojsonFeatures[0].properties.title);
 		}
 		if ( widgetReadonly === true) console.warn(widgetRootMsg+"Full access not granted: readonly mode !");
@@ -1286,6 +1286,13 @@ if (debug) console.log(widgetRootMsg+"CarteFacile LayerGroup:\n"+JSON.stringify(
 				// Focus on the BBox
 				FitBounds();
 				AddGristTable2Map ();
+				//
+				// Reevaluate visibility of addRowBtn
+				const addRowbtn = document.getElementById('AddRowBtn');
+				if ( addRowBtn ) {
+					if (widgetReadonly === false ) addRowBtn.style.display = 'none';
+					else addRowBtn.style.display = 'block';
+				}
 				//
 				// Inspect a cluster on click (@ClusterZoomIn)
 				mapLibre.on('click', 'clusters', async (e) => {
